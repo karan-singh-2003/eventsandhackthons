@@ -1,6 +1,18 @@
-import Image from "next/image";
+'use client'
+
+import Image from 'next/image'
+import { useEffect, useState } from 'react'
+import { getAuthData, type AuthData } from '@/lib/auth-client'
 
 export default function Home() {
+  const [cookieData, setCookieData] = useState<AuthData | null>(null)
+
+  useEffect(() => {
+    const data = getAuthData()
+    setCookieData(data)
+    console.log('cookie data', data)
+  }, [])
+
   return (
     <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -12,9 +24,103 @@ export default function Home() {
           height={38}
           priority
         />
+
+        {/* 🍪 Cookie Data Display */}
+        <div className="w-full max-w-4xl bg-gray-50 dark:bg-gray-900 rounded-none p-6 border">
+          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
+            Cookie Data
+          </h2>
+
+          {cookieData ? (
+            <div className="space-y-6">
+              {/* User Info */}
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-blue-600 dark:text-blue-400">
+                  User Info
+                </h3>
+                {cookieData.userInfo ? (
+                  <div className="bg-white dark:bg-gray-800 rounded p-4 space-y-2">
+                    <p>
+                      <span className="font-medium">User ID:</span>{' '}
+                      {cookieData.userInfo.userId}
+                    </p>
+                    <p>
+                      <span className="font-medium">University ID:</span>{' '}
+                      {cookieData.userInfo.universityId}
+                    </p>
+                    <p>
+                      <span className="font-medium">Name:</span>{' '}
+                      {cookieData.userInfo.name}
+                    </p>
+                    <p>
+                      <span className="font-medium">Email:</span>{' '}
+                      {cookieData.userInfo.email}
+                    </p>
+                    <p>
+                      <span className="font-medium">Is Admin:</span>{' '}
+                      {cookieData.userInfo.isAdmin ? 'Yes' : 'No'}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No user info available
+                  </p>
+                )}
+              </div>
+
+              {/* Session Info */}
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-green-600 dark:text-green-400">
+                  Session Info
+                </h3>
+                {cookieData.sessionInfo ? (
+                  <div className="bg-white dark:bg-gray-800 rounded p-4 space-y-2">
+                    <p>
+                      <span className="font-medium">Session ID:</span>{' '}
+                      {cookieData.sessionInfo.sessionId}
+                    </p>
+                    <p>
+                      <span className="font-medium">Token:</span>{' '}
+                      {cookieData.sessionInfo.token.substring(0, 20)}...
+                    </p>
+                    <p>
+                      <span className="font-medium">IP Address:</span>{' '}
+                      {cookieData.sessionInfo.ipAddress}
+                    </p>
+                    <p>
+                      <span className="font-medium">User Agent:</span>{' '}
+                      {cookieData.sessionInfo.userAgent}
+                    </p>
+                    <p>
+                      <span className="font-medium">Created At:</span>{' '}
+                      {new Date(
+                        cookieData.sessionInfo.createdAt
+                      ).toLocaleString()}
+                    </p>
+                    <p>
+                      <span className="font-medium">Expires At:</span>{' '}
+                      {new Date(
+                        cookieData.sessionInfo.expiresAt
+                      ).toLocaleString()}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No session info available
+                  </p>
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className="text-gray-500 dark:text-gray-400">
+              Loading cookie data...
+            </p>
+          )}
+        </div>
+
         <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
           <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
+            Get started by editing{' '}
             <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
               src/app/page.tsx
             </code>
@@ -99,5 +205,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  );
+  )
 }
