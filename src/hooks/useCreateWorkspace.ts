@@ -42,9 +42,9 @@ const useCreateWorkspace = () => {
       const encodedSlug = encodeURIComponent(workspaceSlug)
 
       if (isOnboarding) {
-        router.push(`/manage-role?slug=${encodedSlug}`)
+        router.push(`/`)
       } else {
-        router.push(`/${encodedSlug}`)
+        router.push(`/`)
       }
 
       return result

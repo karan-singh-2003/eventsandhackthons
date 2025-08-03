@@ -1,0 +1,159 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { getRoutes } from '@/lib/navigationRoute';
+import { useQueryData } from '@/hooks/useQueryData';
+import { getAuthData } from '@/lib/auth-client';
+
+function BottomNavigation() {
+  const { workspaceSlug } = useParams();
+  const pathname = usePathname();
+
+ const authData = getAuthData()
+   const userId = authData?.userInfo?.userId
+  const { data: notificationStatus } = useQueryData(
+    ['notifications-status', workspaceSlug],
+    () =>
+      fetch(
+        `/api/notifications/status?workspaceSlug=${workspaceSlug}&userId=${userId}`
+      ).then((res) => res.json()),
+    !!workspaceSlug && !!userId
+  );
+
+  const hasUnread = notificationStatus?.hasUnread;
+
+  // Get routes and add showDot only to Notification dynamically
+  const baseRoutes = getRoutes(workspaceSlug as string);
+  const routes = baseRoutes.map((route) => ({
+    ...route,
+    showDot: route.label === 'Notification' && hasUnread,
+  }));
+
+  return (
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-white border-t border-gray-300 lg:hidden">
+      <div className="grid grid-cols-4 px-2 py-3">
+        {routes.map((item) => {
+          const isActive = pathname === item.href;
+
+          return (
+            <Link
+              href={item.href}
+              key={item.href}
+              className="relative flex flex-col items-center justify-center"
+            >
+              <Image
+                src={item.icon}
+                alt={item.label}
+                width={54}
+                height={54}
+                className={cn(
+                  'mb-1 transition-opacity duration-150',
+                  isActive ? 'opacity-100' : 'opacity-70'
+                )}
+              />
+              {/* 🔴 Red dot for Notification */}
+              {item.showDot && (
+                <span className="absolute top-1 right-[66px] h-5 w-5 rounded-full bg-red-600 shadow" />
+              )}
+              <span
+                className={cn(
+                  'text-[29px] font-bold',
+                  isActive ? 'text-blue-900' : 'text-gray-600'
+                )}
+              >
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default BottomNavigation;
+
+
+
+
+
+// 'use client';
+
+// import React from 'react';
+// import Link from 'next/link';
+// import Image from 'next/image';
+// import { useParams, usePathname } from 'next/navigation';
+// import { cn } from '@/lib/utils';
+
+// function BottomNavigation() {
+//   const { workspaceSlug } = useParams();
+//   const pathname = usePathname();
+
+//   const routes = [
+//     {
+//       label: 'Home',
+//       href: '/',
+//       icon: '/home.svg',
+//     },
+//     {
+//       label: 'Settings',
+//       href: `/workspace/${workspaceSlug}/workspacesetting`,
+//       icon: '/setting1.svg',
+//     },
+//     {
+//       label: 'Notification',
+//       href: '/notification',
+//       icon: '/notification.svg',
+//     },
+//     {
+//       label: 'Invite',
+//       href: `/workspace/${workspaceSlug}/invitemembers`,
+//       icon: '/setting1.svg',
+//     },
+//   ];
+
+//   return (
+//     <div className="fixed bottom-0 left-0 z-50 w-full bg-white border-t border-gray-300 lg:hidden">
+//       <div className="grid grid-cols-4 px-2 py-3">
+//         {routes.map((item) => {
+//           const isActive = pathname === item.href;
+
+//           return (
+//             <Link
+//               href={item.href}
+//               key={item.href}
+//               className="flex flex-col items-center justify-center"
+//             >
+//               <Image
+//                 src={item.icon}
+//                 alt={item.label}
+//                 width={54}
+//                 height={54}
+//                 className={cn(
+//                   'mb-1',
+//                   isActive ? 'opacity-100' : 'opacity-70'
+//                 )}
+//               />
+//               <span
+//                 className={cn(
+//                   'text-[29px] font-bold',
+//                   isActive ? 'text-blue-900' : 'text-gray-600'
+//                 )}
+//               >
+//                 {item.label}
+//               </span>
+//             </Link>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default BottomNavigation;
+
+

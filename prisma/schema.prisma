@@ -31,11 +31,11 @@ model User {
 model Workspace {
   id            String   @id @default(uuid())
   name          String
+slug          String?   @unique
   createdById   String
   allowAutoJoin Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
   createdBy       User           @relation("UserCreatedWorkspaces", fields: [createdById], references: [id], onDelete: Cascade)
   lastActiveUsers User[]         @relation("UserLastActiveWorkspace")
   members         Member[]

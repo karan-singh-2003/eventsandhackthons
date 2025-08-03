@@ -6,7 +6,6 @@ import { createNotification } from '@/actions/user'
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse and validate request body
     const body = await request.json()
     const result = createWorkspaceSchema.safeParse(body)
 
@@ -17,9 +16,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { workspacename, workspaceslug } = result.data
+    let { workspacename, workspaceslug } = result.data
 
-    // Get complete authentication data (user info + session info)
+    // ✅ Replace spaces with hyphens and lowercase
+    workspaceslug = workspaceslug.trim().toLowerCase().replace(/\s+/g, '-')
+
     const authData = await getAuthData()
 
     if (!authData.userInfo || !authData.sessionInfo) {
@@ -31,35 +32,34 @@ export async function POST(request: NextRequest) {
 
     const { userInfo, sessionInfo } = authData
 
-    // Verify session is not expired
     const sessionExpiry = new Date(sessionInfo.expiresAt)
     if (new Date() > sessionExpiry) {
       return NextResponse.json({ error: 'Session expired' }, { status: 401 })
     }
 
-    console.log('Complete auth data:', authData)
-
-    // Check for existing workspace name
+    // Check if workspace with the same name or slug already exists
     const existingWorkspace = await prisma.workspace.findFirst({
       where: {
-        name: workspacename,
+        OR: [
+          { name: workspacename },
+          { slug: workspaceslug }
+        ],
       },
     })
 
     if (existingWorkspace) {
       return NextResponse.json(
         {
-          error:
-            'Workspace name already exists. Please choose a different name.',
+          error: 'Workspace name or slug already exists. Please choose a different one.',
         },
-        { status: 409 } // Conflict status code
+        { status: 409 }
       )
     }
 
-    // Create workspace with owner role
     const newWorkspace = await prisma.workspace.create({
       data: {
         name: workspacename,
+        slug: workspaceslug, // ✅ Store the cleaned slug
         createdById: userInfo.userId,
         roles: {
           create: {
@@ -72,17 +72,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Get the owner role that was just created
     const ownerRole = newWorkspace.roles.find((role) => role.name === 'OWNER')
-
     if (!ownerRole) {
-      return NextResponse.json(
-        { error: 'Failed to create owner role' },
-        { status: 500 }
-      )
+      return NextResponse.json({ error: 'Failed to create owner role' }, { status: 500 })
     }
 
-    // Create member relationship with owner role
     await prisma.member.create({
       data: {
         userId: userInfo.userId,
@@ -92,16 +86,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    console.log('Workspace created:', newWorkspace)
-    console.log('Session info used:', sessionInfo)
-
-    // Set last active workspace for the user
     await prisma.user.update({
       where: { id: userInfo.userId },
       data: { lastActiveWorkspaceId: newWorkspace.id },
     })
 
-    // Create a welcome notification (you may need to implement this function)
     try {
       await createNotification({
         userId: userInfo.userId,
@@ -110,7 +99,6 @@ export async function POST(request: NextRequest) {
       })
     } catch (notificationError) {
       console.error('Failed to create notification:', notificationError)
-      // Don't fail the whole request for notification error
     }
 
     return NextResponse.json(
@@ -120,16 +108,13 @@ export async function POST(request: NextRequest) {
         workspace: {
           id: newWorkspace.id,
           name: newWorkspace.name,
-          slug: workspaceslug, // Use the slug from the request
+          slug: newWorkspace.slug,
         },
       },
       { status: 201 }
     )
   } catch (error) {
     console.error('Create workspace API error:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

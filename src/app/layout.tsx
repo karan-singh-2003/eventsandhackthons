@@ -1,11 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/Provider/ReactQueryClient'
+
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+})
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-poppins',
 })
 
 export const metadata: Metadata = {
@@ -20,8 +28,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans`}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+      <body className={`${inter.variable}  ${poppins.variable} font-poppins  `}>
+        <ReactQueryProvider>
+           <Toaster
+        position="top-center" 
+        
+        
+      />
+          {children}</ReactQueryProvider>
       </body>
     </html>
   )

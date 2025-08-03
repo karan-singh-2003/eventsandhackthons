@@ -158,3 +158,19 @@ body {
   font-family: 'Boldonse', sans-serif;
 }
 
+/* styles/sidebar.css */
+.sidebar {
+  background: linear-gradient(to bottom, #1F1F2D, #151522);
+  
+  color: #E5E7EB;
+  padding: 1rem;
+}
+
+/* styles/globals.css or tailwind.config.css */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
