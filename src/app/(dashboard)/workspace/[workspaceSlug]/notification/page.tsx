@@ -62,10 +62,10 @@ useEffect(() => {
       ) : notifications.length === 0 ? (
         <p className="text-muted-foreground">No notifications yet.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-4 lg:mb-1 mb-[47px]">
           {notifications.map((notify, index) => (
             <li key={notify.id} className="bg-background">
-              <p className="font-semibold lg:text-sm text-xs lg:my-1 my-3 text-foreground">{notify.message}</p>
+              <p className="font-semibold lg:text-sm text-xs lg:my-1 my-3  text-foreground">{notify.message}</p>
               <span className="lg:text-sm text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(notify.createdAt))} ago
               </span>

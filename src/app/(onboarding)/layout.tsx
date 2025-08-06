@@ -72,6 +72,7 @@ const Layout = ({ children }: Props) => {
               alt="eventsLogo"
               height={40}
               width={126}
+              
               className="w-20 h-6 sm:w-22 sm:h-6 lg:w-24 lg:h-7"
               style={{
                 filter: 'invert(1)', // This will make white SVG appear black
