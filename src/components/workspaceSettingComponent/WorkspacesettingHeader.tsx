@@ -66,7 +66,7 @@ function WorkspacesettingHeader() {
         <div className="flex flex-col items-center gap-4 lg:flex-row lg:items-center">
           <div
             className={clsx(
-              "lg:w-11 lg:h-11 w-27 h-27 rounded-full flex items-center justify-center lg:text-lg text-4xl font-semibold text-black shadow-md",
+              "lg:w-11 lg:h-11 w-14 h-14 rounded-full flex items-center justify-center lg:text-lg text-xl font-semibold text-black shadow-md",
             )}
             style={{ backgroundColor: bgColor }}
           >
@@ -81,25 +81,25 @@ function WorkspacesettingHeader() {
                   type="text"
                   onBlur={handleSubmit(handleSave)} // Trigger submit on blur
                   onKeyDown={handleKeyDown} // Handle key down event for "Enter"
-                  className="lg:text-lg text-3xl font-semibold text-black bg-transparent border border-[#555] rounded lg:px-2 lg:py-1 px-4 py-2  focus:outline-none focus:border-[#888] w-full"
+                  className="lg:text-lg text-lg font-semibold text-black bg-transparent border border-[#555] rounded lg:px-2 lg:py-1 px-2 py-2  focus:outline-none focus:border-[#888] w-full"
                 />
               ) : (
                 <span
-                  className="lg:text-lg text-5xl font-semibold text-black cursor-pointer hover:underline"
+                  className="lg:text-lg text-lg font-semibold text-black cursor-pointer hover:underline"
                   onClick={() => setIsEditing(true)}
                 >
                   {isPending || isFetching ? "Loading..." : workspaceData?.workspace?.name || "Workspace"}
                 </span>
               )}
               <span
-                className="cursor-pointer text-[#aaa] mt-2 lg:text-xs text-xl"
+                className="cursor-pointer text-[#aaa] mt-2 lg:text-xs text-xs"
                 onClick={() => setIsEditing(true)}
                 title="Edit name"
               >
                 edit.
               </span>
             </div>
-            <span className="lg:text-xs text-xl text-[#999999] mt-1">
+            <span className="lg:text-xs text-xs text-[#999999] mt-1">
               {isRenaming ? "Renaming workspace..." : "Workspace Settings"}
             </span>
             {/* Display Server Error */}
@@ -110,21 +110,21 @@ function WorkspacesettingHeader() {
         </div>
         {/* Right: Button - Removed as per original code, but kept for structure if needed */}
       </div>
-      <div className="items-center justify-between lg:px-4 px-6 lg:py-2 py-4 mt-4 lg:text-sm text-2xl">
+      <div className="items-center justify-between lg:px-4 px-4 lg:py-2 py-2 mt-2 lg:text-sm text-xs">
         Workspace Name
-        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-3xl bg-[#f0f0f0] lg:px-2 px-4 w-full lg:py-2  py-4 lg:mt-0.5 mt-2  shadow-sm lg:w-[426px]">
+        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-xs bg-[#f0f0f0] lg:px-2 px-2 w-full lg:py-2  py-2 lg:mt-0.5 mt-2  shadow-sm lg:w-[426px]">
           {isPending || isFetching ? "Loading..." : workspaceData?.workspace?.name || "Workspace"}
         </div>
       </div>
-      <div className="items-center justify-between lg:px-4 px-6 lg:py-2 py-4 mt-2 lg:text-sm text-2xl">
+      <div className="items-center justify-between lg:px-4 px-4 lg:py-2 py-2 mt-2 lg:text-sm text-xs">
         Workspace Slug
-        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-3xl bg-[#f0f0f0] lg:px-2  px-4 w-full lg:py-2 py-4 lg:mt-0.5 mt-2 shadow-sm lg:w-[426px]">
+        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-xs bg-[#f0f0f0] lg:px-2  px-2 w-full lg:py-2 py-2 lg:mt-0.5 mt-2 shadow-sm lg:w-[426px]">
           {isPending || isFetching ? "Loading..." : workspaceData?.workspace?.slug || "Workspace"}
         </div>
       </div>
-      <div className="items-center justify-between lg:px-4 px-6 lg:py-2 py-4 mt-2 lg:text-sm text-2xl">
+      <div className="items-center justify-between lg:px-4 px-4 lg:py-2 py-2 mt-2 lg:text-sm text-xs">
         Workspace ID
-        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-3xl bg-[#f0f0f0] lg:px-2 px-4 w-full lg:py-2  py-4 lg:mt-0.5 mt-2 shadow-sm lg:w-[426px]">
+        <div className="flex uppercase text-[#10414d] font-semibold lg:text-xs text-xs bg-[#f0f0f0] lg:px-2 px-2 w-full lg:py-2  py-2 lg:mt-0.5 mt-2 shadow-sm lg:w-[426px]">
           {isPending || isFetching ? "Loading..." : workspaceData?.workspace?.id || "Workspace"}
         </div>
       </div>

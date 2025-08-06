@@ -19,7 +19,7 @@ function Layout({ children }: DashboardlayoutProps) {
   return (
    <div className="min-h-screen bg-white">
   {/* Fixed Top Navbar */}
-   <div className="fixed top-0 left-0 z-50 w-full h-[116px] lg:h-[49px] bg-white border-b border-gray-200">
+   <div className="fixed top-0 left-0 z-50 w-full h-[47px] lg:h-[49px] bg-white border-b border-gray-200">
         <WorkspaceNavbar />
       </div>
 

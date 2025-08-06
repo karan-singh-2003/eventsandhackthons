@@ -64,8 +64,8 @@ export default function BottomNavigation() {
               <Image
                 src={iconSrc || '/placeholder.svg'}
                 alt={item.label}
-                width={44}
-                height={44}
+                width={24}
+                height={24}
                 className={cn(
                   'mb-1 transition-opacity duration-150',
                   isActive ? 'opacity-100' : 'opacity-70'
@@ -73,13 +73,13 @@ export default function BottomNavigation() {
               />
               {item.showDot && (
                 <span
-                  className="absolute top-0 right-[54px] h-4 w-4 rounded-full bg-red-600 shadow"
+                  className="absolute top-0 right-[12px] h-2 w-2 rounded-full bg-red-600 shadow"
                   aria-hidden="true"
                 />
               )}
               <span
                 className={cn(
-                  'text-2xl font-bold',
+                  'text-xs font-bold',
                   isActive ? 'text-blue-900' : 'text-gray-600'
                 )}
               >
@@ -96,16 +96,16 @@ export default function BottomNavigation() {
               className="relative flex flex-col items-center justify-center py-1 text-gray-600"
               aria-label="More options"
             >
-              <MoreHorizontal className="w-6 h-6 mb-1" />
+              <MoreHorizontal className="w-5 h-5 mb-1" />
               <span className="text-xs font-bold">More</span>
             </button>
           </SheetTrigger>
           <SheetContent
             side="bottom"
-            className="h-auto max-h-[90vh] rounded-t-xl"
+            className="h-auto  rounded-t-xl"
           >
-            <SheetHeader className="p-4">
-              <SheetTitle className="font-bold text-center text-3xl">Navigation</SheetTitle>
+            <SheetHeader className="p-3">
+              <SheetTitle className="font-bold text-center text-xl">Navigation</SheetTitle>
             </SheetHeader>
             <nav className="grid grid-cols-3 gap-2 pb-4">
               {menuRoutes.map((item) => {
@@ -122,13 +122,13 @@ export default function BottomNavigation() {
                       <Image
                         src={iconSrc || '/placeholder.svg'}
                         alt={item.label}
-                        width={48}
-                        height={48}
+                        width={24}
+                        height={24}
                         className="mb-1"
                       />
                       <span
                         className={cn(
-                          'text-2xl font-semibold',
+                          'text-xs font-semibold',
                           isActive ? 'text-blue-900' : 'text-gray-600'
                         )}
                       >

@@ -47,14 +47,14 @@ useEffect(() => {
 }, [fetchedNotifications, workspaceSlug])
 
   return (
-    <div className="p-4 lg:mt-1 mt-[76px]">
-      <h1 className="lg:text-2xl text-5xl font-bold lg:mb-7 mb-[44px] text-foreground">Notifications</h1>
+    <div className="p-4  ">
+      <h1 className="lg:text-2xl text-2xl font-bold lg:mb-7  text-foreground">Notifications</h1>
 
       {isPending ? (
         <div className="space-y-4">
           {[...Array(4)].map((_, idx) => (
             <div key={idx}>
-              <Skeleton className="lg:h-5 h-8 w-3/4 mb-2 rounded-none" />
+              <Skeleton className="lg:h-5 h-8 lg:w-3/4 w-2/2 mb-2 rounded-none" />
               <Skeleton className="h-4 w-1/4 rounded-none" />
             </div>
           ))}
@@ -65,8 +65,8 @@ useEffect(() => {
         <ul className="space-y-4">
           {notifications.map((notify, index) => (
             <li key={notify.id} className="bg-background">
-              <p className="font-semibold lg:text-sm text-2xl lg:my-1 my-4 text-foreground">{notify.message}</p>
-              <span className="lg:text-sm text-xl text-muted-foreground">
+              <p className="font-semibold lg:text-sm text-xs lg:my-1 my-3 text-foreground">{notify.message}</p>
+              <span className="lg:text-sm text-xs text-muted-foreground">
                 {formatDistanceToNow(new Date(notify.createdAt))} ago
               </span>
               {index < notifications.length - 1 && (

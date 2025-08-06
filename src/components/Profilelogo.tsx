@@ -74,35 +74,35 @@ const handleLogout = async () => {
         <Button
           variant="ghost"
           className="relative
-            h-[66px] w-[66px] /* Bigger for mobile */
+            h-[26px] w-[26px] /* Bigger for mobile */
             lg:h-8 lg:w-8 /* Same as code for desktop */
             rounded-full hover:bg-gray-100 focus:outline-none focus:ring-0"
         >
           <Avatar
             className="
-            h-18 w-18 /* Bigger avatar for mobile */
+            h-8 w-8 /* Bigger avatar for mobile */
             lg:h-8 lg:w-8 /* Same as code for desktop */
           "
           >
             <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-            <AvatarFallback className="bg-blue-500 text-white font-semibold lg:text-sm text-3xl">{user.initials}</AvatarFallback>
+            <AvatarFallback className="bg-blue-500 text-white font-semibold lg:text-sm text-sm">{user.initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="lg:w-60 lg:p-2 w-100 p-4" align="end" sideOffset={8}>
+      <DropdownMenuContent className="lg:w-60 lg:p-2 w-50 p-1" align="end" sideOffset={8}>
         {/* User Info Section */}
-        <DropdownMenuLabel className="lg:p-3 p-3">
+        <DropdownMenuLabel className="lg:p-3 p-2">
           <div className="flex items-center space-x-3">
-            <Avatar className="lg:h-10 lg:w-10 h-18 w-18">
+            <Avatar className="lg:h-10 lg:w-10 h-8 w-8">
               <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-              <AvatarFallback className="bg-blue-500 text-white font-semibold lg:text-sm text-3xl ">
+              <AvatarFallback className="bg-blue-500 text-white font-semibold lg:text-sm text-sm ">
                 {user.initials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col space-y-1">
-              <p className="lg:text-sm text-3xl font-medium leading-none">{user.name}</p>
-              <p className="lg:text-xs text-[23px] text-muted-foreground leading-none">{user.email}</p>
+              <p className="lg:text-sm text-sm font-medium leading-none">{user.name}</p>
+              <p className="lg:text-xs text-[11px] text-muted-foreground leading-none">{user.email}</p>
             </div>
           </div>
         </DropdownMenuLabel>
@@ -111,13 +111,13 @@ const handleLogout = async () => {
 
         {/* Menu Items */}
         <DropdownMenuItem className="cursor-pointer p-3 focus:bg-gray-100" onClick={onProfileClick}>
-          <User className="mr-3 lg:h-4 lg:w-4 h-6 w-6" />
-          <span className="sm:text-2xl lg:text-sm">Profile</span>
+          <User className="mr-3 lg:h-4 lg:w-4 h-4 w-4" />
+          <span className="text-xs lg:text-sm">Profile</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem className="cursor-pointer lg:p-3 p-4 focus:bg-gray-100" onClick={onSettingsClick}>
           <Settings className="mr-3 lg:h-4 lg:w-4 h-[30px] w[40px]" />
-          <span className="sm:text-2xl lg:text-sm">Account settings</span>
+          <span className="text-xs lg:text-sm">Account settings</span>
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
@@ -127,7 +127,7 @@ const handleLogout = async () => {
           onClick={handleLogout}
         >
           <LogOut className="mr-3 lg:h-4 lg:w-4 sm:w-6 sm:h-6" />
-          <span className="sm:text-2xl lg:text-sm">Log out</span>
+          <span className="text-xs lg:text-sm">Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
