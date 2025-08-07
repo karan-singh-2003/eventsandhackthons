@@ -59,7 +59,7 @@ const routes = getRoutes(workspaceSlug as any)
                   <button
                     onClick={() => handleNavigation(item)}
                     className={cn(
-                      'group rounded-md transition-all p-2 w-10 h-10 flex items-center justify-center relative',
+                      'group rounded-md transition-all p-2 w-9 h-9 flex items-center justify-center relative',
                       isActive ? 'bg-gray-100 text-blue-900' : 'hover:bg-gray-100'
                     )}
                     aria-label={item.label}
@@ -69,7 +69,7 @@ const routes = getRoutes(workspaceSlug as any)
                       alt={item.label}
                       width={20}
                       height={20}
-                      className="w-[20px] h-[20px] "
+                      className="w-[19px] h-[19px] "
                     />
                     {/* 🔴 Red dot for unread notifications */}
                     {showDot && (
@@ -94,7 +94,7 @@ const routes = getRoutes(workspaceSlug as any)
       </Tooltip.Provider>
       <Separator className="my-4 bg-gray-300" />
       <div className="flex flex-col items-center space-y-2 my-2">
-        <Image src="/searchicon.svg" alt="Search Icon" width={20} height={20} className="w-[20px] h-[20px]" />
+        <Image src="/searchicon.svg" alt="Search Icon" width={20} height={20} className="w-[19px] h-[19px]" />
       </div>
     </>
   )

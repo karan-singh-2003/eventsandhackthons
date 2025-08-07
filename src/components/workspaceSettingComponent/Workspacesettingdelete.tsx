@@ -53,8 +53,8 @@ const WorkspaceSettingMain: React.FC = () => {
   return (
     <div className="mt-4 p-4 border-t border-gray-200 flex flex-col md:flex-row items-start md:items-center justify-between lg:mb-1 mb-[56px]">
       <div className="flex flex-col gap-2 mb-3 md:mb-0">
-        <div className="lg:text-xl text-sm font-semibold text-gray-900">Delete Workspace</div>
-        <p className="lg:text-sm text-xs lg:w-full  text-gray-600">
+        <div className="lg:text-sm text-sm font-semibold text-gray-900">Delete Workspace</div>
+        <p className="lg:text-xs text-xs lg:w-full  text-gray-600">     
           This action will be permanently delete this workspace.
         </p>
       </div>
@@ -62,7 +62,7 @@ const WorkspaceSettingMain: React.FC = () => {
         <DialogTrigger asChild>
           <Button
             variant="outline"
-            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent rounded-lg lg:px-6 px-6 lg:py-3 py-3  font-medium w-full md:w-auto transition-colors duration-200 lg:text-sm text-xs sm:ml-[119px] "
+            className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent lg:px-1 px-6 lg:py-2 py-3  font-medium w-full md:w-auto transition-colors duration-200 lg:text-xs text-xs lg:mr-[532px] sm:ml-[9px] "
             disabled={deletepending}
           >
             {deletepending ? "Deleting..." : "Delete Workspace"}

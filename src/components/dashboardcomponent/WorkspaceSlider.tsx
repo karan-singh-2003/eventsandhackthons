@@ -28,8 +28,7 @@ function Slider() {
     visible: { opacity: 1, x: 0 },
   }
 
-  const text = 'GNE-EVENTS'
-
+  
   return (
     <>
       <aside className="h-full bg-[#ffff] border-r border-[#d4d4d4] hidden lg:block p-1 w-[47px]">
