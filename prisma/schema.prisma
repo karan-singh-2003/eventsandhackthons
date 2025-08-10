@@ -1,0 +1,186 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                    String         @id @default(uuid())
+  name                  String?
+  email                 String?        @unique
+  password              String
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  isAdmin               Boolean        @default(false)
+  universityId          String         @unique
+  lastActiveAt          DateTime?      @default(now())
+  lastActiveWorkspaceId String?        @unique
+  invitesSent           Invite[]       @relation("InvitesSentBy")
+  joinRequests          JoinRequest[]
+  memberships           Member[]
+  notifications         Notification[]
+  createdRoles          Role[]         @relation("RoleCreatedBy")
+  updatedRoles          Role[]         @relation("RoleUpdatedBy")
+  sessions              Session[]
+  lastActiveWorkspace   Workspace?     @relation("UserLastActiveWorkspace", fields: [lastActiveWorkspaceId], references: [id])
+  createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces")
+}
+
+model Workspace {
+  id              String         @id @default(uuid())
+  name            String
+  createdById     String
+  allowAutoJoin   Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  slug            String         @unique
+  invites         Invite[]
+  joinRequests    JoinRequest[]
+  members         Member[]
+  notifications   Notification[]
+  roles           Role[]
+  lastActiveUsers User?          @relation("UserLastActiveWorkspace")
+  createdBy       User           @relation("UserCreatedWorkspaces", fields: [createdById], references: [id], onDelete: Cascade)
+}
+
+model Member {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String
+  roleId      String
+  joinedAt    DateTime  @default(now())
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  updatedById String
+
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy   User             @relation("RoleCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
+  updatedBy   User             @relation("RoleUpdatedBy", fields: [updatedById], references: [id], onDelete: Cascade)
+  permissions RolePermission[]
+  members     Member[]
+  Invite      Invite[]
+  JoinRequest JoinRequest[]
+
+  @@unique([workspaceId, name])
+}
+
+model PermissionCategory {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  permissions Permission[]
+}
+
+model Permission {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  label           String
+  categoryId      String
+  category        PermissionCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model Invite {
+  id    String @id @default(uuid())
+  token String @unique
+
+  // Used only for one-time email invites
+  email        String? // optional for public invites
+  name         String? // optional for public invites
+  universityId String? // optional for public invites
+
+  // Keep track of everyone who joined using this link
+  joinedEmails String[] @default([])
+
+  isLink     Boolean      @default(false) // true = link invite, false = email invite
+  status     InviteStatus @default(PENDING)
+  linkPublic Boolean      @default(false)
+  disabled   Boolean      @default(false)
+  usedAt     DateTime? // only for one-time email invite
+  expiresAt  DateTime
+  createdAt  DateTime     @default(now())
+
+  // Relations
+  invitedById String
+  roleId      String
+  workspaceId String
+
+  invitedBy User      @relation("InvitesSentBy", fields: [invitedById], references: [id], onDelete: Cascade)
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model JoinRequest {
+  id          String    @id @default(cuid())
+  userId      String
+  workspaceId String
+  roleId      String
+  createdAt   DateTime  @default(now())
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Session {
+  id             String   @id @default(cuid()) @map("_id")
+  userId         String
+  token          String
+  expiresAt      DateTime
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id          String     @id @default(cuid())
+  userId      String
+  message     String
+  workspaceId String?
+  read        Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
