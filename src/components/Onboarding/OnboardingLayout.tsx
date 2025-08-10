@@ -20,7 +20,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   workspaceName,
   isLoading,
   children,
-  loadingTitle = 'Loading workspace...',
+  loadingTitle = 'Loading workspace',
 }) => {
   if (isLoading) {
     return (

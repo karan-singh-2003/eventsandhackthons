@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  getWorkspaceRoles,
-  getAllRoles,
-  createRole,
-  updateRole,
-  deleteRole,
-} from '@/actions/roles'
+import { prisma } from '@/lib/prisma'
 
 // GET /api/roles?workspaceSlug=xxx&action=xxx
 export async function GET(request: NextRequest) {
@@ -22,14 +16,57 @@ export async function GET(request: NextRequest) {
     }
 
     switch (action) {
-      case 'getWorkspaceRoles':
-        const workspaceRoles = await getWorkspaceRoles(workspaceSlug)
-        return NextResponse.json(workspaceRoles)
-
+      case 'getWorkspaceRoles': {
+        const workspace = await prisma.workspace.findUnique({
+          where: { slug: workspaceSlug },
+          select: { id: true },
+        })
+        if (!workspace) {
+          return NextResponse.json({ status: 404, data: 'Workspace not found' })
+        }
+        const roles = await prisma.role.findMany({
+          where: { workspaceId: workspace.id },
+          select: {
+            id: true,
+            name: true,
+            workspaceId: true,
+          },
+          orderBy: { name: 'asc' },
+        })
+        return NextResponse.json({ status: 200, data: roles })
+      }
       case 'getAll':
-      default:
-        const allRoles = await getAllRoles(workspaceSlug)
-        return NextResponse.json({ status: 200, data: allRoles })
+      default: {
+        const workspace = await prisma.workspace.findUnique({
+          where: { slug: workspaceSlug },
+          select: { id: true },
+        })
+        if (!workspace) {
+          return NextResponse.json({ status: 404, data: 'Workspace not found' })
+        }
+        const roles = await prisma.role.findMany({
+          where: { workspaceId: workspace.id },
+          include: {
+            permissions: {
+              include: {
+                permission: {
+                  select: {
+                    id: true,
+                    name: true,
+                    label: true,
+                    category: {
+                      select: { name: true },
+                    },
+                  },
+                },
+              },
+            },
+            workspace: true,
+          },
+          orderBy: { name: 'asc' },
+        })
+        return NextResponse.json({ status: 200, data: roles })
+      }
     }
   } catch (error) {
     console.error('GET /api/roles error:', error)
@@ -44,22 +81,48 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, workspaceSlug, permissions } = body
+    const { name, workspaceSlug, permissions, createdById, updatedById } = body
 
-    if (!name || !workspaceSlug) {
+    if (!name || !workspaceSlug || !createdById || !updatedById) {
       return NextResponse.json(
-        { error: 'name and workspaceSlug are required' },
+        {
+          error:
+            'name, workspaceSlug, createdById, and updatedById are required',
+        },
         { status: 400 }
       )
     }
 
-    const result = await createRole({
-      name,
-      workspaceSlug,
-      permissions: permissions || [],
+    // Find workspace
+    const workspace = await prisma.workspace.findUnique({
+      where: { slug: workspaceSlug },
+      select: { id: true },
     })
-
-    return NextResponse.json(result)
+    if (!workspace) {
+      return NextResponse.json(
+        { error: 'Workspace not found' },
+        { status: 404 }
+      )
+    }
+    // Create role
+    const role = await prisma.role.create({
+      data: {
+        name,
+        workspaceId: workspace.id,
+        createdById,
+        updatedById,
+      },
+    })
+    // Add permissions if provided
+    if (permissions && permissions.length > 0) {
+      await prisma.rolePermission.createMany({
+        data: permissions.map((permissionId: string) => ({
+          roleId: role.id,
+          permissionId,
+        })),
+      })
+    }
+    return NextResponse.json({ status: 200, data: role })
   } catch (error) {
     console.error('POST /api/roles error:', error)
     return NextResponse.json(
@@ -82,14 +145,22 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const result = await updateRole({
-      id,
-      name,
-      permissions: permissions || [],
-      userId,
+    // Update role name
+    const updatedRole = await prisma.role.update({
+      where: { id },
+      data: { name },
     })
-
-    return NextResponse.json(result)
+    // Update permissions
+    await prisma.rolePermission.deleteMany({ where: { roleId: id } })
+    if (permissions && permissions.length > 0) {
+      await prisma.rolePermission.createMany({
+        data: permissions.map((permissionId: string) => ({
+          roleId: id,
+          permissionId,
+        })),
+      })
+    }
+    return NextResponse.json({ status: 200, data: updatedRole })
   } catch (error) {
     console.error('PUT /api/roles error:', error)
     return NextResponse.json(
@@ -109,8 +180,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'roleId is required' }, { status: 400 })
     }
 
-    const result = await deleteRole(roleId)
-    return NextResponse.json(result)
+    await prisma.rolePermission.deleteMany({ where: { roleId } })
+    await prisma.role.delete({ where: { id: roleId } })
+    return NextResponse.json({ status: 200, message: 'Role deleted' })
   } catch (error) {
     console.error('DELETE /api/roles error:', error)
     return NextResponse.json(

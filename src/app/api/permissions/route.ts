@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import {
-  getAllPermissions,
-  getPermissionsByCategory,
-} from '@/actions/permissions'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,13 +7,36 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action') || 'default'
 
     switch (action) {
-      case 'getAll':
-        const allPermissions = await getAllPermissions()
-        return NextResponse.json({ status: 200, data: allPermissions })
+      case 'getAll': {
+        const permissions = await prisma.permission.findMany({
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: [{ category: { name: 'asc' } }, { name: 'asc' }],
+        })
+        return NextResponse.json({ status: 200, data: permissions })
+      }
 
-      case 'getByCategory':
-        const permissionsByCategory = await getPermissionsByCategory()
-        return NextResponse.json(permissionsByCategory)
+      case 'getByCategory': {
+        const categories = await prisma.permissionCategory.findMany({
+          include: {
+            permissions: {
+              orderBy: {
+                name: 'asc',
+              },
+            },
+          },
+          orderBy: {
+            name: 'asc',
+          },
+        })
+        return NextResponse.json(categories)
+      }
 
       case 'default':
       default:

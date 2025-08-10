@@ -1,19 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import {
-  getInviteWorkspace,
-  findAllJoinRequests,
-  getWorkspaceMembers,
-  updateMemberRole,
-  removeMemberFromWorkspace,
-  cancelInvitation,
-  approveJoinRequest,
-  rejectJoinRequest,
-} from '@/actions/workspace'
+import { prisma } from '@/lib/prisma'
 
 // GET /api/workspace?action=xxx&...params
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    const url = new URL(request.url)
+    const searchParams = url.searchParams
     const action = searchParams.get('action')
 
     switch (action) {
@@ -25,32 +17,64 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           )
         }
-        const result = await getInviteWorkspace(token)
-        return NextResponse.json(result)
-      }
 
-      case 'findAllJoinRequests': {
-        const workspaceId = searchParams.get('workspaceId')
-        if (!workspaceId) {
+        const invite = await prisma.invite.findUnique({
+          where: { token },
+          include: {
+            workspace: true,
+            role: true,
+          },
+        })
+
+        if (!invite) {
           return NextResponse.json(
-            { error: 'workspaceId is required' },
-            { status: 400 }
+            { status: 404, invite: 'Invalid or expired invite.' },
+            { status: 404 }
           )
         }
-        const result = await findAllJoinRequests({ workspaceId })
-        return NextResponse.json(result)
-      }
 
-      case 'getWorkspaceMembers': {
-        const workspaceSlug = searchParams.get('workspaceSlug')
-        if (!workspaceSlug) {
+        if (invite.expiresAt < new Date()) {
           return NextResponse.json(
-            { error: 'workspaceSlug is required' },
-            { status: 400 }
+            { status: 410, invite: 'This invite link has expired.' },
+            { status: 410 }
           )
         }
-        const result = await getWorkspaceMembers(workspaceSlug)
-        return NextResponse.json(result)
+
+        const members = await prisma.member.findMany({
+          where: { workspaceId: invite.workspaceId },
+          include: { user: true, role: true },
+        })
+
+        const workspaceData = {
+          approvalRequired: invite.linkPublic ?? false,
+          workspace: {
+            id: invite.workspace.id,
+            name: invite.workspace.name,
+            slug: invite.workspace.slug,
+            imageUrl: null,
+            createdAt: invite.workspace.createdAt,
+            members: members.map((m) => ({
+              id: m.id,
+              userId: m.userId,
+              workspaceId: m.workspaceId,
+              role: m.role?.name ?? undefined,
+              user: {
+                id: m.user.id,
+                name: m.user.name ?? m.user.email ?? 'User',
+                email: m.user.email ?? '',
+                createdAt: m.user.createdAt,
+                updatedAt: m.user.updatedAt,
+              },
+            })),
+            allowAutoJoin: false,
+            createdById: invite.workspace.createdById,
+          },
+        }
+
+        return NextResponse.json(
+          { status: 200, invite: workspaceData },
+          { status: 200 }
+        )
       }
 
       default:
@@ -68,41 +92,23 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT /api/workspace - Update operations
+// PUT /api/workspace - Update operations (placeholders)
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
     const { action } = body
 
     switch (action) {
-      case 'updateMemberRole': {
-        const { memberId, roleId, workspaceSlug } = body
-        if (!memberId || !roleId || !workspaceSlug) {
-          return NextResponse.json(
-            { error: 'memberId, roleId, and workspaceSlug are required' },
-            { status: 400 }
-          )
-        }
-        const result = await updateMemberRole({
-          memberId,
-          roleId,
-          workspaceSlug,
-        })
-        return NextResponse.json(result)
-      }
-
-      case 'approveJoinRequest': {
-        const { requestId, workspaceSlug } = body
-        if (!requestId || !workspaceSlug) {
-          return NextResponse.json(
-            { error: 'requestId and workspaceSlug are required' },
-            { status: 400 }
-          )
-        }
-        const result = await approveJoinRequest({ requestId, workspaceSlug })
-        return NextResponse.json(result)
-      }
-
+      case 'updateMemberRole':
+        return NextResponse.json(
+          { message: 'updateMemberRole not implemented' },
+          { status: 501 }
+        )
+      case 'approveJoinRequest':
+        return NextResponse.json(
+          { message: 'approveJoinRequest not implemented' },
+          { status: 501 }
+        )
       default:
         return NextResponse.json(
           { error: 'Invalid action parameter' },
@@ -118,55 +124,28 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE /api/workspace - Delete operations
+// DELETE /api/workspace - Delete operations (placeholders)
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action')
 
     switch (action) {
-      case 'removeMember': {
-        const memberId = searchParams.get('memberId')
-        const workspaceSlug = searchParams.get('workspaceSlug')
-        if (!memberId || !workspaceSlug) {
-          return NextResponse.json(
-            { error: 'memberId and workspaceSlug are required' },
-            { status: 400 }
-          )
-        }
-        const result = await removeMemberFromWorkspace({
-          memberId,
-          workspaceSlug,
-        })
-        return NextResponse.json(result)
-      }
-
-      case 'cancelInvitation': {
-        const inviteId = searchParams.get('inviteId')
-        const workspaceSlug = searchParams.get('workspaceSlug')
-        if (!inviteId || !workspaceSlug) {
-          return NextResponse.json(
-            { error: 'inviteId and workspaceSlug are required' },
-            { status: 400 }
-          )
-        }
-        const result = await cancelInvitation({ inviteId, workspaceSlug })
-        return NextResponse.json(result)
-      }
-
-      case 'rejectJoinRequest': {
-        const requestId = searchParams.get('requestId')
-        const workspaceSlug = searchParams.get('workspaceSlug')
-        if (!requestId || !workspaceSlug) {
-          return NextResponse.json(
-            { error: 'requestId and workspaceSlug are required' },
-            { status: 400 }
-          )
-        }
-        const result = await rejectJoinRequest({ requestId, workspaceSlug })
-        return NextResponse.json(result)
-      }
-
+      case 'removeMember':
+        return NextResponse.json(
+          { message: 'removeMember not implemented' },
+          { status: 501 }
+        )
+      case 'cancelInvitation':
+        return NextResponse.json(
+          { message: 'cancelInvitation not implemented' },
+          { status: 501 }
+        )
+      case 'rejectJoinRequest':
+        return NextResponse.json(
+          { message: 'rejectJoinRequest not implemented' },
+          { status: 501 }
+        )
       default:
         return NextResponse.json(
           { error: 'Invalid action parameter' },

@@ -48,7 +48,7 @@ const FormElements: React.FC<Props> = ({
             placeholder={placeholder}
             {...register(name)}
             readOnly={readonly}
-            className={`lg:text-[15px] text-[14px] dark:border-gray-[#444444] rounded-none w-full lg:h-12 h-11 mb-2 font-medium focus:border-black focus:border-[1.8px] focus:outline-none ${className} ${
+            className={`lg:text-[15px] text-[14px] font-medium dark:border-gray-[#444444] rounded-none w-full lg:h-12 h-11 mb-2 focus:border-black focus:border-[1.8px] focus:outline-none ${className} ${
               errors[name]
                 ? 'border-red-500 text-red-500'
                 : isFocused

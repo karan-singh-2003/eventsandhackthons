@@ -135,8 +135,6 @@ export async function POST(req: Request) {
       },
     })
 
-    localStorage.removeItem('pending_invite_token')
-
     return NextResponse.json(
       {
         redirectTo: `/workspace/${invite.workspace.slug}`,

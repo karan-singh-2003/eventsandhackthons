@@ -183,13 +183,13 @@ const InviteMembers = () => {
     <div>
       <div className="space-y-7 ">
         {successMessage && (
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg font-medium">
-            ✅ {successMessage}
+          <div className="bg-green-50   text-green-700 px-4 py-3 rounded-none font-medium">
+            {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg font-medium">
-            ❌ {errorMessage}
+          <div className="bg-red-50   text-red-700 px-4 py-3 rounded-none font-medium">
+            {errorMessage}
           </div>
         )}
 

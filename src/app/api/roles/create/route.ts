@@ -4,15 +4,17 @@ import { getAuthData } from '@/lib/auth-server'
 import { z } from 'zod'
 
 const createRoleSchema = z.object({
-  workspaceId: z.string(),
-  roleName: z.string().min(1).max(50),
-  permissionIds: z.array(z.string()),
+  workspaceSlug: z.string(),
+  name: z.string().min(1).max(50),
+  permissions: z.array(z.string()),
 })
 
 export async function POST(request: NextRequest) {
   try {
     // Parse and validate request body
     const body = await request.json()
+    console.log('POST /api/roles called')
+    console.log('Request body:', body)
     const result = createRoleSchema.safeParse(body)
 
     if (!result.success) {
@@ -22,7 +24,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { workspaceId, roleName, permissionIds } = result.data
+    const { workspaceSlug, name, permissions } = result.data
 
     // Get authentication data
     const authData = await getAuthData()
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Check if user is the owner of the workspace
     const workspace = await prisma.workspace.findFirst({
       where: {
-        id: workspaceId,
+        slug: workspaceSlug,
         createdById: userInfo.userId,
       },
     })
@@ -53,8 +55,8 @@ export async function POST(request: NextRequest) {
     // Check if role name already exists in this workspace
     const existingRole = await prisma.role.findFirst({
       where: {
-        workspaceId,
-        name: roleName,
+        workspaceId: workspace?.id,
+        name,
       },
     })
 
@@ -68,17 +70,17 @@ export async function POST(request: NextRequest) {
     // Create the role
     const newRole = await prisma.role.create({
       data: {
-        name: roleName,
-        workspaceId,
+        name,
+        workspaceId: workspace?.id,
         createdById: userInfo.userId,
         updatedById: userInfo.userId,
       },
     })
 
     // Create role permissions
-    if (permissionIds.length > 0) {
+    if (permissions.length > 0) {
       await prisma.rolePermission.createMany({
-        data: permissionIds.map((permissionId) => ({
+        data: permissions.map((permissionId) => ({
           roleId: newRole.id,
           permissionId,
         })),

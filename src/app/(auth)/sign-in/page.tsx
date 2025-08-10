@@ -9,7 +9,8 @@ import { useLogInUser } from '@/hooks/useLogInUser'
 
 import { Button } from '@/components/ui/button'
 import FormElements from '@/components/global/FormElements'
-import Spinner from '@/components/global/Spinner'
+// import Spinner from '@/components/global/Spinner'
+import Spinner from '@/components/Global/Spinner'
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(true)

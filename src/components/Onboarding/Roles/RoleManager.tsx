@@ -86,7 +86,7 @@ const RoleManager = ({ Roles }: RoleManagerProps) => {
         console.log('✅ Role updated successfully:', roleData.name)
       } else {
         // Create new role
-        const response = await fetch('/api/roles', {
+        const response = await fetch('/api/roles/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

@@ -6,7 +6,7 @@ import axios from 'axios'
 import { getAuthData } from '@/lib/auth-client'
 import WorkspaceDescription from '@/components/Onboarding/InviteMembers/WorksapceDescriptionAvatar'
 import { Button } from '@/components/ui/button'
-import Spinner from '@/components/global/Spinner'
+import Spinner from '@/components/Global/Spinner'
 import { useQueryData } from '@/hooks/useQueryData'
 
 export type InviteResponse = {
@@ -88,6 +88,7 @@ const InvitePageRedirect = () => {
       if (response.data.redirectTo) {
         // User was added directly to workspace
         window.location.href = response.data.redirectTo
+        localStorage.removeItem('pending_invite_token')
       } else {
         // Join request was sent, show success message
         alert(response.data || 'Your join request has been sent!')
@@ -106,32 +107,32 @@ const InvitePageRedirect = () => {
     }
   }
 
-  if (redirecting || validatingToken) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <PageLoader title="Redirecting..." />
-      </div>
-    )
-  }
+  // if (redirecting || validatingToken) {
+  //   return (
+  //     <div className="h-screen flex items-center justify-center">
+  //       <PageLoader title="Redirecting..." />
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="h-[300px] w-[350px] mx-auto mt-[50px] flex flex-col items-center justify-center">
       <WorkspaceDescription setIsPrivate={() => {}} />
 
-      <h1 className="text-center font-medium text-[#696767] text-[15px] mb-4">
+      <h1 className="text-center font-medium text-[#696767] -mt-6 text-[15px] mb-4">
         {inviteResponse?.invite?.linkPublic
-          ? 'Only selected members can access this workspace. Please request permission from the owner to join.'
-          : 'Anyone can join this workspace and become a member instantly.'}
+          ? 'Anyone can join this workspace and become a member instantly.'
+          : 'Only selected members can access this workspace. Please request permission from the owner to join.'}
       </h1>
 
       {inviteResponse?.message ? (
-        <p className="text-center text-green-700 font-medium text-sm mb-4">
+        <p className="text-center text-green-700 font-medium mt-5 text-sm mb-4">
           Successfully validated invite for{' '}
           <b>{inviteResponse.invite?.workspace.name}</b>
         </p>
       ) : inviteResponse?.valid && !inviteResponse?.redirectTo ? (
         <Button
-          className="bg-[#246EFF] rounded-none"
+          className="bg-[#246EFF] rounded-none mt-4 "
           onClick={handleAcceptInvite}
           disabled={isSubmitting}
         >

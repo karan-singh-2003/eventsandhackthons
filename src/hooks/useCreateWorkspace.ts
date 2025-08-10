@@ -66,7 +66,7 @@ const useCreateWorkspace = () => {
       console.log('🔄 [useCreateWorkspace] Navigating to invite members...')
 
       // Navigate to invite members step
-      router.push('/onboarding/invite-members')
+      router.push('/onboarding/manage-role')
 
       return result
     },
