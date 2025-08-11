@@ -1,6 +1,6 @@
 import useMutationData from '@/hooks/useMutationData'
 import useZodForm from '@/hooks/useZodForm'
-import { logInSchema } from '@/schemas/LogInSchema'
+import { logInSchema } from '@/Schemas/LogInSchema'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'

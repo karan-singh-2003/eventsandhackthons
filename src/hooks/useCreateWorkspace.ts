@@ -2,7 +2,7 @@
 
 import useMutationData from '@/hooks/useMutationData'
 import useZodForm from './useZodForm'
-import { createWorkspaceSchema } from '@/schemas/WorkspaceSchema'
+import { createWorkspaceSchema } from '@/Schemas/WorkspaceSchema'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWorkspace } from '@/context/WorkspaceContext'

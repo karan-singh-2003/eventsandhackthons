@@ -1,7 +1,7 @@
 'use client'
 
-// import WorkspacesettingHeader from '@/components/workspaceSettingComponent/WorkspacesettingHeader'
-// import Workspacesettingmain from '@/components/workspaceSettingComponent/Workspacesettingdelete'
+import WorkspacesettingHeader from '@/components/workspaceSettingComponent/WorkspacesettingHeader'
+import Workspacesettingmain from '@/components/workspaceSettingComponent/Workspacesettingdelete'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 function TaskviewSwitcher() {
@@ -12,7 +12,7 @@ function TaskviewSwitcher() {
         Organization Settings
       </div>
 
-      {/* <Tabs className="w-full">
+      <Tabs className="w-full" defaultValue="workspace profile">
         <div className="h-full flex flex-col overflow-auto">
      
           <div className="w-full overflow-x-auto whitespace-nowrap lg:overflow-visible">
@@ -68,8 +68,8 @@ function TaskviewSwitcher() {
             </h2>
           </TabsContent>
         </div>
-      </Tabs> */}
-      <Tabs defaultValue="profile" className="lg:w-[680px] mt-5">
+      </Tabs>
+      {/* <Tabs defaultValue="profile" className="lg:w-[680px] mt-5">
         <TabsList className="grid w-full grid-cols-3 gap-x-2 bg-transparent text-[#696767]">
           <TabsTrigger value="profile">Profile Settings</TabsTrigger>
           <TabsTrigger value="roles">Roles Management</TabsTrigger>
@@ -79,7 +79,7 @@ function TaskviewSwitcher() {
         <TabsContent value="profile">Profile</TabsContent>
         <TabsContent value="roles">Roles</TabsContent>
         <TabsContent value="teams">Teams</TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   )
 }
