@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { v4 as uuidv4 } from 'uuid'
 import { prisma } from '@/lib/prisma'
 import redis from '@/lib/redis'
-import { logInSchema } from '@/schemas/LogInSchema'
+import { logInSchema } from '../../../../Schemas/LogInSchema'
 
 export async function POST(request: NextRequest) {
   try {

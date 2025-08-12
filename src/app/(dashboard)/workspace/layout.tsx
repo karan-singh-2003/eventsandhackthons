@@ -24,8 +24,8 @@ function Layout({ children }: DashboardlayoutProps) {
         <PanelGroup direction="horizontal" className="h-full  ">
           {/* Sidebar Panel */}
           <Panel
-            defaultSize={10}
-            minSize={8}
+            defaultSize={0}
+            minSize={0}
             maxSize={18}
             className="bg-[#f0f0f0] hidden lg:block "
           >
@@ -39,9 +39,9 @@ function Layout({ children }: DashboardlayoutProps) {
 
           {/* Main Content Panel */}
           <Panel>
-            <div className="lg:pl-[11px] h-full">
-              <div className="mx-auto max-w-screen-2xl h-full">
-                <main className="h-full overflow-y-auto px-3 sm:px-6 py-4">
+            <div className="lg:pl-[22px] h-full">
+              <div className="mx-auto max-w-screen-3xl h-full">
+                <main className="h-full overflow-y-auto px-3 sm:px-6 py-2">
                   <NuqsAdapter>{children}</NuqsAdapter>
                 </main>
               </div>

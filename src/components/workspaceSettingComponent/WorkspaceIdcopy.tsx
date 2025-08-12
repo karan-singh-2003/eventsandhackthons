@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Clipboard, Check } from 'lucide-react';
 
 interface CopyWorkspaceIdProps {
-  workspaceId: string;
+  workspaceId: any;
 }
 
 const CopyWorkspaceId: React.FC<CopyWorkspaceIdProps> = ({ workspaceId }) => {
