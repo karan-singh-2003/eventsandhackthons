@@ -34,6 +34,7 @@ const useRenameWorkspace = () => {
     onSuccess: () => {
       toast.success('Workspace updated');
       queryClient.invalidateQueries({ queryKey: ['workspaces'] });
+      queryClient.invalidateQueries({queryKey:['notifications-status']})
       setServerError(null);
 
       // If slug was provided, redirect to home

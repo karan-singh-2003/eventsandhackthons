@@ -39,7 +39,7 @@ function Layout({ children }: DashboardlayoutProps) {
 
           {/* Main Content Panel */}
           <Panel>
-            <div className="lg:pl-[22px] h-full">
+            <div className="lg:pl-[18px] h-full">
               <div className="mx-auto max-w-screen-3xl h-full">
                 <main className="h-full overflow-y-auto px-3 sm:px-6 py-2">
                   <NuqsAdapter>{children}</NuqsAdapter>

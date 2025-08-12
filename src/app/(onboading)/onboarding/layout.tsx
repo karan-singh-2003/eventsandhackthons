@@ -43,12 +43,12 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         const { workspaces, userRole } = response.data
 
         // If user has workspaces, redirect them away from onboarding
-        if (workspaces && workspaces.length > 0) {
-          // User already has workspaces, redirect to their primary workspace
-          const primaryWorkspace = workspaces[0]
-          router.replace(`/workspace/${primaryWorkspace.slug}`)
-          return
-        }
+        // if (workspaces && workspaces.length > 0) {
+        //   // User already has workspaces, redirect to their primary workspace
+        //   const primaryWorkspace = workspaces[0]
+        //   router.replace(`/workspace/${primaryWorkspace.slug}`)
+        //   return
+        // }
 
         // If user is not admin and has no workspaces, they shouldn't be here
         if (userRole !== 'admin') {

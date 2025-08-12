@@ -118,16 +118,17 @@ const WorkspaceSettingsProfile = () => {
   }
 
   return (
-    <div className=" mx-auto p-6">
+    <div className=" mx-auto p-1 mb-[95px] lg:mb-1">
       {/* Header with tabs */}
      
 
       {/* Avatar and Upload Picture Section */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 gap-4">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+       <div className="flex flex-col items-center lg:items-center lg:flex-row gap-4 lg:gap-4">
+
           <div
             className={clsx(
-              "w-16 h-16  lg:w-[52px] lg:h-[52px]        rounded-full flex items-center justify-center text-xl  font-semibold text-black shadow-md",
+              "w-16 h-16  lg:w-[52px] lg:h-[52px]   mx-auto lg:mx-0     rounded-full flex items-center justify-center text-xl lg:text-lg  font-semibold text-black shadow-md",
             )}
             style={{ backgroundColor: bgColor }}
           >
@@ -135,17 +136,20 @@ const WorkspaceSettingsProfile = () => {
           </div>
 
           <div className="flex flex-col">
-            <span className="text-sm lg:text-[14px]  font-semibold text-black uppercase">
+            <span className="text-lg lg:text-[14px] text-center lg:text-left  font-semibold text-black uppercase">
               {isPending || isFetching ? "Loading..." : workspaceData?.workspace?.name || "Workspace"}
             </span>
-            <span className="text-sm lg:text-[13px] text-gray-500">JPG, PNG. Recommended size is 256x256px</span>
+            <span className="text-xs  lg:text-[13px] text-center lg:text-left text-gray-500">JPG, PNG. Recommended size is 256x256px</span>
           </div>
+           <Button variant="outline" className="w-full lg:w-auto border border-[#6F6D6D] bg-transparent text-sm lg:text-[11px] px-4 lg:ml-[102px] lg:py-1 lg:px-6 py-2  rounded-2xl text-[#464545]" 
+        size='sm'
+        >
+          Upload picture
+        </Button>
         </div>
 
         {/* Upload Picture Button - positioned to the right on desktop */}
-        <Button variant="outline" className="w-full lg:w-auto border border-[#6F6D6D] bg-transparent text-sm lg:text-[11px] px-4 lg:py-1 lg:px-6 py-2 md:mr-[645px] rounded-2xl text-[#464545]" >
-          Upload picture
-        </Button>
+       
       </div>
 
       {/* Error Messages */}
@@ -214,20 +218,21 @@ const WorkspaceSettingsProfile = () => {
       </div>
 
       {/* Delete Workspace Section */}
-      <div className="mt-12 pt-8 border-t border-gray-200">
+      <div className="mt-8 pt-8 border-t border-gray-200">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <h3 className="text-sm lg:text-[14px] font-semibold text-[#696767]">Delete Workspace</h3>
-            <p className="text-sm lg:text-[13px] text-gray-600 mt-1">The Workspace will be permanently deleted</p>
-          </div>
+           <div className="lg:flex">
 
-          <Dialog>
+            <p className="text-xs lg:text-[13px] text-gray-600 mt-1">The Workspace will be permanently deleted</p>
+
+              <Dialog>
             <DialogTrigger asChild>
               <Button
-                variant="outline"
-                className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent font-medium text-sm lg:px-3 px-4 py-2 w-full lg:w-auto md:mr-[624px] rounded-2xl"
+                variant="outline" size='sm'
+                className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent font-medium text-sm  lg:px-3 px-4 py-2 w-full lg:w-auto  lg:mt-0 mt-[16px] lg:ml-[179px] rounded-2xl"
                 disabled={deletepending}
-              >
+                >
                 {deletepending ? "Deleting..." : "Delete Workspace"}
               </Button>
             </DialogTrigger>
@@ -249,12 +254,16 @@ const WorkspaceSettingsProfile = () => {
                   onClick={handleDelete}
                   disabled={deletepending}
                   className="rounded-lg px-4 py-2"
-                >
+                  >
                   {deletepending ? "Deleting..." : "Delete"}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
+                  </div>
+          </div>
+
+        
         </div>
       </div>
     </div>
