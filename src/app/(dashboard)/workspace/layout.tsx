@@ -20,6 +20,23 @@ function Layout({ children }: DashboardlayoutProps) {
           <WorkspaceNavbar />
         </div>
 
+      {/* Content Area */}
+      <div className="pt-[49px] h-[calc(100vh)] ">
+        <PanelGroup direction="horizontal" className="h-full  ">
+          {/* Sidebar Panel */}
+          <Panel
+            defaultSize={0}
+            minSize={8}
+            maxSize={18}
+            className="bg-[#f0f0f0] hidden lg:block "
+          >
+            <div className="hidden lg:block fixed top-[49px] left-0 h-[calc(100vh-49px)] w-full max-w-[44px] border-r border-gray-200 bg-white z-40">
+              <Slider />
+            </div>
+          </Panel>
+          <BottomNavigation />
+          {/* Resize Handle */}
+          <PanelResizeHandle className="w-1 bg-[#f6f6f6]  cursor-col-resize " />
         {/* Content Area */}
         <div className="pt-[49px] h-[calc(100vh)] ">
           <PanelGroup direction="horizontal" className="h-full  ">
