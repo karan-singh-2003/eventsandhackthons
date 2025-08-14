@@ -4,15 +4,18 @@ import React from 'react'
 import InviteMembers from '@/components/Onboarding/InviteMembers'
 import OnboardingLayout from '@/components/Onboarding/OnboardingLayout'
 // import OnboardingActions from '@/components/Onboarding/OnboardingActions'
-import { useWorkspaceName, useWorkspaceSlug } from '@/context/WorkspaceContext'
+import {
+  useWorkspaceNameSafe,
+  useWorkspaceSlugSafe,
+} from '@/context/WorkspaceContext'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 
 const InvitePage = () => {
-  const workspaceName = useWorkspaceName()
+  const workspaceName = useWorkspaceNameSafe()
   const router = useRouter()
 
-  const workspaceSlug = useWorkspaceSlug()
+  const workspaceSlug = useWorkspaceSlugSafe()
   console.log('Workspace slug:', workspaceSlug)
 
   return (

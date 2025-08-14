@@ -7,25 +7,27 @@ import ResponsiveMenuOrDrawer from './ResponsiveMenuOrDrawer'
 import WorkspaceSwitcherContent from './WorkspaceSwitcherContent'
 import { useParams, useRouter } from 'next/navigation'
 import { useQueryData } from '@/hooks/useQueryData'
-import Spinner from '../Global/Spinner'
-import { useIsMobile } from '@/hooks/usemobileswitcherOpen'
+import { Skeleton } from '../ui/skeleton'
 
 const WorkspaceSwitcher = () => {
   const { workspaceSlug } = useParams()
   const currentWorkspaceSlug = workspaceSlug
   const router = useRouter()
-  const isMobile = useIsMobile()
 
   // Fetch workspaces
   const {
     data: workspaces = { data: [] },
     isPending,
     isFetching,
-  } = useQueryData(['workspaces'], async () => {
-    const res = await fetch('/api/workspace/getworkspaces')
-    if (!res.ok) throw new Error('Failed to fetch workspaces')
-    return res.json()
-  }, true)
+  } = useQueryData(
+    ['workspaces'],
+    async () => {
+      const res = await fetch('/api/workspace/getworkspaces')
+      if (!res.ok) throw new Error('Failed to fetch workspaces')
+      return res.json()
+    },
+    true
+  )
 
   const currentWorkspace = workspaces.data.find(
     (w: any) => w.workspaceSlug === currentWorkspaceSlug
@@ -44,13 +46,7 @@ const WorkspaceSwitcher = () => {
     }
   }
 
-  if (isPending || isFetching) {
-    return (
-      <div className="flex justify-center items-center h-[50px]">
-        <Spinner color="#aaaa" size={14} />
-      </div>
-    )
-  }
+  const isLoading = isPending || isFetching || !currentWorkspace?.workspaceName
 
   return (
     <ResponsiveMenuOrDrawer
@@ -59,16 +55,24 @@ const WorkspaceSwitcher = () => {
           className="flex items-center gap-2 hover:bg-black/5 py-1.5 px-2 rounded-none w-full cursor-pointer"
           aria-label="Switch workspace"
         >
-          <Button
-            variant="outline"
-            className="border-black/20 px-2 py-2 text-black/50 h-6 w-6 mr-1.5 text-[11.5px]"
-          >
-            {currentWorkspace?.workspaceName?.slice(0, 2).toUpperCase() || 'W'}
-          </Button>
-          <span className="font-semibold text-[15px] truncate">
-            {currentWorkspace?.workspaceName || 'Select Workspace'}
-          </span>
-          <ChevronDown className="text-black/40" size={15} />
+          {isPending ? (
+            <Skeleton className="h-7 w-7 mr-1.5 rounded-none" />
+          ) : (
+            <Button
+              variant="outline"
+              className="border-black/20 px-2 py-2 text-black/50 h-6 w-6 mr-1.5 text-[11.5px]"
+            >
+              {currentWorkspace.workspaceName.slice(0, 2).toUpperCase()}
+            </Button>
+          )}
+          {isLoading ? (
+            <Skeleton className="h-4 w-36 rounded-none" />
+          ) : (
+            <span className="font-semibold text-[15px] truncate">
+              {currentWorkspace.workspaceName}
+            </span>
+          )}
+          {!isLoading && <ChevronDown className="text-black/40" size={15} />}
         </div>
       }
     >

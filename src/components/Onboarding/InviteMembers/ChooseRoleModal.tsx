@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import { useQueryData } from '@/hooks/useQueryData'
 import { RoleResponse } from '../Roles/types'
-import { useWorkspaceSlug, useWorkspaceData } from '@/context/WorkspaceContext'
+import {
+  useWorkspaceSlugSafe,
+  useWorkspaceDataSafe,
+} from '@/context/WorkspaceContext'
 import {
   Dialog,
   DialogContent,
@@ -36,8 +39,8 @@ const ChooseRoleModal = ({
   )
   const [inChooseRole, setInChooseRole] = useState<string | null>(null)
 
-  const workspaceSlugFromContext = useWorkspaceSlug()
-  const workspace = useWorkspaceData()
+  const workspaceSlugFromContext = useWorkspaceSlugSafe()
+  const workspace = useWorkspaceDataSafe()
 
   // Debug workspace context
   console.log('🎯 [ChooseRoleModal] Workspace context:', {

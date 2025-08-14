@@ -1,6 +1,6 @@
 'use client'
 
-import { formatDistanceToNow } from 'date-fns'
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow'
 import { useQueryData } from '@/hooks/useQueryData'
 import { useEffect, useState } from 'react'
 import type { Notification } from '@/types'
@@ -17,77 +17,73 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
 
   const { data: fetchedNotifications, isPending } = useQueryData(
-  ['notifications', userId, workspaceSlug],
-  async () => {
-    const res = await fetch(
-      `/api/notifications/getUserNotifications?userId=${userId}&workspaceSlug=${workspaceSlug}`
-    )
-    if (!res.ok) throw new Error('Failed to fetch notifications')
-    return res.json()
-  },
-  !!workspaceSlug && !!userId
-)
+    ['notifications', userId, workspaceSlug],
+    async () => {
+      const res = await fetch(
+        `/api/notifications/getUserNotifications?userId=${userId}&workspaceSlug=${workspaceSlug}`
+      )
+      if (!res.ok) throw new Error('Failed to fetch notifications')
+      return res.json()
+    },
+    !!workspaceSlug && !!userId
+  )
 
- const queryClient = useQueryClient()
-useEffect(() => {
-  if (fetchedNotifications?.notifications?.length) {
-    setNotifications(fetchedNotifications.notifications)
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (fetchedNotifications?.notifications?.length) {
+      setNotifications(fetchedNotifications.notifications)
 
-    if (fetchedNotifications.hasUnread) {
-      fetch('/api/notifications/markReadNotifications', { method: 'POST' })
-        .then((res) => {
-          if (!res.ok) throw new Error('Failed to mark as read')
-          queryClient.invalidateQueries({
-            queryKey: ['notifications-status', workspaceSlug],
+      if (fetchedNotifications.hasUnread) {
+        fetch('/api/notifications/markReadNotifications', { method: 'POST' })
+          .then((res) => {
+            if (!res.ok) throw new Error('Failed to mark as read')
+            queryClient.invalidateQueries({
+              queryKey: ['notifications-status', workspaceSlug],
+            })
           })
-        })
-        .catch((err) =>
-          console.error('Failed to mark notifications as read', err)
-        )
+          .catch((err) =>
+            console.error('Failed to mark notifications as read', err)
+          )
+      }
     }
-  }
-}, [fetchedNotifications, workspaceSlug])
+  }, [fetchedNotifications, workspaceSlug, queryClient])
 
   return (
-    <div className="lg:p-2  p-0 lg:mb-1 mb-[73px]">
-      <h1 className="lg:text-xl text-xl font-bold lg:mb-7  mb-3 text-foreground">Notifications</h1>
+    <div className="lg:p-2  p-0 lg:mb-1 mb-[73px] mx-4">
+      <h1 className="lg:text-2xl text-xl font-bold lg:mb-7  mb-3 text-foreground">
+        Notifications
+      </h1>
 
       {isPending ? (
-        <div className="space-y-4">
-          {[...Array(4)].map((_, idx) => (
-            <div key={idx}>
+        <div className="space-y-8">
+          {[...Array(3)].map((_, idx) => (
+            <div key={idx} className="max-w-[800px]">
               <Skeleton className="lg:h-5 h-8 lg:w-3/4 w-2/2 mb-2 rounded-none" />
-              <Skeleton className="h-4 w-1/4 rounded-none" />
+              <Skeleton className="h-4 w-1/4 rounded-none my-2.5" />
             </div>
           ))}
         </div>
       ) : notifications.length === 0 ? (
         <p className="text-muted-foreground">No notifications yet.</p>
       ) : (
-        <ul className="space-y-4 lg:mb-1 mb-[47px]">
+        <div className="space-y-4 lg:mb-1 mb-[47px] max-w-[800px]">
           {notifications.map((notify, index) => (
-            <li key={notify.id} className="bg-background">
-              <p className="font-medium  lg:text-sm text-xs lg:my-1 my-2  ">{notify.message}</p>
-              <span className="lg:text-sm text-xs text-muted-foreground">
+            <div key={notify.id} className="bg-background">
+              <p className="font-medium  lg:text-base text-sm    ">
+                {notify.message}
+              </p>
+              <span className="lg:text-sm text-xs font-medium text-muted-foreground">
                 {formatDistanceToNow(new Date(notify.createdAt))} ago
               </span>
               {index < notifications.length - 1 && (
                 <hr className="my-4 border-t border-gray-200 dark:border-[#414141]" />
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )
 }
 
 export default NotificationsPage
-
-// import React from 'react'
-
-// const page = () => {
-//   return <div>Notification Page</div>
-// }
-
-// export default page

@@ -9,7 +9,10 @@ import { Button } from '@/components/ui/button'
 
 import axios from 'axios'
 
-import { useWorkspaceSlug, useWorkspaceData } from '@/context/WorkspaceContext'
+import {
+  useWorkspaceSlugSafe,
+  useWorkspaceDataSafe,
+} from '@/context/WorkspaceContext'
 import { RoleResponse } from '../Roles/types'
 
 const InviteMembers = () => {
@@ -22,8 +25,8 @@ const InviteMembers = () => {
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
 
-  const workspaceSlug = useWorkspaceSlug()
-  const workspace = useWorkspaceData()
+  const workspaceSlug = useWorkspaceSlugSafe()
+  const workspace = useWorkspaceDataSafe()
 
   // Debug workspace context
   console.log('🎯 [InviteMembers] Workspace context:', {
@@ -166,12 +169,10 @@ const InviteMembers = () => {
     console.warn('⚠️ [InviteMembers] No workspace slug available')
     return (
       <div className="space-y-4">
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-none">
+        <div className="bg-yellow-50   text-yellow-800 px-4 py-3 rounded-none">
           <div className="flex items-center space-x-2">
-            <h1 className="text-lg">⚠️</h1>
             <div>
               <h3 className="font-semibold">Workspace Not Found</h3>
-              <p>Please create a workspace to invite members.</p>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { useWorkspaceSlug } from '@/context/WorkspaceContext'
+import { useWorkspaceSlugSafe } from '@/context/WorkspaceContext'
 
 import { RoleHeader } from './RoleHeader'
 import { RoleTable } from './RoleTable'
@@ -15,7 +15,7 @@ interface RoleManagerProps {
 }
 
 const RoleManager = ({ Roles }: RoleManagerProps) => {
-  const workspaceSlug = useWorkspaceSlug()
+  const workspaceSlug = useWorkspaceSlugSafe()
 
   const [searchText, setSearchText] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -140,11 +140,12 @@ const RoleManager = ({ Roles }: RoleManagerProps) => {
       })
       const res = await response.json()
 
-      if (!response.ok) {
+      console.log('🗑️ Role delete response:', res)
+      if (res.status !== 200) {
         throw new Error(res.error || 'Failed to delete role')
       }
 
-      if (res.success) {
+      if (res.status === 200) {
         // Invalidate and refetch roles after deletion
         await queryClient.invalidateQueries({
           queryKey: ['getAllRolesOfWorkspace', workspaceSlug],
@@ -183,6 +184,18 @@ const RoleManager = ({ Roles }: RoleManagerProps) => {
         onClose={handleModalClose}
         onSubmit={handleCreateRole}
         editingRole={editingRole}
+        rolePermissions={(() => {
+          type MixedPermission = {
+            id?: string
+            permissionId?: string
+            permission?: { id: string }
+          }
+          const source = (editingRole?.permissions ||
+            []) as unknown as MixedPermission[]
+          return source
+            .map((p) => p.permission?.id ?? p.permissionId ?? p.id)
+            .filter((id): id is string => Boolean(id))
+        })()}
       />
     </div>
   )

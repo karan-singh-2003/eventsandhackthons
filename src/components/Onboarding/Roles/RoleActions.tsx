@@ -14,8 +14,9 @@ interface RoleActionsProps {
 }
 
 export function RoleActions({ Roles, onDelete }: RoleActionsProps) {
-  const isOwner = Roles[0].id === 'owner'
-
+  const isOwner = Roles[0].name === 'OWNER'
+  console.log('isowner', isOwner)
+  console.log('Roles in RoleActions:', Roles)
   return (
     <ResponsiveMenu
       align="start"
@@ -62,7 +63,7 @@ export function RoleActions({ Roles, onDelete }: RoleActionsProps) {
 
       {/* Role Info Section */}
       <div className={`px-3   ${isOwner ? 'mt-3' : ''}`}>
-        <div className="text-[12px] mb-2 text-gray-700 space-y-0.5 mt-2.5">
+        <div className="text-[13px] mb-2 text-gray-700 font-medium space-y-0.5 mt-2.5">
           <div className="">
             Last edited by{' '}
             {Roles[0].updatedBy?.name || Roles[0].createdBy?.name || 'Unknown'}

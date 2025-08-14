@@ -18,7 +18,7 @@ const WorkspaceSwitcherContent = ({
   workspaces,
   currentWorkspaceSlug,
   onSelect,
-  onCreate
+  onCreate,
 }: Props) => {
   return (
     <div className="md:mx-0.5 md:my-2 mb-4">

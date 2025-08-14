@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode } from 'react'
+import { useParams, useSearchParams } from 'next/navigation'
 
 interface WorkspaceData {
   id: string
@@ -80,4 +81,33 @@ export function useWorkspaceSlug() {
 export function useWorkspaceId() {
   const { workspace } = useWorkspace()
   return workspace?.id || ''
+}
+
+// Safe hooks that don't throw if used outside provider and fall back to route/query
+export function useWorkspaceSlugSafe() {
+  const context = useContext(WorkspaceContext)
+  const params = useParams() as { workspaceSlug?: string; slug?: string }
+  const searchParams = useSearchParams()
+
+  const fromContext = context?.workspace?.slug
+  const fromParams = params?.workspaceSlug || params?.slug
+  const fromSearch =
+    searchParams?.get('workspaceSlug') || searchParams?.get('slug')
+
+  return fromContext || fromParams || fromSearch || ''
+}
+
+export function useWorkspaceDataSafe(): WorkspaceData | null {
+  const context = useContext(WorkspaceContext)
+  return context?.workspace ?? null
+}
+
+export function useWorkspaceNameSafe() {
+  const context = useContext(WorkspaceContext)
+  return context?.workspace?.name || ''
+}
+
+export function useWorkspaceIdSafe() {
+  const context = useContext(WorkspaceContext)
+  return context?.workspace?.id || ''
 }

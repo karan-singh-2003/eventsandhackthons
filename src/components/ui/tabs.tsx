@@ -42,7 +42,7 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "data-[state=active]:bg-background dark:data-[state=active]:text-white    dark:data-[state=active]:bg-input/30  dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-none border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow]   disabled:pointer-events-none disabled:opacity-50 data-[state=active]:border-b-[2px] data-[state=active]:border-b-blue-600 dark:data-[state=active]:border-b-[#b8b8b8] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[state=active]:text-blue-700",
+        "relative data-[state=active]:bg-background dark:data-[state=active]:text-white dark:data-[state=active]:bg-input/30 dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-none border border-transparent px-2 py-1 text-base font-medium whitespace-nowrap transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-[state=active]:text-orange-600 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-[2px] after:rounded-full after:bg-transparent after:w-0 after:transition-all after:duration-200 data-[state=active]:after:bg-orange-600 dark:data-[state=active]:after:bg-[#b8b8b8] data-[state=active]:after:w-[145px] ",
         className
       )}
       {...props}

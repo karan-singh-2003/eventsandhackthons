@@ -61,6 +61,12 @@ export async function GET(request: NextRequest) {
                 },
               },
             },
+            updatedBy: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
             workspace: true,
           },
           orderBy: { name: 'asc' },

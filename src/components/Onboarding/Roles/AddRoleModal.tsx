@@ -15,6 +15,7 @@ interface AddRoleModalProps {
   onClose: () => void
   onSubmit: (roleData: { name: string; permissions: string[] }) => void
   editingRole?: RoleResponse | null
+  rolePermissions?: string[]
 }
 
 interface PermissionSectionProps {
@@ -36,8 +37,9 @@ const PermissionSection = ({
   onTogglePermission,
   onSelectAll,
 }: PermissionSectionProps) => {
+  // all selected based on current controlled selection
   const allSelected = permissions.every((p) =>
-    selectedPermissions.includes(p.id)
+    selectedPermissions.includes(String(p.id))
   )
 
   return (
@@ -81,12 +83,14 @@ const PermissionSection = ({
             {permissions.map((permission) => (
               <div key={permission.id} className="flex items-center space-x-3">
                 <Checkbox
-                  id={permission.id}
-                  checked={selectedPermissions.includes(permission.id)}
-                  onCheckedChange={() => onTogglePermission(permission.id)}
+                  id={String(permission.id)}
+                  checked={selectedPermissions.includes(String(permission.id))}
+                  onCheckedChange={() =>
+                    onTogglePermission(String(permission.id))
+                  }
                 />
                 <label
-                  htmlFor={permission.id}
+                  htmlFor={String(permission.id)}
                   className="text-[15px] text-gray-700"
                 >
                   {permission.label}
@@ -105,12 +109,14 @@ export function RoleModal({
   onClose,
   onSubmit,
   editingRole,
+  rolePermissions,
 }: AddRoleModalProps) {
   const [roleName, setRoleName] = useState('')
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
   const [expandedSections, setExpandedSections] = useState<{
     [key: string]: boolean
   }>({})
+  const [error, setError] = useState<string>('')
 
   // Fetch permissions from database
   const { data: dbPermissions = [] } = useQueryData<PermissionResponse[]>(
@@ -121,8 +127,6 @@ export function RoleModal({
       return result.data || []
     }
   )
-
-  console.log('RoleModal dbPermissions:', dbPermissions)
 
   const permissionsByCategory = useMemo(() => {
     const grouped: { [categoryName: string]: PermissionResponse[] } = {}
@@ -139,13 +143,37 @@ export function RoleModal({
   useEffect(() => {
     if (editingRole) {
       setRoleName(editingRole.name)
-      const permissionIds = editingRole.permissions?.map((rp) => rp.id) || []
+      // Normalize permission IDs: handle both direct Permission[] and RolePermission[] with nested permission
+      type MixedPermission = {
+        id?: string
+        permissionId?: string
+        permission?: { id: string }
+      }
+      const permissionIds = (editingRole.permissions || [])
+        .map(
+          (rp: MixedPermission) =>
+            rp?.permission?.id ?? rp?.permissionId ?? rp?.id
+        )
+        .filter((id): id is string => Boolean(id))
+
       setSelectedPermissions(permissionIds)
+      setError('')
     } else {
       setRoleName('')
       setSelectedPermissions([])
+      setError('')
     }
   }, [editingRole, isOpen])
+
+  // Also seed from rolePermissions prop when provided (e.g., clicked role)
+  useEffect(() => {
+    if (isOpen && rolePermissions && rolePermissions.length > 0) {
+      // Only set if we haven't already populated selection (avoid clobbering user changes)
+      if (selectedPermissions.length === 0) {
+        setSelectedPermissions(Array.from(new Set(rolePermissions.map(String))))
+      }
+    }
+  }, [isOpen, rolePermissions, selectedPermissions.length])
 
   useEffect(() => {
     if (dbPermissions.length > 0) {
@@ -169,6 +197,14 @@ export function RoleModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!roleName.trim()) {
+      setError('Role name is required')
+      return
+    }
+    if (!editingRole && selectedPermissions.length === 0) {
+      setError('Select at least one permission to create a role')
+      return
+    }
     if (roleName.trim()) {
       onSubmit({
         name: roleName.trim(),
@@ -176,6 +212,7 @@ export function RoleModal({
       })
       setRoleName('')
       setSelectedPermissions([])
+      setError('')
       onClose()
     }
   }
@@ -197,7 +234,7 @@ export function RoleModal({
 
   const handleSelectAll = (categoryName: string) => {
     const categoryPermissions = permissionsByCategory[categoryName] || []
-    const allPermissionIds = categoryPermissions.map((p) => p.id)
+    const allPermissionIds = categoryPermissions.map((p) => String(p.id))
     const allSelected = allPermissionIds.every((id) =>
       selectedPermissions.includes(id)
     )
@@ -240,7 +277,7 @@ export function RoleModal({
                   placeholder="Enter a role name"
                   value={roleName}
                   onChange={(e) => setRoleName(e.target.value)}
-                  className="w-full h-12 rounded-none"
+                  className="w-full h-14  rounded-none placeholder:text-base"
                   required
                 />
                 <div className="text-right text-xs text-gray-500">
@@ -254,6 +291,11 @@ export function RoleModal({
               <h2 className="text-[30px] font-bold text-gray-900">
                 Permissions
               </h2>
+              {error && (
+                <div className="text-red-600 text-[15px] font-medium">
+                  {error}
+                </div>
+              )}
               {permissionSections.map((section) => (
                 <PermissionSection
                   key={section.id}
@@ -275,8 +317,8 @@ export function RoleModal({
           <div className="w-full flex flex-col space-y-2 lg:flex-row lg:space-x-3 lg:space-y-0 lg:justify-end">
             <Button
               type="button"
-              className="w-full lg:w-[200px] h-11"
-              variant="outline"
+              className="w-full lg:w-[200px] text-base h-11"
+              variant="secondary"
               onClick={onClose}
             >
               Cancel
@@ -284,7 +326,7 @@ export function RoleModal({
             <Button
               type="submit"
               onClick={handleSubmit}
-              className="bg-orange-600 hover:bg-orange-700 text-white w-full lg:w-[200px] h-11"
+              className="bg-orange-600 hover:bg-orange-700 text-white text-base w-full lg:w-[200px] h-11"
             >
               {editingRole ? 'Update' : 'Create'}
             </Button>

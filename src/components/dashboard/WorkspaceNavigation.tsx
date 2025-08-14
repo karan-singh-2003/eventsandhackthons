@@ -66,7 +66,7 @@ function Navigation() {
                     className={cn(
                       'group rounded-none transition-all p-2  flex items-center justify-center relative',
                       isActive
-                        ? 'bg-gray-100 text-blue-900'
+                        ? 'bg-gray-100 text-orange-600'
                         : 'hover:bg-gray-100'
                     )}
                     aria-label={item.label}

@@ -1,74 +1,70 @@
-"use client";
+'use client'
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import WorkspaceSettingsProfile from "@/components/workspaceSettingComponent/WorkspaceProfile";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import WorkspaceSettingsProfile from '@/components/dashboard/workspaceSettingComponent/WorkspaceProfile'
+import RolesComponent from '@/components/Onboarding/Roles/RolesComponent'
+import InviteMembersDemo from '@/components/dashboard/InviteMembers'
+import JoinRequests from '@/components/dashboard/JoinRequests'
 
 function Page() {
   return (
-    <div className="bg-white text-[#828282] rounded-lg p-2 lg:p-4 mt-1">
+    <div className="bg-white text-[#828282] max-w-[1500px] rounded-lg mx-6 my-2">
       {/* Header */}
-      <div className="text-black font-bold text-[19px] lg:text-[25px] lg:mb-4 mb-2 lg:px-4">
+      <div className="text-black font-bold text-[19px] lg:text-2xl mb-4 px-1">
         Organization Settings
       </div>
 
       <Tabs className="w-full" defaultValue="workspace profile">
         <div className="h-full flex flex-col overflow-auto">
           {/* Tabs List */}
-      {/* Tabs List (Scrolls left-right on mobile) */}
-<div className="w-full overflow-x-auto whitespace-nowrap lg:overflow-visible">
-  <TabsList className="inline-flex  lg:gap-3 bg-white  lg:px-0">
-   <TabsTrigger
-  value="workspace profile"
-  className="h-10 text-nowrap px-4 text-sm lg:text-xs text-[#828282] lg:text-[14px]
-    data-[state=active]:underline  decoration-[#5267ee] decoration-2 underline-offset-4 lg:data-[state=active]:no-underline
-    data-[state=active]:text-[#5267ee] cursor-pointer transition-colors"
->
-  Workspace Profile
-</TabsTrigger>
+          {/* Tabs List (Scrolls left-right on mobile) */}
+          <div className="w-full overflow-x-auto whitespace-nowrap   lg:overflow-visible">
+            <TabsList className="inline-flex  lg:gap-3 bg-white -p-0 ">
+              <TabsTrigger value="workspace profile">
+                Workspace Profile
+              </TabsTrigger>
 
+              <TabsTrigger value="Team Management">Team Management</TabsTrigger>
 
-    <TabsTrigger
-      value="Team Management"
-     className="h-10 text-nowrap px-4 text-sm lg:text-xs text-[#828282] lg:text-[14px]
-    data-[state=active]:underline  decoration-[#5267ee] decoration-2 underline-offset-4 lg:data-[state=active]:no-underline
-    data-[state=active]:text-[#5267ee] cursor-pointer transition-colors"
-    >
-      Team Management
-    </TabsTrigger>
+              <TabsTrigger value="Roles Management">
+                Roles Management
+              </TabsTrigger>
 
-    <TabsTrigger
-      value="Roles Management"
-      className="h-10 text-nowrap px-4 text-sm lg:text-xs text-[#828282] lg:text-[14px]
-    data-[state=active]:underline  decoration-[#5267ee] decoration-2 underline-offset-4 lg:data-[state=active]:no-underline
-    data-[state=active]:text-[#5267ee] cursor-pointer transition-colors"
-    >
-      Roles Management
-    </TabsTrigger>
-  </TabsList>
-</div>
-
+              <TabsTrigger value="Joining Request">
+                Joining Requests
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Tabs Content */}
-          <TabsContent value="workspace profile" className="lg:mt-4 mt-2">
-          <WorkspaceSettingsProfile/>
+          <TabsContent
+            value="workspace profile"
+            className="lg:mt-4 mt-2 max-w-[800px]"
+          >
+            <WorkspaceSettingsProfile />
           </TabsContent>
 
           <TabsContent value="Team Management" className="mt-4">
-            <h2 className="text-base lg:text-lg font-semibold">Team Management</h2>
+            <div className="max-w-[1200px]">
+              <InviteMembersDemo></InviteMembersDemo>
+            </div>
           </TabsContent>
 
           <TabsContent value="Roles Management" className="mt-4">
-            <h2 className="text-base lg:text-lg font-semibold">Roles Management</h2>
+            <div className="text-base lg:text-lg font-semibold max-w-[800px] px-1">
+              <RolesComponent></RolesComponent>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="Joining Request" className="mt-4">
+            <div className="text-base lg:text-lg font-semibold max-w-[900px] px-1">
+              <JoinRequests />
+            </div>
           </TabsContent>
         </div>
       </Tabs>
     </div>
-  );
+  )
 }
 
 export default Page

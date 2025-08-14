@@ -59,6 +59,11 @@ async function main() {
       label: 'View workspace details',
       category: 'WORKSPACE',
     },
+    {
+      name: 'VIEW_MEMBERS',
+      label: 'View members of the workspace',
+      category: 'WORKSPACE',
+    },
 
     // Event
     // { name: 'CREATE_EVENT', label: 'Create new events', category: 'EVENT' },

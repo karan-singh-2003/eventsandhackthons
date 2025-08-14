@@ -3,14 +3,16 @@ import RoleManager from './RoleManager'
 import { RoleResponse } from './types'
 
 import { useQueryData } from '@/hooks/useQueryData'
-import { useWorkspaceSlug } from '@/context/WorkspaceContext'
+import { useWorkspaceSlugSafe } from '@/context/WorkspaceContext'
 import PageLoader from '@/components/global/PageLoader'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-
+import { usePermissions } from '@/hooks/usePermissions'
+import PermissionError from '@/components/global/PermissionError'
 const RolesComponent = () => {
-  const workspaceSlug = useWorkspaceSlug()
-
+  const ctxSlug = useWorkspaceSlugSafe()
+  const params = useParams() as { workspaceSlug?: string }
+  const workspaceSlug = (ctxSlug || params?.workspaceSlug || '') as string
   const router = useRouter()
 
   const { data } = useQueryData<RoleResponse[]>(
@@ -21,7 +23,8 @@ const RolesComponent = () => {
       )
       const result = await response.json()
       return result.data || []
-    }
+    },
+    Boolean(workspaceSlug)
   )
 
   // Show no workspace state
@@ -43,7 +46,7 @@ const RolesComponent = () => {
         >
           Create Workspace Now
         </Button>
-        <PageLoader title="Redirecting..." />
+        <PageLoader title="Redirecting" />
       </div>
     )
   }
@@ -51,10 +54,20 @@ const RolesComponent = () => {
   const roles = data || []
   console.log('✅ Rendering roles:', roles)
 
-  return (
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { can, isPending: permsPending } = usePermissions(workspaceSlug)
+  if (permsPending) {
+    return <PageLoader title="Loading " />
+  }
+  const canManageRoles = can(
+    `${process.env.NEXT_PUBLIC_MANAGE_ROLES_PERMISSION_ID}`
+  )
+  return canManageRoles ? (
     <div>
       <RoleManager Roles={roles} />
     </div>
+  ) : (
+    <PermissionError message="You do not have permission to manage roles." />
   )
 }
 

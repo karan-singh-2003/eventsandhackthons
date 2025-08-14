@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getAuthData } from '@/lib/auth-server'
-import { createWorkspaceSchema } from '@/Schemas/WorkspaceSchema'
+import { createWorkspaceSchema } from '@/schemas/WorkspaceSchema'
 import { createNotification } from '@/actions/notifications'
 
 export async function POST(request: NextRequest) {
