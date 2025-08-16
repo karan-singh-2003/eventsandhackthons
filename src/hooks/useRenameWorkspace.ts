@@ -16,7 +16,7 @@ const useRenameWorkspace = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
-  const slugRef = useRef<string | undefined>(undefined); // Store the current slug for use in onSuccess
+  const slugRef = useRef<any | undefined>(undefined); // Store the current slug for use in onSuccess
 
   const mutation = useMutation({
     mutationFn: async ({ workspaceId:id, name, slug }: RenameInput) => {
@@ -32,15 +32,16 @@ const useRenameWorkspace = () => {
       return response.data;
     },
     onSuccess: () => {
+      if (slugRef.current) {
+        router.push('/');
+      }
       toast.success('Workspace updated');
       queryClient.invalidateQueries({ queryKey: ['workspaces'] });
       queryClient.invalidateQueries({queryKey:['notifications-status']})
       setServerError(null);
 
       // If slug was provided, redirect to home
-      if (slugRef.current) {
-        router.push('/');
-      }
+     
     },
     onError: (error: any) => {
       const message =

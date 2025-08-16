@@ -62,14 +62,16 @@ const WorkspaceSwitcher = () => {
               variant="outline"
               className="border-black/20 px-2 py-2 text-black/50 h-6 w-6 mr-1.5 text-[11.5px]"
             >
-              {currentWorkspace.workspaceName.slice(0, 2).toUpperCase()}
+               {currentWorkspace
+              ? currentWorkspace.workspaceName.slice(0, 2).toUpperCase()
+              : 'W'}
             </Button>
           )}
           {isLoading ? (
             <Skeleton className="h-4 w-36 rounded-none" />
           ) : (
             <span className="font-semibold text-[15px] truncate">
-              {currentWorkspace.workspaceName}
+              {currentWorkspace?.workspaceName ?? 'Select Workspace'}
             </span>
           )}
           {!isLoading && <ChevronDown className="text-black/40" size={15} />}

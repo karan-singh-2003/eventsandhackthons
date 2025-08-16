@@ -5,7 +5,7 @@ import JoinRequestsTable from './JoinRequestsTable'
 import { useParams } from 'next/navigation'
 import type { JoinRequest } from './JoinRequestsTable'
 import { usePermissions } from '@/hooks/usePermissions'
-import PermissionError from '@/components/global/PermissionError'
+import PermissionError from '@/components/Global/PermissionError'
 
 export default function JoinRequests() {
   const { workspaceSlug } = useParams<{ workspaceSlug: string }>()

@@ -8,7 +8,7 @@ import PageLoader from '@/components/global/PageLoader'
 import { useParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { usePermissions } from '@/hooks/usePermissions'
-import PermissionError from '@/components/global/PermissionError'
+import PermissionError from '@/components/Global/PermissionError'
 const RolesComponent = () => {
   const ctxSlug = useWorkspaceSlugSafe()
   const params = useParams() as { workspaceSlug?: string }

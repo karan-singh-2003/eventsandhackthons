@@ -7,7 +7,7 @@ import { useQueryData } from '@/hooks/useQueryData'
 import axios from 'axios'
 import { usePermissions } from '@/hooks/usePermissions'
 import PageLoader from '@/components/global/PageLoader'
-import PermissionError from '@/components/global/PermissionError'
+import PermissionError from '@/components/Global/PermissionError'
 
 export type Member = {
   id: string

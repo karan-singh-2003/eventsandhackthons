@@ -23,7 +23,7 @@ import { useQueryData } from '@/hooks/useQueryData'
 import { getWorkspaceBySlug } from '@/actions/usegetWorkspacebySlug'
 import useRenameWorkspace from '@/hooks/useRenameWorkspace'
 import { useDeleteWorkspace } from '@/hooks/useDeleteWorkspace'
-import { updateWorkspaceSchema } from '@/schemas/updateWorkspaceNameSchema'
+import { updateWorkspaceSchema } from '@/Schemas/updateWorkspaceNameSchema'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { getBgColor, getTextColor } from '@/utils/generatecolor'
@@ -72,29 +72,26 @@ const WorkspaceSettingsProfile = () => {
   // Colors are derived inline via getBgColor/getTextColor
 
   const handleSave = (data: { name: string; slug: string }) => {
-    const payload: { name?: string; slug?: string } = {}
+  const payload: { name?: string; slug?: string } = {};
+  const currentName = workspaceData?.workspace?.name;
+  const currentSlug = workspaceData?.workspace?.slug;
 
-    const currentName = workspaceData?.workspace?.name
-    const currentSlug = workspaceData?.workspace?.slug
-
-    if (data.name && data.name !== currentName) {
-      payload.name = data.name
-    }
-
-    if (data.slug && data.slug !== currentSlug) {
-      payload.slug = data.slug
-    }
-
-    if (Object.keys(payload).length > 0) {
-      renameWorkspace({
-        workspaceId: workspaceData?.workspace?.id as string,
-        ...payload,
-      })
-    }
-
-    setIsEditingName(false)
-    setIsEditingSlug(false)
+  if (data.name && data.name !== currentName) {
+    payload.name = data.name;
   }
+
+  if (data.slug && data.slug !== currentSlug) {
+    payload.slug = data.slug;
+  }
+
+  if (Object.keys(payload).length > 0) {
+    renameWorkspace({
+      workspaceId: workspaceData?.workspace?.id as string,
+      ...payload,
+    });
+  }
+};
+
 
   const handleDelete = () => {
     // mutate requires a variable param by typing; pass undefined
@@ -189,29 +186,30 @@ const WorkspaceSettingsProfile = () => {
       <div className="space-y-6 ">
         {/* Workspace Name Field */}
         <div>
-          <label className="block text-sm lg:text-[14px] text-[#646464]  font-semibold  mb-2">
-            Workspace Name
-          </label>
-          <div className="w-full lg:w-[411px]">
-            {isEditingName ? (
-              <input
-                {...register('name')}
-                type="text"
-                onBlur={handleSubmit(handleSave)}
-                onKeyDown={handleKeyDown}
-                className="w-full  px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-[14px] focus:border-blue-500 uppercase font-semibold text-[#10414d]"
-              />
+       <label className="block text-sm lg:text-[14px] text-[#646464] font-semibold mb-2">
+    Workspace Name
+  </label>
+  <div className="w-full lg:w-[411px]">
+    {isEditingName ? (
+      <input
+        {...register('name')}
+        autoFocus
+        type="text"
+        onBlur={handleSubmit(handleSave)}
+        onKeyDown={handleKeyDown}
+        className="w-full px-3 py-2 border border-gray-300 bg-gray-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[14px]  uppercase font-medium text-[#10414d]"
+      />
             ) : (
               <div>
                 {isPending ? (
                   <Skeleton className="h-9 w-103 rounded-none" />
                 ) : (
-                  <div
-                    className="w-full px-3 py-2 bg-gray-100  cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-                    onClick={() => setIsEditingName(true)}
-                  >
-                    {workspaceData?.workspace?.name || 'Workspace'}
-                  </div>
+                <div
+        className="w-full px-3 py-2 bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
+        onClick={() => setIsEditingName(true)}
+      >
+        {workspaceData?.workspace?.name || 'Workspace'}
+      </div>
                 )}
               </div>
             )}
@@ -220,29 +218,30 @@ const WorkspaceSettingsProfile = () => {
 
         {/* Workspace Slug Field */}
         <div>
-          <label className="block text-sm lg:text-[14px] font-semibold text-[#646464]  mb-2">
-            Workspace Slug
-          </label>
-          <div className="w-full lg:w-[411px]">
-            {isEditingSlug ? (
-              <input
-                {...register('slug')}
-                type="text"
-                onBlur={handleSubmit(handleSave)}
-                onKeyDown={handleKeyDown}
-                className="w-full px-3 py-2 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-[14px] focus:border-blue-500 lowercase font-semibold text-[#10414d]"
-              />
+          <label className="block text-sm lg:text-[14px] font-semibold text-[#646464] mb-2">
+    Workspace Slug
+  </label>
+  <div className="w-full lg:w-[411px]">
+    {isEditingSlug ? (
+      <input
+        {...register('slug')}
+        autoFocus
+        type="text"
+        onBlur={handleSubmit(handleSave)}
+        onKeyDown={handleKeyDown}
+        className="w-full px-3 py-2 border bg-gray-100 border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[14px]  uppercase font-medium text-[#10414d]"
+      />
             ) : (
               <div>
                 {isPending ? (
                   <Skeleton className="h-9 w-103 rounded-none" />
                 ) : (
-                  <div
-                    className="w-full px-3 py-2 bg-gray-100  cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-                    onClick={() => setIsEditingName(true)}
-                  >
-                    {workspaceData?.workspace?.slug || 'Workspace'}
-                  </div>
+                   <div
+        className="w-full px-3 py-2 bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
+        onClick={() => setIsEditingSlug(true)}
+      >
+        {workspaceData?.workspace?.slug || 'workspace-slug'}
+      </div>
                 )}
               </div>
             )}
@@ -309,7 +308,7 @@ const WorkspaceSettingsProfile = () => {
             ) : (
               <div
                 className="w-full px-3 py-2 bg-gray-100  cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-                onClick={() => setIsEditingName(true)}
+               
               >
                 {workspaceData?.workspace?.id || 'Workspace'}
               </div>
