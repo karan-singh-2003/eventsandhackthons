@@ -1,34 +1,19 @@
-import React, { useState } from 'react'
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/ui/drawer'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from '@/components/ui/dropdown-menu'
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useMobile } from "@/hooks/useMobile"
 
 interface ResponsiveMenuOrDrawerProps {
   trigger: React.ReactNode
   children: React.ReactNode
 }
 
-function useIsMobile() {
-  if (typeof window === 'undefined') return false
-  return window.innerWidth < 640
-}
-
-const ResponsiveMenuOrDrawer: React.FC<ResponsiveMenuOrDrawerProps> = ({
-  trigger,
-  children,
-}) => {
+const ResponsiveMenuOrDrawer = ({ trigger, children }: ResponsiveMenuOrDrawerProps) => {
+  const isMobile = useMobile()
   const [open, setOpen] = useState(false)
-  const isMobile =
-    typeof window !== 'undefined' ? window.innerWidth < 640 : false
 
   if (isMobile) {
     return (
@@ -43,14 +28,11 @@ const ResponsiveMenuOrDrawer: React.FC<ResponsiveMenuOrDrawerProps> = ({
       </Drawer>
     )
   }
+
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-
-      <DropdownMenuContent
-        side="bottom"
-        className="min-w-[280px] border-[1px] mx-4 border-black/20"
-      >
+      <DropdownMenuContent side="bottom" className="min-w-[280px] border-[1px] mx-4 border-black/20" align="start">
         {children}
       </DropdownMenuContent>
     </DropdownMenu>
