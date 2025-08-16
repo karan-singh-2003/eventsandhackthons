@@ -67,13 +67,13 @@ const WorkspaceSwitcher = () => {
           {isPending ? (
             <Skeleton className="h-7 w-7 mr-1.5 rounded-none" />
           ) : (
-            <Button
-              variant="outline"
-              className="border-black/20 px-2 py-2 text-black/50 h-6 w-6 mr-1.5 text-[11.5px] bg-transparent hidden lg:block"
-             
-            >
-              {currentWorkspace ? currentWorkspace.workspaceName.slice(0, 2).toUpperCase() : "W"}
-            </Button>
+          <Button
+  variant="outline"
+  className=" items-center justify-center border-black/20 h-6 w-6 mr-1.5 text-[11.5px] text-black/50 bg-transparent hidden lg:flex"
+>
+  {currentWorkspace ? currentWorkspace.workspaceName.slice(0, 2).toUpperCase() : "W"}
+</Button>
+
           )}
           {isLoading ? (
             <Skeleton className="h-4 w-36 rounded-none" />

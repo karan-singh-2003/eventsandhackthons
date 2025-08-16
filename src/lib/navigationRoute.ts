@@ -1,10 +1,13 @@
-// lib/navigation-routes.ts (✅ REMOVE 'use client')
+import { HomeIcon, SettingsIcon, NotificationIcon, MembersIcon } from '../components/icons/NavigationIcons'
+import type React from "react"
 
 export interface NavigationRoute {
+  href?: string
   label: string
-  href: string
-  icon: string
-  activeIcon: string
+  icon: React.ComponentType<{ className?: string }>
+  activeIcon: React.ComponentType<{ className?: string }>
+  action?: "navigate" | "dialog" | "function"
+  onClick?: () => void
 }
 
 export function getRoutes(workspaceSlug: string): NavigationRoute[] {
@@ -12,32 +15,40 @@ export function getRoutes(workspaceSlug: string): NavigationRoute[] {
     {
       label: "Home",
       href: "/",
-      icon: "/home.svg",
-      activeIcon: "/home.svg",
+      icon: HomeIcon,
+      activeIcon: HomeIcon,
+      action: "navigate",
     },
     {
       label: "Settings",
       href: `/workspace/${workspaceSlug}/workspacesetting`,
-      icon: "/setting1.svg",
-      activeIcon: "/setting1.svg",
+      icon: SettingsIcon,
+      activeIcon: SettingsIcon,
+      action: "navigate",
     },
     {
       label: "Notification",
       href: `/workspace/${workspaceSlug}/notification`,
-      icon: "/notification.svg",
-      activeIcon: "/notification.svg",
+      icon: NotificationIcon,
+      activeIcon: NotificationIcon,
+      action: "navigate",
     },
     {
       label: "Members",
-      href: "/members", // Add dynamic slug if needed
-      icon: "/members.svg",
-      activeIcon: "/members.svg",
+      href: "/members",
+      icon: MembersIcon,
+      activeIcon: MembersIcon,
+      action: "navigate",
     },
     {
       label: "Invite Peoples",
-      href: `/workspace/${workspaceSlug}/invitemembers`,
-      icon: "/setting1.svg",
-      activeIcon: "/setting1.svg",
+      icon: MembersIcon,
+      activeIcon: MembersIcon,
+      action: "dialog",
+      onClick: () => {
+        // This will trigger a dialog in the future
+        console.log("Opening invite members dialog")
+      },
     },
   ]
 }
