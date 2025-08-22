@@ -78,6 +78,11 @@ async function main() {
       name: 'EDIT_ROLES',
       label: 'Edit existing roles in the workspace',
       category: 'WORKSPACE',
+    },
+    {
+      name: 'CREATE_WOORKPSACE',
+      label: 'Create new workspace',
+      category: 'WORKSPACE',
     }
 
     // Event
