@@ -85,7 +85,7 @@ export default function InviteMembersDemo() {
 
   return (
     <div className="bg-white rounded-lg px-2">
-      <div className="text-black font-semibold text-lg mb-4">
+      <div className="text-black font-semibold lg:text-lg text-[12px] mb-4">
         Members ({count})
       </div>
       <MembersTable

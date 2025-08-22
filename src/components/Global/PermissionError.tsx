@@ -7,7 +7,7 @@ interface PermissionErrorProps {
 
 const PermissionError = ({ message }: PermissionErrorProps) => {
   return (
-    <div className="text-yellow-800 font-medium flex gap-x-3 items-center bg-yellow-50 p-3 text-sm">
+    <div className="text-yellow-800 font-medium flex gap-x-3 items-center bg-yellow-50 p-3 text-[11px] lg:text-sm">
       <CircleAlert />
       <div>
         <h1>Permission Denied</h1>

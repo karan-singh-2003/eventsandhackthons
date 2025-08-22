@@ -28,6 +28,7 @@ import { updateWorkspaceSchema } from '@/Schemas/updateWorkspaceNameSchema'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getBgColor, getTextColor } from '@/utils/generatecolor'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useMobileSidebar } from '../WorkspaceSlider'
 
 const WorkspaceSettingsProfile = () => {
   const { workspaceSlug } = useParams()
@@ -92,7 +93,7 @@ const WorkspaceSettingsProfile = () => {
   }
 };
 
-
+  const { isOpen } = useMobileSidebar()
   const handleDelete = () => {
     // mutate requires a variable param by typing; pass undefined
     deleteWorkspace(undefined)
@@ -102,6 +103,8 @@ const WorkspaceSettingsProfile = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSubmit(handleSave)()
+      setIsEditingName(false) // ✅ exit edit mode after save
+    setIsEditingSlug(false)
     }
   }
 
@@ -112,64 +115,73 @@ const WorkspaceSettingsProfile = () => {
     workspaceSlug as string
   )
   const canDeleteWorkspace = can(
-    `${process.env.NEXT_PUBLIC_DELETE_WORKSPACE_PERMISSION_ID}`
+    `${process.env.NEXT_PUBLIC_DELETE_WORKSPACE_PERMISSION_ID }`
   )
 
+    const canChangeNameAndSlug = can(
+    `${process.env.NEXT_PUBLIC_Change_WORKSPACE_Name_AND_SLUG_PERMISSION_ID}`
+  )
   return (
-    <div className=" mx-auto p-1 mb-[95px] lg:mb-1">
+    <div className=" mx-auto p-1 mb-[222px] lg:mb-1">
       {/* Header with tabs */}
 
       {/* Avatar and Upload Picture Section */}
-      <div className="flex flex-col max-w-full  lg:flex-row lg:items-center lg:justify-between mb-8 gap-4 mt-3">
-        <div className="flex flex-col items-center lg:items-center lg:flex-row gap-4 lg:gap-4">
-          {isPending ? (
-            <Skeleton className="h-16 w-16 lg:w-[48px] lg:h-[48px] rounded-full" />
-          ) : (
-            <div
-              className={clsx(
-                'w-16 h-16  lg:w-[48px] lg:h-[48px]   mx-auto lg:mx-0     rounded-full flex items-center justify-center text-xl lg:text-lg  font-semibold text-black shadow-md'
-              )}
-              style={{
-                backgroundColor: getBgColor(
-                  workspaceData?.workspace?.name || ''
-                ),
-                color: getTextColor(workspaceData?.workspace?.name || ''),
-              }}
-            >
-              {(workspaceData?.workspace?.name ?? 'WS')
-                .slice(0, 2)
-                .toUpperCase()}
-            </div>
-          )}
-
-          <div className="flex flex-col">
-            {isPending ? (
-              <div className="flex flex-col gap-y-2">
-                <Skeleton className="h-4 w-48 rounded-none" />
-                <Skeleton className="h-4 w-52 rounded-none" />
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <h1 className="font-medium text-[#494949]">
-                  {workspaceData?.workspace?.name}
-                </h1>
-                <span className="text-xs font-medium lg:text-[13px] text-center lg:text-left text-[#8b8b8b]">
-                  JPG, PNG. Recommended size is 256x256px
-                </span>
-              </div>
-            )}
-          </div>
-          <Button
-            variant="outline"
-            className=" border border-[#6F6D6D] bg-transparent ml-[330px] text-sm lg:text-[11px] px-4  lg:py-1 lg:px-6 py-2  rounded-2xl text-[#464545]"
-            size="sm"
-          >
-            Upload picture
-          </Button>
-        </div>
-
-        {/* Upload Picture Button - positioned to the right on desktop */}
+     <div className="flex  max-w-full lg:flex-row lg:items-center justify-between lg:mb-8 mb-7 gap-4 mt-3">
+  <div className="flex  lg:flex-row lg:items-center gap-2">
+    {isPending ? (
+      <Skeleton className="h-11 w-11 lg:w-[48px] lg:h-[48px] rounded-full" />
+    ) : (
+      <div
+        className={clsx(
+          'w-[35px] lg:p-0 p-3 h-[35px] lg:w-[48px] lg:h-[48px] rounded-full flex items-center justify-center text-[16px] lg:text-lg font-semibold text-black shadow-md'
+        )}
+        style={{
+          backgroundColor: getBgColor(workspaceData?.workspace?.name || ''),
+          color: getTextColor(workspaceData?.workspace?.name || ''),
+        }}
+      >
+        {(workspaceData?.workspace?.name ?? 'WS')
+          .slice(0, 2)
+          .toUpperCase()}
       </div>
+    )}
+
+    <div className="flex flex-col">
+      {isPending ? (
+        <div className="flex flex-col gap-y-2">
+          <Skeleton className=" h-4 w-[124px] lg:w-48 rounded-none" />
+          <Skeleton className=" h-4 w-[124px] lg:w-52 rounded-none" />
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          <h1 className={`font-semibold uppercase lg:font-medium  ${isOpen ? "text-[10px]" : "text-[12.5px]"} lg:text-lg text-[#494949]`}>
+            {workspaceData?.workspace?.name}
+          </h1>
+        <span
+      className={`
+        font-medium text-[#8b8b8b]
+        ${isOpen ? "text-[8px]" : "text-[10px]"}  /* Mobile case changes */
+        lg:text-[13px] lg:text-left              /* Desktop unaffected */
+      `}
+    >
+      JPG, PNG. Recommended size is 256x256px
+    </span>
+
+        </div>
+      )}
+    </div>
+  </div>
+
+  {/* Upload Picture Button aligned right via justify-between */}
+  <Button
+    variant="outline"
+    className="border border-[#6F6D6D] bg-transparent  w-[75px] h-[24px] lg:h-auto  lg:w-auto  text-[8.5px] lg:text-[11px] px-2 lg:py-1 lg:px-6 py-2  rounded-2xl text-[#464545]"
+    size="sm"
+  >
+    Upload picture
+  </Button>
+</div>
+
 
       {/* Error Messages */}
       {serverError && (
@@ -183,30 +195,30 @@ const WorkspaceSettingsProfile = () => {
       )}
 
       {/* Form Fields */}
-      <div className="space-y-6 ">
+      <div className="lg:space-y-6 space-y-4">
         {/* Workspace Name Field */}
         <div>
-       <label className="block text-sm lg:text-[14px] text-[#646464] font-semibold mb-2">
+       <label className="block text-[11.5px] lg:text-[14px] text-[#646464] font-semibold mb-2">
     Workspace Name
   </label>
   <div className="w-full lg:w-[411px]">
-    {isEditingName ? (
+    {isEditingName && canChangeNameAndSlug ? (
       <input
         {...register('name')}
         autoFocus
         type="text"
-        onBlur={handleSubmit(handleSave)}
+        
         onKeyDown={handleKeyDown}
-        className="w-full px-3 py-2 border border-gray-300 bg-gray-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[14px]  uppercase font-medium text-[#10414d]"
+        className="w-full px-3 py-2 lg:h-auto h-[30px] border border-gray-300 bg-gray-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[11.5px] lg:text-[14px]  uppercase font-medium text-[#10414d]"
       />
             ) : (
               <div>
                 {isPending ? (
-                  <Skeleton className="h-9 w-103 rounded-none" />
+                  <Skeleton className="h-9 lg:w-103 w-[280px] rounded-none" />
                 ) : (
                 <div
-        className="w-full px-3 py-2 bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-        onClick={() => setIsEditingName(true)}
+        className="w-full px-3 py-2 lg:h-auto h-[30px] bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-[11.5px] lg:text-[14px]"
+        onClick={() => {if(canChangeNameAndSlug){setIsEditingName(true)}}}
       >
         {workspaceData?.workspace?.name || 'Workspace'}
       </div>
@@ -218,27 +230,31 @@ const WorkspaceSettingsProfile = () => {
 
         {/* Workspace Slug Field */}
         <div>
-          <label className="block text-sm lg:text-[14px] font-semibold text-[#646464] mb-2">
+          <label className="block text-[11.5px] lg:text-[14px] font-semibold text-[#646464] mb-2">
     Workspace Slug
   </label>
   <div className="w-full lg:w-[411px]">
-    {isEditingSlug ? (
+    {isEditingSlug && canChangeNameAndSlug ? (
       <input
         {...register('slug')}
         autoFocus
         type="text"
-        onBlur={handleSubmit(handleSave)}
+        
         onKeyDown={handleKeyDown}
-        className="w-full px-3 py-2 border bg-gray-100 border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[14px]  uppercase font-medium text-[#10414d]"
+        className="w-full px-3 py-2 lg:h-auto h-[30px] border border-gray-300 bg-gray-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 text-[11.5px] lg:text-[14px]  uppercase font-medium text-[#10414d]"
       />
             ) : (
               <div>
                 {isPending ? (
-                  <Skeleton className="h-9 w-103 rounded-none" />
+                  <Skeleton className="h-9 lg:w-103 w-[280px] rounded-none" />
                 ) : (
                    <div
-        className="w-full px-3 py-2 bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-        onClick={() => setIsEditingSlug(true)}
+        className="w-full px-3 py-2 lg:h-auto h-[30px] bg-gray-100 cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-[11.5px] lg:text-[14px]"
+        onClick={() => {
+                      if (canChangeNameAndSlug) {
+                        setIsEditingSlug(true)
+                      }
+                    }}
       >
         {workspaceData?.workspace?.slug || 'workspace-slug'}
       </div>
@@ -250,7 +266,7 @@ const WorkspaceSettingsProfile = () => {
 
         {/* Workspace ID Field */}
         <div className="max-w-[410px]">
-          <label className=" flex justify-between  text-sm lg:text-[14px] font-semibold text-[#646464] mb-2">
+          <label className=" flex justify-between  text-[11.5px] lg:text-[14px] font-semibold text-[#646464] mb-2">
             Workspace Id
             <div className="flex items-center ">
               {!copyClicked && (
@@ -289,7 +305,7 @@ const WorkspaceSettingsProfile = () => {
                 </svg>
               )}
               <button
-                className="ml-1 text-xs text-muted-foreground"
+                className="ml-1 lg:text-xs text-[8px] text-muted-foreground"
                 onClick={() => {
                   navigator.clipboard.writeText(
                     workspaceData?.workspace?.id || 'workspace-id'
@@ -304,90 +320,86 @@ const WorkspaceSettingsProfile = () => {
           </label>
           <div>
             {isPending ? (
-              <Skeleton className="h-9 w-103 rounded-none" />
+              <Skeleton className="h-9 lg:w-103 w-[280px] rounded-none" />
             ) : (
-              <div
-                className="w-full px-3 py-2 bg-gray-100  cursor-pointer hover:bg-gray-200 uppercase font-medium text-[#10414d] text-sm lg:text-[14px]"
-               
-              >
-                {workspaceData?.workspace?.id || 'Workspace'}
-              </div>
+           <div
+  className="w-full px-3 py-2 bg-gray-100 min-h-[30px] cursor-pointer 
+             hover:bg-gray-200 uppercase font-medium text-[#10414d] 
+             text-[11.5px] lg:text-[14px] truncate"
+>
+  {workspaceData?.workspace?.id || 'Workspace'}
+</div>
+
             )}
           </div>
         </div>
       </div>
 
       {/* Delete Workspace Section */}
-      <div className="mt-8 pt-8 border-t border-gray-200">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h3 className="text-sm lg:text-[15px] font-semibold text-[#4d4d4d]">
-              Delete Workspace
-            </h3>
-            <div className="lg:flex">
-              <p className="text-xs lg:text-[14px] font-medium text-muted-foreground/90 mt-1">
-                Deleting this workspace will remove all projects, files, and
-                members linked to it. Once deleted, the data cannot be recovered
-              </p>
+     <div className="mt-8 pt-8 border-t border-gray-200">
+  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    {/* Left section (heading + description) */}
+    <div>
+      <h3 className="text-[11.5px] lg:text-[15px] font-semibold text-[#4d4d4d]">
+        Delete Workspace
+      </h3>
+      <p className="text-[10px] lg:text-[14px] font-medium text-muted-foreground/90 mt-1 max-w-2xl">
+        Deleting this workspace will remove all projects, files, and members linked to it. 
+        Once deleted, the data cannot be recovered.
+      </p>
+    </div>
 
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent font-medium text-sm  lg:px-3 px-4 py-2 w-full lg:w-auto  lg:mt-0 mt-[16px] lg:ml-[179px] rounded-2xl"
-                    disabled={deletepending || !canDeleteWorkspace}
-                  >
-                    {deletepending ? 'Deleting...' : 'Delete Workspace'}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent
-                  className="sm:max-w-[672px]  rounded-none -p-0.5 p-3.5"
-                  showCloseButton={false}
-                >
-                  <div className=" border-b-[0.5px] border-[#c7c7c7] pb-5 -mx-4">
-                    <div className="px-4 flex flex-col gap-y-2 ">
-                      <DialogTitle className="lg:text-[22px] text-xl font-semibold text-gray-900">
-                        Are you sure you want to delete this workspace?
-                      </DialogTitle>
-                      <DialogDescription className="text-muted-foreground lg:text-[15px]">
-                        This will permanently delete all the data in this
-                        workspace
-                      </DialogDescription>
-                    </div>
-                  </div>
+    {/* Right section (Delete button + dialog) */}
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-red-600 border-red-600 hover:bg-red-50 hover:text-red-700 bg-transparent font-medium text-[8.9px] px-[48px] lg:px-5  lg:py-2 py-3 rounded-2xl w-[82px] h-[23px] lg:h-full lg:w-auto"
+          disabled={deletepending || !canDeleteWorkspace}
+        >
+          {deletepending ? "Deleting..." : "Delete Workspace"}
+        </Button>
+      </DialogTrigger>
 
-                  <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 my-1">
-                    <DialogClose asChild>
-                      <Button
-                        variant="secondary"
-                        className="rounded-full bg-transparent h-7.5"
-                      >
-                        Cancel
-                      </Button>
-                    </DialogClose>
-                    <Button
-                      variant="destructive"
-                      onClick={handleDelete}
-                      disabled={
-                        deletepending || (!permsPending && !canDeleteWorkspace)
-                      }
-                      className="rounded-full text-sm h-7.5 "
-                    >
-                      {deletepending ? 'Deleting...' : 'Delete'}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-              {/* {!permsPending && !canDeleteWorkspace && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  You don’t have permission to delete this workspace.
-                </p>
-              )} */}
-            </div>
+      <DialogContent
+        className="sm:max-w-[672px] rounded-none -p-0.5 p-3.5"
+        showCloseButton={false}
+      >
+        <div className="border-b-[0.5px] border-[#c7c7c7] pb-5 -mx-4">
+          <div className="px-4 flex flex-col gap-y-2">
+            <DialogTitle className="lg:text-[22px] text-[15px] font-semibold text-gray-900">
+              Are you sure you want to delete this workspace?
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-[11.5px] lg:text-[15px]">
+              This will permanently delete all the data in this workspace.
+            </DialogDescription>
           </div>
         </div>
-      </div>
+
+        <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 my-1">
+          <DialogClose asChild>
+            <Button
+              variant="secondary"
+              className="rounded-full bg-transparent lg:text-sm text-[10px]  h-7.5"
+            >
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={deletepending || (!permsPending && !canDeleteWorkspace)}
+            className="rounded-full lg:text-sm text-[10px] h-7.5"
+          >
+            {deletepending ? "Deleting..." : "Delete"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>
+</div>
+
     </div>
   )
 }

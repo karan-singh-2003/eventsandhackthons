@@ -1,15 +1,13 @@
-import React from 'react'
-import WorkspacesSwitcher from './WorkspaceSwitcher'
-// import ProfileDropdown from '../Profilelogo'
+import WorkspacesSwitcher from "./WorkspaceSwitcher"
 
 function WorkspaceNavbar() {
   return (
-    <div className="px-2 py-2 lg:p-2 border-b border-[#dcdcdc] w-full flex items-center justify-between h-full">
+    <div className="px-1 py-1 lg:p-2 w-full flex items-center justify-between h-8 lg:h-full">
       <div className="flex items-center">
         <WorkspacesSwitcher />
       </div>
-      {/* <div className="flex items-center">
-        <ProfileDropdown />
+      {/* <div className="flex items-center">        
+        <ProfileDropdown />      
       </div> */}
     </div>
   )

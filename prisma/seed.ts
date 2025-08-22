@@ -64,6 +64,21 @@ async function main() {
       label: 'View members of the workspace',
       category: 'WORKSPACE',
     },
+    {
+      name: 'CHANGE_WORKSPACE_NAME_AND_SLUG',
+      label: 'Change workspace name and slug',
+      category: 'WORKSPACE',
+    },
+    {
+      name: 'ADD_ROLES',
+      label: 'Add new roles to the workspace',
+      category: 'WORKSPACE',
+    },
+    {
+      name: 'EDIT_ROLES',
+      label: 'Edit existing roles in the workspace',
+      category: 'WORKSPACE',
+    }
 
     // Event
     // { name: 'CREATE_EVENT', label: 'Create new events', category: 'EVENT' },

@@ -7,6 +7,8 @@ import {
   ResponsiveMenuItem,
 } from '@/components/ui/responsive-menu'
 import { RoleResponse } from './types'
+import { usePermissions } from '@/hooks/usePermissions'
+import { useParams } from 'next/navigation'
 
 interface RoleActionsProps {
   Roles: RoleResponse[]
@@ -14,6 +16,14 @@ interface RoleActionsProps {
 }
 
 export function RoleActions({ Roles, onDelete }: RoleActionsProps) {
+  const { workspaceSlug } = useParams()
+  const { can, isPending: permsPending } = usePermissions(
+    workspaceSlug as string
+  )
+  const canDeleteRole = can(
+    `${process.env.NEXT_PUBLIC_EDIT_ROLE_PERMISSION_ID}`
+  )
+
   const isOwner = Roles[0].name === 'OWNER'
   console.log('isowner', isOwner)
   console.log('Roles in RoleActions:', Roles)
@@ -27,7 +37,7 @@ export function RoleActions({ Roles, onDelete }: RoleActionsProps) {
       }
     >
       {/* Conditionally show Delete button - hide for Owner role */}
-      {!isOwner && (
+      {!isOwner && canDeleteRole && (
         <ResponsiveMenuItem
           onClick={() => onDelete(Roles[0])}
           variant="destructive"

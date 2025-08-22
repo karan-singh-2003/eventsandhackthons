@@ -19,7 +19,7 @@ export function RoleAvatar({ role }: RoleAvatarProps) {
 
   return (
     <div className="relative">
-      <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center text-white text-sm font-medium transition-all duration-200">
+      <div className="lg:w-10 lg:h-10 h-7 w-7 bg-black rounded-full flex items-center justify-center text-white lg:text-sm text-[11px] font-medium transition-all duration-200">
         {initials}
       </div>
     </div>

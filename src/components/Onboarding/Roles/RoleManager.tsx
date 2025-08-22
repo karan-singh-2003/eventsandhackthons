@@ -9,6 +9,8 @@ import { RoleTable } from './RoleTable'
 import { RoleResponse } from './types'
 import { RoleModal } from './AddRoleModal'
 import { getAuthData } from '@/lib/auth-client'
+import { useParams } from 'next/navigation'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface RoleManagerProps {
   Roles: RoleResponse[]
@@ -21,7 +23,13 @@ const RoleManager = ({ Roles }: RoleManagerProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingRole, setEditingRole] = useState<RoleResponse | null>(null)
   const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-
+  const params = useParams()
+  const { can, isPending: permsPending } = usePermissions(
+    params.workspaceSlug as string
+  )
+  const canEditRole = can(
+    `${process.env.NEXT_PUBLIC_EDIT_ROLE_PERMISSION_ID}`
+  )
   const queryClient = useQueryClient()
 
   // Get current user ID from auth
@@ -122,9 +130,10 @@ const RoleManager = ({ Roles }: RoleManagerProps) => {
   }
 
   const handleRoleClick = (role: RoleResponse) => {
-    setEditingRole(role)
-    setIsModalOpen(true)
-  }
+     if (canEditRole) {
+      setEditingRole(role)
+      setIsModalOpen(true)
+    } }
 
   const handleModalClose = () => {
     setIsModalOpen(false)

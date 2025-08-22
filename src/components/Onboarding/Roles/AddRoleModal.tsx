@@ -45,53 +45,55 @@ const PermissionSection = ({
   return (
     <div className="rounded-lg">
       <div
-        className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-2 rounded"
+        className="flex items-center justify-between cursor-pointer hover:bg-gray-50 lg:p-2 p-1 rounded"
         onClick={onToggleExpanded}
       >
         <div>
-          <h3 className="font-bold text-gray-900 text-[20px]">{title}</h3>
-          <p className="text-base text-gray-600 mt-1">
+          <h3 className="font-bold text-gray-900 text-[14px] lg:text-[20px]">{title}</h3>
+          <p className="lg:text-base text-[11.5px] text-gray-600 mt-1">
             {permissions.length} permissions available
           </p>
         </div>
         <ChevronDown
-          className={`w-5 h-5 text-gray-500 transition-transform ${
+          className={`lg:w-5 lg:h-5 h-4 w-4 text-gray-500 transition-transform ${
             isExpanded ? 'rotate-180' : ''
           }`}
         />
       </div>
 
       {isExpanded && (
-        <div className="border-t border-gray-200 mt-4 pl-4 pt-4 space-y-4">
+        <div className="border-t border-gray-200 mt-4 pl-4 lg:pt-3  pt-4 lg:space-y-4 space-y-3">
           {/* Select All */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center lg:space-x-3 space-x-2">
             <Checkbox
               id={`select-all-${title.toLowerCase().replace(' ', '-')}`}
               checked={allSelected}
               onCheckedChange={onSelectAll}
+              className='lg:w-5 lg:h-5 w-4 h-4'
             />
             <label
               htmlFor={`select-all-${title.toLowerCase().replace(' ', '-')}`}
-              className="text-[15px] font-medium text-gray-700"
+              className="lg:text-[15px] text-[11.5px] font-medium text-gray-700"
             >
               Select all
             </label>
           </div>
 
           {/* Individual Permissions */}
-          <div className="space-y-3">
+          <div className="space-y-2 lg:space-y-3">
             {permissions.map((permission) => (
-              <div key={permission.id} className="flex items-center space-x-3">
+              <div key={permission.id} className="flex items-center space-x-2 lg:space-x-3 ">
                 <Checkbox
                   id={String(permission.id)}
                   checked={selectedPermissions.includes(String(permission.id))}
+                  className='lg:w-5 lg:h-5 w-4 h-4'
                   onCheckedChange={() =>
                     onTogglePermission(String(permission.id))
                   }
                 />
                 <label
                   htmlFor={String(permission.id)}
-                  className="text-[15px] text-gray-700"
+                  className="lg:text-[15px] text-[11.5px] text-gray-700"
                 >
                   {permission.label}
                 </label>
@@ -254,45 +256,46 @@ export function RoleModal({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTitle></DialogTitle>
-      <DialogContent className="!max-w-none w-screen h-screen p-0 m-0 rounded-none flex flex-col">
+    <DialogContent className="!max-w-none w-screen h-[100dvh] p-0 m-0 rounded-none flex flex-col">
+
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 ">
-          <h1 className="text-base font-semibold max-w-[200px] mx-auto text-gray-900">
-            {editingRole ? 'Edit role' : 'Create role'}
-          </h1>
-        </div>
+       <div className="flex items-center justify-between px-4 py-2 lg:px-6 lg:py-4">
+  <h1 className="lg:text-base text-[11.5px] font-semibold max-w-[200px] mx-auto text-gray-900">
+    {editingRole ? 'Edit role' : 'Create role'}
+  </h1>
+</div>
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-4xl mx-auto space-y-8">
+          <div className="max-w-4xl mx-auto lg:space-y-8 space-y-1">
             {/* Role Info */}
-            <div className="space-y-2 mt-2">
-              <h2 className="text-[30px] font-bold text-gray-900">
-                Role information
-              </h2>
-              <div className="space-y-2">
-                <Input
-                  id="roleName"
-                  type="text"
-                  placeholder="Enter a role name"
-                  value={roleName}
-                  onChange={(e) => setRoleName(e.target.value)}
-                  className="w-full h-14  rounded-none placeholder:text-base"
-                  required
-                />
-                <div className="text-right text-xs text-gray-500">
-                  {roleName.length}/50
-                </div>
-              </div>
-            </div>
+            <div className="lg:space-y-4 space-y-1 mt-1">
+  <h2 className="lg:text-[30px] text-[15px] font-bold text-gray-900">
+    Role information
+  </h2>
+  <div className="space-y-1 lg:space-y-2">
+    <Input
+      id="roleName"
+      type="text"
+      placeholder="Enter a role name"
+      value={roleName}
+      onChange={(e) => setRoleName(e.target.value)}
+      className="w-full lg:h-14 h-[26px] lg:text-sm text-[11.5px] rounded-none placeholder:text-[11px] lg:placeholder:text-base"
+      required
+    />
+    <div className="text-right lg:text-xs text-[11px] text-gray-500">
+      {roleName.length}/50
+    </div>
+  </div>
+</div>
 
             {/* Permissions */}
-            <div className="space-y-6">
-              <h2 className="text-[30px] font-bold text-gray-900">
+            <div className="lg:space-y-6 space-y-3">
+              <h2 className="lg:text-[30px] text-[15px] font-bold text-gray-900">
                 Permissions
               </h2>
               {error && (
-                <div className="text-red-600 text-[15px] font-medium">
+                <div className="text-red-600 lg:text-[15px] text-[11px] font-medium">
                   {error}
                 </div>
               )}
@@ -307,17 +310,17 @@ export function RoleModal({
                   onTogglePermission={togglePermission}
                   onSelectAll={() => handleSelectAll(section.title)}
                 />
-              ))}
+               ))}
             </div>
           </div>
         </div>
 
         {/* Sticky Footer */}
         <div className="border-t border-gray-200 p-6">
-          <div className="w-full flex flex-col space-y-2 lg:flex-row lg:space-x-3 lg:space-y-0 lg:justify-end">
+          <div className="w-full flex flex-col space-y-2 lg:flex-row lg:space-x-3 lg:space-y-0 lg:justify-end lg:mb-0 mb-2 ">
             <Button
               type="button"
-              className="w-full lg:w-[200px] text-base h-11"
+              className="w-full lg:w-[200px] lg:h-11 h-[28px] lg:text-base text-[11.5px] "
               variant="secondary"
               onClick={onClose}
             >
@@ -326,7 +329,7 @@ export function RoleModal({
             <Button
               type="submit"
               onClick={handleSubmit}
-              className="bg-orange-600 hover:bg-orange-700 text-white text-base w-full lg:w-[200px] h-11"
+              className="bg-orange-600 hover:bg-orange-700 text-white lg:h-11 h-[28px] lg:text-base text-[11.5px]  w-full lg:w-[200px] "
             >
               {editingRole ? 'Update' : 'Create'}
             </Button>

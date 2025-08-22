@@ -83,7 +83,7 @@ const EmailBadgeInput = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           onBlur={handleBlur}
-          className="h-12 flex-grow outline-none pl-1.5 text-[15px] placeholder-[#696767] placeholder:font-medium"
+          className="lg:h-12 h-[30px] flex-grow outline-none pl-1.5  lg:text-[15px] text-[11px] placeholder-[#696767] placeholder:font-medium "
         />
       </div>
       <div>

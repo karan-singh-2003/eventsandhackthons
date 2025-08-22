@@ -182,7 +182,7 @@ const InviteMembers = () => {
 
   return (
     <div>
-      <div className="space-y-7 ">
+      <div className="lg:space-y-7 space-y-5 ">
         {successMessage && (
           <div className="bg-green-50   text-green-700 px-4 py-3 rounded-none font-medium">
             {successMessage}
@@ -195,20 +195,20 @@ const InviteMembers = () => {
         )}
 
         <div className="space-y-3">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h2 className="lg:text-xl text-[13px] font-bold text-gray-900 dark:text-white">
             Share Invite Link
           </h2>
-          <p className="text-[14px] text-gray-600 dark:text-gray-300 leading-relaxed">
+          <p className="lg:text-[14px] text-[11px]  text-gray-600 dark:text-gray-300 leading-relaxed">
             Generate a shareable link to invite new members to your workspace.
             Members joining through this link will be assigned the default
             VIEWER role and the link will automatically expire after 7 days for
-            security.
+            security. 
           </p>
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-none space-y-3">
           <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label className="lg:text-sm text-[11px] font-medium text-gray-700 dark:text-gray-300">
               Workspace Invite Link
             </label>
             <div
@@ -216,7 +216,7 @@ const InviteMembers = () => {
               onClick={handleCopy}
             >
               <Copy size={12} className="text-gray-500 dark:text-gray-400" />
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+              <span className="lg:text-xs text-[11px]   font-medium text-gray-600 dark:text-gray-400">
                 {copyClicked ? 'Copied!' : 'Copy Link'}
               </span>
             </div>
@@ -227,8 +227,8 @@ const InviteMembers = () => {
             value={inviteLink}
             readOnly
             className="text-gray-900 dark:text-white bg-white dark:bg-gray-900 
-            border border-gray-300 dark:border-gray-600 rounded-none px-4 h-12
-            font-mono text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none
+            border border-gray-300 dark:border-gray-600 rounded-none px-4 lg:h-12 h-[30px]
+            font-mono lg:text-sm text-[11px] focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none
             placeholder:text-gray-400 placeholder:font-normal"
           />
         </div>
@@ -236,10 +236,10 @@ const InviteMembers = () => {
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-none p-4">
           <div className="flex items-center justify-between gap-x-4">
             <div className="space-y-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <h3 className="lg:text-lg text-[13px] font-semibold text-gray-900 dark:text-white">
                 Require Manual Approval
               </h3>
-              <p className="text-[14px] text-gray-600 dark:text-gray-300">
+              <p className="lg:text-[14px] text-[11px] text-gray-600 dark:text-gray-300">
                 When enabled, you&apos;ll need to manually review and approve
                 each member before they can access the workspace
               </p>
@@ -248,7 +248,7 @@ const InviteMembers = () => {
               id="invite-toggle"
               checked={approvalRequired}
               onCheckedChange={handleToggle}
-              className="data-[state=checked]:bg-blue-600"
+              className="data-[state=checked]:bg-blue-600 "
             />
           </div>
         </div>
@@ -257,10 +257,10 @@ const InviteMembers = () => {
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="lg:text-xl text-[13px] font-bold text-gray-900 dark:text-white">
               Send Direct Invitations
             </h2>
-            <p className="text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+            <p className="lg:text-base text-[11px] text-gray-600 dark:text-gray-300 leading-relaxed">
               Send personalized invitation emails to specific people. You can
               add multiple email addresses and assign them a specific role in
               your workspace.
@@ -275,8 +275,8 @@ const InviteMembers = () => {
           />
 
           <Button
-            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-none 
-            transition-colors duration-200 focus:ring-2 focus:ring-blue-500/20 focus:outline-none
+            className="w-full lg:h-12 h-[30px] bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-none 
+            transition-colors duration-200 focus:ring-2 focus:ring-blue-500/20 focus:outline-none lg:text-sm text-[11px]
             disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => handleSendInviteButtonClick()}
             disabled={!emails.length || !selectedRole}

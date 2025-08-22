@@ -6,7 +6,6 @@ import * as Tooltip from "@radix-ui/react-tooltip"
 import { getRoutes, type NavigationRoute } from "@/lib/navigationRoute"
 import { useQueryData } from "@/hooks/useQueryData"
 import { getUserInfo } from "@/lib/auth-client"
-import { Button } from "../ui/button"
 import { useMobileSidebar } from "./WorkspaceSlider"
 import { SearchIcon } from "../icons/NavigationIcons"
 
@@ -56,7 +55,7 @@ function Navigation() {
   return (
     <>
       <Tooltip.Provider delayDuration={150}>
-        <ul className="flex flex-col items-center space-y-2 mt-2">
+        <ul className="flex flex-col items-center space-y-1.5 mt-2">
           {routes.map((item: NavigationRoute) => {
             let itemFullHref = item.href || ""
             if (item.href && item.href.includes("[workspaceSlug]") && workspaceSlug) {
@@ -70,20 +69,21 @@ function Navigation() {
             return (
               <Tooltip.Root key={item.href || item.label}>
                 <Tooltip.Trigger asChild>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleNavigation(item)}
-                    className={cn(
-                      "group rounded-none transition-all p-1 flex items-center justify-center relative",
-                      isActive ? "bg-gray-100 text-orange-600" : "hover:bg-gray-100",
-                    )}
-                    aria-label={item.label}
-                  >
-                    <IconComponent className="w-[32px] h-[32px]" />
-                    {showDot && (
-                      <span className="absolute top-[6px] right-[12px] w-1.5 h-1.5 bg-red-500 rounded-full" />
-                    )}
-                  </Button>
+                 <button
+  onClick={() => handleNavigation(item)}
+  className={cn(
+    "group rounded-none transition-all w-full lg:h-[38px] h-[32px] p-2 flex items-center justify-center relative",
+    "hover:bg-gray-100 focus:outline-none", // 🔥 removed focus:ring
+    isActive ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-700",
+  )}
+  aria-label={item.label}
+>
+  <IconComponent className="w-[17px] h-[17px] lg:w-[21px] lg:h-[21px]" />
+  {showDot && (
+    <span className="absolute top-[6px] right-[12px] w-1.5 h-1.5 bg-red-500 rounded-full" />
+  )}
+</button>
+
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content
@@ -100,10 +100,28 @@ function Navigation() {
           })}
         </ul>
       </Tooltip.Provider>
-      <Separator className="my-4 bg-gray-300" />
-      <div className="flex flex-col items-center space-y-2 my-2">
-        <SearchIcon className="w-[19px] h-[19px]" />
+      <Separator className="lg:my-4 my-3 bg-gray-300" />
+          <div className="flex flex-col items-center space-y-1 my-1 w-full">
+        {(() => {
+          const isSearchActive = pathname === `/${workspaceSlug}/search` // 👈 adjust this route if different
+          return (
+            <button
+              onClick={() => router.push(`/${workspaceSlug}/search`)}
+              className={cn(
+                "w-full h-[42px] flex items-center justify-center transition-colors focus:outline-none",
+                isSearchActive
+                  ? "bg-gray-100 text-gray-900"
+                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
+              )}
+            >
+              <SearchIcon
+                className="w-[17px] h-[17px] lg:w-[22px] lg:h-[22px]"
+              />
+            </button>
+          )
+        })()}
       </div>
+
     </>
   )
 }

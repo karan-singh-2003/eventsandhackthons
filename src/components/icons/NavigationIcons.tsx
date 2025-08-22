@@ -154,26 +154,45 @@ export const SettingsIcon: React.FC<IconProps> = ({ className, width = 14, heigh
   </svg>
 )
 
-export const NotificationIcon: React.FC<IconProps> = ({ className, width = 14, height = 14 }) => (
+
+export const NotificationIcon: React.FC<IconProps> = ({
+  className,
+  width = 14,
+  height = 14,
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 14 14"
-    height={height}
     width={width}
+    height={height}
     className={className}
   >
     <desc>Notification Bell Icon</desc>
     <g>
       <path
-        d="M10.5 4.5C10.5 3.57174 10.1313 2.6815 9.47487 2.02513C8.8185 1.36875 7.92826 1 7 1C6.07174 1 5.1815 1.36875 4.52513 2.02513C3.86875 2.6815 3.5 3.57174 3.5 4.5C3.5 8.5 2 9.5 2 9.5H12C12 9.5 10.5 8.5 10.5 4.5Z"
+        d="M6 13.25h2"
         stroke="currentColor"
         strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M8.18506 11.5C8.03228 11.8031 7.79808 12.0547 7.50798 12.2295C7.21788 12.4044 6.88299 12.4965 6.54256 12.4965C6.20213 12.4965 5.86724 12.4044 5.57714 12.2295C5.28704 12.0547 5.05284 11.8031 4.90006 11.5"
+        d="M11 5.75c0-1.0609-.4214-2.0783-1.1716-2.8284C9.0783 2.1714 8.0609 1.75 7 1.75s-2.0783.4214-2.8284 1.1716C3.4214 3.6717 3 4.6891 3 5.75v3.5c0 .3978-.158.7794-.4393 1.0607S1.8978 10.75 1.5 10.75h11c-.3978 0-.7794-.158-1.0607-.4393S11 9.6478 11 9.25v-3.5Z"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M0.5 5.62c.0005-.9519.2275-1.8899.6622-2.7367C1.5969 2.0365 2.2269 1.3053 3 .75"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.5 5.62c-.0005-.9519-.2275-1.8899-.6622-2.7367S11.7731 1.3053 11 .75"
         stroke="currentColor"
         strokeWidth="1"
         strokeLinecap="round"
@@ -183,26 +202,44 @@ export const NotificationIcon: React.FC<IconProps> = ({ className, width = 14, h
   </svg>
 )
 
-export const MembersIcon: React.FC<IconProps> = ({ className, width = 14, height = 14 }) => (
+export const MembersIcon: React.FC<IconProps> = ({
+  className,
+  width = 14,
+  height = 14,
+}) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 14 14"
-    height={height}
     width={width}
+    height={height}
     className={className}
   >
     <desc>Members Icon</desc>
     <g>
       <path
-        d="M9.5 3.5C9.5 4.88071 8.38071 6 7 6C5.61929 6 4.5 4.88071 4.5 3.5C4.5 2.11929 5.61929 1 7 1C8.38071 1 9.5 2.11929 9.5 3.5Z"
+        d="M5 6.5c1.3807 0 2.5-1.1193 2.5-2.5S6.3807 1.5 5 1.5 2.5 2.6193 2.5 4s1.1193 2.5 2.5 2.5Z"
         stroke="currentColor"
         strokeWidth="1"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M2 13V11.5C2 10.1193 3.11929 9 4.5 9H9.5C10.8807 9 12 10.1193 12 11.5V13"
+        d="M0.5 13.5h9v-.5421c-.008-.7622-.209-1.51-.584-2.1734a4.12 4.12 0 0 0-3.712-2.2849c-.068 0-.136.0017-.204.005-.761.0361-1.501.2645-2.15.664a4.12 4.12 0 0 0-1.562 1.6204C0.709 11.4479.508 12.1957.5 12.9579V13.5Z"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9 6.5c1.381 0 2.5-1.1193 2.5-2.5S10.381 1.5 9 1.5"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M11.5 13.5h2v-.5422c-.008-.7622-.209-1.51-.584-2.1734a4.12 4.12 0 0 0-1.562-1.6205 4.12 4.12 0 0 0-1.354-.5545"
         stroke="currentColor"
         strokeWidth="1"
         strokeLinecap="round"
@@ -226,5 +263,23 @@ export const SearchIcon: React.FC<IconProps> = ({ className, width = 14, height 
       <circle cx="6" cy="6" r="4" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
       <path d="m13 13-3-3" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
     </g>
+  </svg>
+)
+
+export const CalendarIcon: React.FC<IconProps> = ({ className, width = 16, height = 16 }) => (
+  <svg
+    viewBox="0 0 16 16"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    height={height}
+    width={width}
+    className={className}
+  >
+    <desc>Calendar Streamline Icon: https://streamlinehq.com</desc>
+    <path
+      d="M13 2.6666666666666665h-2V1.6666666666666665c0 -0.18407999999999997 -0.14926666666666666 -0.3333333333333333 -0.3333333333333333 -0.3333333333333333s-0.3333333333333333 0.14925333333333332 -0.3333333333333333 0.3333333333333333V2.6666666666666665h-4.666666666666666V1.6666666666666665c0 -0.18407999999999997 -0.14925333333333332 -0.3333333333333333 -0.3333333333333333 -0.3333333333333333 -0.18407999999999997 0 -0.3333333333333333 0.14925333333333332 -0.3333333333333333 0.3333333333333333V2.6666666666666665H2.999673333333333c-0.9200866666666667 0.0009733333333333332 -1.6656866666666668 0.7465799999999999 -1.6666666666666665 1.6666666666666665v8.666666666666666c0.00098 0.9200666666666667 0.7465799999999999 1.6656666666666666 1.6666666666666665 1.6666666666666665H13c0.9201333333333334 -0.0008666666666666666 1.6658 -0.7465333333333333 1.6666666666666665 -1.6666666666666665v-8.666666666666666c-0.0008666666666666666 -0.9201266666666666 -0.7465333333333333 -1.6658133333333334 -1.6666666666666665 -1.6666666666666665ZM14 13c-0.0006 0.5520666666666666 -0.44793333333333335 0.9994000000000001 -1 1H2.999673333333333c-0.55204 -0.0006 -0.9993866666666666 -0.44793333333333335 -1 -1V7.333333333333333H14v5.666666666666666Zm0 -6.333333333333333H1.9996733333333332V4.333333333333333c0.0006133333333333334 -0.55204 0.44795999999999997 -0.9993866666666666 1 -1H5v1c0 -0.00015999999999999999 0 0.00012 0 0 0.00012 0.18396 0.14933333333333332 0.33345333333333327 0.3333333333333333 0.3333333333333333 -0.00015999999999999999 0 0.00012 0 0 0 0.18396 -0.00012 0.33345333333333327 -0.14933333333333332 0.3333333333333333 -0.3333333333333333V3.333333333333333h4.666666666666666v1c0 -0.00015999999999999999 0 0.00012 0 0 0.00013333333333333334 0.18396 0.14933333333333332 0.33345333333333327 0.3333333333333333 0.3333333333333333 -0.00013333333333333334 0 0.00013333333333333334 0 0 0 0.1839333333333333 -0.00012 0.33346666666666663 -0.14933333333333332 0.3333333333333333 -0.3333333333333333V3.333333333333333h2c0.5520666666666666 0.0006133333333333334 0.9994000000000001 0.44795999999999997 1 1V6.666666666666666Z"
+      fill="currentColor"
+      strokeWidth={0.6667}
+    />
   </svg>
 )

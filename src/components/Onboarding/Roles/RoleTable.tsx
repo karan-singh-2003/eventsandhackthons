@@ -24,15 +24,15 @@ export function RoleTable({ roles, onRoleClick, onDelete }: RoleTableProps) {
     <div className="bg-white mt-6">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Role</TableHead>
-            <TableHead className="text-right">Action</TableHead>
+          <TableRow >
+            <TableHead className='lg:text-sm text-[11.5px]'>Role</TableHead>
+            <TableHead className="text-right lg:text-sm text-[11.5px] ">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {roles.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2} className="text-center p-9 bg-gray-50">
+              <TableCell colSpan={2} className="text-center p-9 lg:text-sm text-[11.5px] bg-gray-50">
                 No roles available. Please add a role.
               </TableCell>
             </TableRow>
@@ -46,7 +46,7 @@ export function RoleTable({ roles, onRoleClick, onDelete }: RoleTableProps) {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <RoleAvatar role={role} />
-                    <div className="text-foreground text-[15px] font-medium">
+                    <div className="text-foreground lg:text-[15px] text-[12px] font-medium">
                       {role.name}
                     </div>
                   </div>

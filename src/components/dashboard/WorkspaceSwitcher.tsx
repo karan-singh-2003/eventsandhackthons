@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "../ui/button"
-import { ChevronDown, Menu } from "lucide-react"
+import { ChevronDown, Menu, X } from "lucide-react"
 import ResponsiveMenuOrDrawer from "./ResponsiveMenuOrDrawer"
 import WorkspaceSwitcherContent from "./WorkspaceSwitcherContent"
 import { useParams, useRouter } from "next/navigation"
@@ -12,7 +12,7 @@ const WorkspaceSwitcher = () => {
   const { workspaceSlug } = useParams()
   const currentWorkspaceSlug = workspaceSlug
   const router = useRouter()
-  const { toggle } = useMobileSidebar()
+  const { toggle, isOpen } = useMobileSidebar()
 
   const {
     data: workspaces = { data: [] },
@@ -49,20 +49,19 @@ const WorkspaceSwitcher = () => {
     <ResponsiveMenuOrDrawer
       trigger={
         <div
-          className="flex items-center gap-2 hover:bg-black/5 py-1.5 px-2 rounded-none w-full cursor-pointer"
+          className="flex items-center gap-1 hover:bg-black/5 py-1.5 px-2 rounded-none w-full cursor-pointer"
           aria-label="Switch workspace"
         >
-           <Button
-        variant="outline"
-        className="border-black/20 px-2 py-2 text-black/50 h-6 w-6 mr-1.5 text-[11.5px] bg-transparent lg:hidden"
-        onClick={(e) => {
-          e.stopPropagation()
-          toggle()
-        }}
-        aria-label="Toggle sidebar"
-      >
-        <Menu size={12} />
-      </Button>
+           <button
+            onClick={(e) => {
+              e.stopPropagation()
+              toggle()
+            }}
+            className="lg:hidden flex items-center justify-center h-6 w-6 mr-1.5 text-black/70"
+            aria-label="Toggle sidebar"
+          >
+            {isOpen? <X size={16} /> : <Menu size={16} />}
+          </button>
 
           {isPending ? (
             <Skeleton className="h-7 w-7 mr-1.5 rounded-none" />
@@ -78,7 +77,7 @@ const WorkspaceSwitcher = () => {
           {isLoading ? (
             <Skeleton className="h-4 w-36 rounded-none" />
           ) : (
-            <span className="font-semibold text-[15px] truncate">
+            <span className="font-semibold text-[12px]  lg:text-[15px] truncate">
               {currentWorkspace?.workspaceName ?? "Select Workspace"}
             </span>
           )}

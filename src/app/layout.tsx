@@ -39,7 +39,8 @@ import { Inter, Poppins } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/providers/query-provider'
 
-import { Toaster } from 'react-hot-toast'
+
+import { toast, Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -66,7 +67,18 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable}  ${poppins.variable} font-poppins  `}>
         <ReactQueryProvider>
-          <Toaster position="top-center" />
+        <Toaster
+  position='top-center'
+  richColors 
+  toastOptions={{
+    style: {
+      width: "auto",
+      maxWidth: 'auto',
+      whiteSpace: "pre-wrap",
+    },
+    className: 'lg:max-w-[calc(100vw-2rem)] max-w-md',
+  }} 
+/>
           {children}
         </ReactQueryProvider>
       </body>

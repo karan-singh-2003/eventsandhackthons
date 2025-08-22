@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import useMutationData from './useMutationData';
 import axios from 'axios';
-import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 interface DeleteWorkspaceProps {
   workspaceSlug: string;

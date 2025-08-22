@@ -25,34 +25,32 @@ export const MobileSidebarProvider = ({ children }: { children: React.ReactNode 
   const toggle = () => setIsOpen((prev) => !prev)
   const close = () => setIsOpen(false)
 
-  return <MobileSidebarContext.Provider value={{ isOpen, toggle, close }}>{children}</MobileSidebarContext.Provider>
+  return (
+    <MobileSidebarContext.Provider value={{ isOpen, toggle, close }}>
+      {children}
+    </MobileSidebarContext.Provider>
+  )
 }
 
 function Slider() {
-  const { isOpen, close } = useMobileSidebar()
+  const { isOpen } = useMobileSidebar()
 
   return (
-    <>
-      {isOpen && (
-        <div
-          className="fixed top-[47px] lg:top-[49px] left-0 right-0 bottom-0 bg-black/50 z-40 lg:hidden"
-          onClick={close}
-        />
-      )}
+    <aside
+      className={`
+        bg-white border-r border-[#d4d4d4] p-1 flex flex-col items-center
+        transition-all duration-300 ease-in-out
 
-      {/* Sidebar */}
-      <aside
-        className={`
-        h-full bg-white border-r border-[#d4d4d4] p-1 w-[47px] flex flex-col items-center
-        lg:relative lg:translate-x-0 lg:z-auto
-        fixed top-[47px] lg:top-0 left-0 z-50 transition-transform duration-300 ease-in-out
-        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        h-[calc(100vh-47px)] lg:h-full
+        /* Desktop */
+        lg:relative lg:w-[47px] lg:h-full lg:translate-x-0
+
+        /* Mobile (open/close inside page flow) */
+        ${isOpen ? "w-[37px]" : "w-0 overflow-hidden hidden lg:block"}
+        h-[calc(100vh-40px)]  /* below navbar */
       `}
-      >
-        <Navigation />
-      </aside>
-    </>
+    >
+      <Navigation />
+    </aside>
   )
 }
 
