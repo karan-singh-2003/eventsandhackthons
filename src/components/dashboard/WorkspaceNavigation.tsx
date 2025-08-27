@@ -74,7 +74,7 @@ function Navigation() {
   className={cn(
     "group rounded-none transition-all w-full lg:h-[38px] h-[32px] p-2 flex items-center justify-center relative",
     "hover:bg-gray-100 focus:outline-none", // 🔥 removed focus:ring
-    isActive ? "bg-gray-100 text-gray-900" : "text-gray-400 hover:text-gray-700",
+    isActive ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:text-gray-700",
   )}
   aria-label={item.label}
 >
