@@ -180,3 +180,52 @@ export const useModalStore = create<ModalState>((set, get) => ({
       selectedRoleForUpdate: null,
     }),
 }))
+
+
+
+interface EventModalState {
+  isOpen: boolean;
+  openModal: () => void;
+  closeModal: () => void;
+}
+
+export const useEventModalStore = create<EventModalState>((set:any) => ({
+  isOpen: false,
+  openModal: () => set({ isOpen: true }),
+  closeModal: () => set({ isOpen: false }),
+}));
+
+
+
+
+
+interface PanelState {
+  isOpen: boolean
+  panelType: "event" | "workspace" | null
+
+    setIsOpen: (value: boolean) => void
+  panelData: any
+  togglePanel: (type: "event" | "workspace", data?: any) => void
+}
+
+export const usePanelStore = create<PanelState>((set, get) => ({
+  isOpen: false,
+  panelType: null,
+  panelData: null,
+   setIsOpen: (value) => set({ isOpen: value }),
+  togglePanel: (type, data) => {
+    const { isOpen, panelType, panelData } = get()
+
+    // If same panel open → close it
+    if (
+      isOpen &&
+      panelType === type &&
+      JSON.stringify(panelData) === JSON.stringify(data)
+    ) {
+      set({ isOpen: false, panelType: null, panelData: null })
+    } else {
+      // Otherwise open/update
+      set({ isOpen: true, panelType: type, panelData: data })
+    }
+  },
+}))

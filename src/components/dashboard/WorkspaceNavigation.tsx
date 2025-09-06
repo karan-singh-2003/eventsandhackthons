@@ -1,4 +1,5 @@
 "use client"
+
 import { useParams, usePathname, useRouter } from "next/navigation"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
@@ -7,41 +8,46 @@ import { getRoutes, type NavigationRoute } from "@/lib/navigationRoute"
 import { useQueryData } from "@/hooks/useQueryData"
 import { getUserInfo } from "@/lib/auth-client"
 import { useMobileSidebar } from "./WorkspaceSlider"
-import { SearchIcon } from "../icons/NavigationIcons"
+import NavigationRoutesecond from "@/lib/NavigationRoutesecond"
+import { usePanelStore } from "@/store/modal-slice" // ✅ import panel store
 
 function Navigation() {
   const { workspaceSlug } = useParams()
   const pathname = usePathname()
   const router = useRouter()
   const { close } = useMobileSidebar()
+  const { setIsOpen } = usePanelStore()// ✅ get setter from panel store
 
   const userInfo = getUserInfo()
   const userId = userInfo?.userId
   const routes = getRoutes(workspaceSlug as any)
   const { data: notificationData } = useQueryData(
     ["notifications-status", workspaceSlug],
-    () => fetch(`/api/notifications/status?workspaceSlug=${workspaceSlug}&userId=${userId}`).then((res) => res.json()),
+    () =>
+      fetch(
+        `/api/notifications/status?workspaceSlug=${workspaceSlug}&userId=${userId}`,
+      ).then((res) => res.json()),
     !!workspaceSlug && !!userId,
   )
 
   const hasUnread = notificationData?.hasUnread
 
   const handleNavigation = (item: NavigationRoute) => {
+    // ✅ always close panel when navigating
+    setIsOpen(false)
+
     if (item.action === "dialog" && item.onClick) {
-      // Handle dialog actions
       item.onClick()
-      close() // Close mobile sidebar
+      close()
       return
     }
 
     if (item.action === "function" && item.onClick) {
-      // Handle custom function actions
       item.onClick()
-      close() // Close mobile sidebar
+      close()
       return
     }
 
-    // Default navigation behavior
     if (item.href) {
       let fullHref = item.href
       if (item.href.includes("[workspaceSlug]") && workspaceSlug) {
@@ -69,21 +75,20 @@ function Navigation() {
             return (
               <Tooltip.Root key={item.href || item.label}>
                 <Tooltip.Trigger asChild>
-                 <button
-  onClick={() => handleNavigation(item)}
-  className={cn(
-    "group rounded-none transition-all w-full lg:h-[38px] h-[32px] p-2 flex items-center justify-center relative",
-    "hover:bg-gray-100 focus:outline-none", // 🔥 removed focus:ring
-    isActive ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:text-gray-700",
-  )}
-  aria-label={item.label}
->
-  <IconComponent className="w-[17px] h-[17px] lg:w-[21px] lg:h-[21px]" />
-  {showDot && (
-    <span className="absolute top-[6px] right-[12px] w-1.5 h-1.5 bg-red-500 rounded-full" />
-  )}
-</button>
-
+                  <button
+                    onClick={() => handleNavigation(item)}
+                    className={cn(
+                      "group rounded-none transition-all w-full lg:h-[38px] h-[32px] p-2 flex items-center justify-center relative",
+                      "hover:bg-gray-100 focus:outline-none",
+                      isActive ? "bg-gray-100 text-gray-700" : "text-gray-400 hover:text-gray-700",
+                    )}
+                    aria-label={item.label}
+                  >
+                    <IconComponent className="w-[17px] h-[17px] lg:w-[21px] lg:h-[21px]" />
+                    {showDot && (
+                      <span className="absolute top-[6px] right-[12px] w-1.5 h-1.5 bg-red-500 rounded-full" />
+                    )}
+                  </button>
                 </Tooltip.Trigger>
                 <Tooltip.Portal>
                   <Tooltip.Content
@@ -101,27 +106,7 @@ function Navigation() {
         </ul>
       </Tooltip.Provider>
       <Separator className="lg:my-4 my-3 bg-gray-300" />
-          <div className="flex flex-col items-center space-y-1 my-1 w-full">
-        {(() => {
-          const isSearchActive = pathname === `/${workspaceSlug}/search` // 👈 adjust this route if different
-          return (
-            <button
-              onClick={() => router.push(`/${workspaceSlug}/search`)}
-              className={cn(
-                "w-full h-[42px] flex items-center justify-center transition-colors focus:outline-none",
-                isSearchActive
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"
-              )}
-            >
-              <SearchIcon
-                className="w-[17px] h-[17px] lg:w-[22px] lg:h-[22px]"
-              />
-            </button>
-          )
-        })()}
-      </div>
-
+      <NavigationRoutesecond />
     </>
   )
 }

@@ -83,12 +83,17 @@ async function main() {
       name: 'CREATE_WOORKPSACE',
       label: 'Create new workspace',
       category: 'WORKSPACE',
-    }
+    },
+    {
+      name: 'Dummy',
+      label: 'View roles and their permissions',
+      category: 'WORKSPACE',
+    },
 
     // Event
-    // { name: 'CREATE_EVENT', label: 'Create new events', category: 'EVENT' },
-    // { name: 'DELETE_EVENT', label: 'Delete events', category: 'EVENT' },
-    // { name: 'EDIT_EVENT', label: 'Edit event details', category: 'EVENT' },
+    { name: 'CREATE_EVENT', label: 'Create new events', category: 'EVENT' },
+    { name: 'DELETE_EVENT', label: 'Delete events', category: 'EVENT' },
+    { name: 'EDIT_EVENT', label: 'Edit event details', category: 'EVENT' },
 
     // Task
     // { name: 'CREATE_TASK', label: 'Create tasks', category: 'TASK' },

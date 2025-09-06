@@ -1,4 +1,4 @@
-import { HomeIcon, SettingsIcon, NotificationIcon, MembersIcon, CalendarIcon } from "@/components/icons/NavigationIcons"
+import { HomeIcon, SettingsIcon, NotificationIcon } from "@/components/icons/NavigationIcons"
 import type React from "react"
 
 export interface NavigationRoute {
@@ -32,20 +32,6 @@ export function getRoutes(workspaceSlug: string): NavigationRoute[] {
       icon: NotificationIcon,
       activeIcon: NotificationIcon,
       action: "navigate",
-    },
-    {
-      label: "Members",
-      href: "/members",
-      icon: MembersIcon,
-      activeIcon: MembersIcon,
-      action: "navigate",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-      icon: CalendarIcon,
-      activeIcon: CalendarIcon,
-      action: "navigate",
-    },
+    }
   ]
 }

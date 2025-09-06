@@ -32,7 +32,14 @@ model User {
   createdRoles          Role[]         @relation("RoleCreatedBy")
   updatedRoles          Role[]         @relation("RoleUpdatedBy")
   sessions              Session[]
+  EventParticipants    EventParticipant[]
+  createdEvents        Event[]        @relation("CreatedEvents")
+  lastActiveEvents UserLastActiveEvent[] 
+TasksCreated         Task[]         @relation("TaskCreatedBy")
   lastActiveWorkspace   Workspace?     @relation("UserLastActiveWorkspace", fields: [lastActiveWorkspaceId], references: [id])
+  TaskAssignees        TaskAssignee[]
+  TaskComments         TaskComment[]
+  TaskRoles            TaskRole[]
   createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces")
 }
 
@@ -49,8 +56,13 @@ model Workspace {
   members         Member[]
   notifications   Notification[]
   roles           Role[]
+  events          Event[]
+  EventRoles      EventRole[]
   lastActiveUsers User?          @relation("UserLastActiveWorkspace")
   createdBy       User           @relation("UserCreatedWorkspaces", fields: [createdById], references: [id], onDelete: Cascade)
+   lastActiveEvents UserLastActiveEvent[]
+   Tasks          Task[]
+   eventParticipants EventParticipant[]
 }
 
 model Member {
@@ -99,6 +111,8 @@ model Permission {
   categoryId      String
   category        PermissionCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   rolePermissions RolePermission[]
+   eventRolePermissions     EventRolePermission[]
+   TaskRolePermissions    TaskRolePermission[]
 }
 
 model RolePermission {
@@ -183,4 +197,205 @@ enum InviteStatus {
   ACCEPTED
   REJECTED
   EXPIRED
+}
+
+
+model Event {
+  id            String      @id @default(cuid())
+  name          String      
+  description   String?
+  location      String?
+  startDate     DateTime
+  endDate       DateTime
+  isOnline      Boolean     @default(false)
+  eventLink     String?
+  capacity      Int?
+  EventRoles    EventRole[]
+  status        EventStatus @default(DRAFT)
+
+  // Relations
+  workspace     Workspace   @relation(fields: [workspaceId], references: [id])
+  workspaceId   String
+
+  createdBy     User        @relation("CreatedEvents", fields: [createdById], references: [id])
+  createdById   String
+  
+  lastActiveUsers UserLastActiveEvent[]
+  participants  EventParticipant[]
+  Tasks         Task[]
+
+  @@unique([workspaceId, name]) // ✅ only enforce name uniqueness per workspace
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+
+
+
+// Pivot table for participants
+
+enum EventStatus {
+  DRAFT
+  OPEN       // users can join
+  CLOSED     // event full or closed
+  COMPLETED  // past event
+  CANCELLED
+}
+
+enum eventJoinStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+model EventRole {
+  id          String   @id @default(cuid())
+  name        String
+  workspaceId String   // Link role to workspace
+   eventId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+ event       Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+ 
+  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  permissions EventRolePermission[]
+  participants EventParticipant[]
+
+  @@unique([workspaceId,eventId, name]) // No duplicate role names per workspace
+}
+
+model EventRolePermission {
+  id           String      @id @default(cuid())
+  roleId       String
+  permissionId String
+
+  role         EventRole   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model EventParticipant {
+  id        String      @id @default(cuid())
+  userId    String
+  eventId   String
+  roleId    String      // assign workspace-linked event role
+  workspaceId String?     // for easier queries
+  status    eventJoinStatus @default(PENDING)
+  joinedAt  DateTime   @default(now())
+
+  workspace Workspace? @relation(fields: [workspaceId], references: [id])
+  user      User   @relation(fields: [userId], references: [id])
+  event     Event  @relation(fields: [eventId], references: [id])
+  role      EventRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model UserLastActiveEvent {
+  id          String   @id @default(cuid())
+  userId      String
+  workspaceId String
+  eventId     String
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  event       Event    @relation(fields: [eventId], references: [id])
+
+   @@unique([userId, workspaceId], name: "userId_workspaceId")  // one last active event per workspace
+}
+
+
+model Task {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus    @default(TODO)
+  priority    TaskPriority  @default(MEDIUM)
+  dueDate     DateTime?
+
+  // Relations
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspaceId String
+
+  event       Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId     String
+
+  createdBy   User          @relation("TaskCreatedBy", fields: [createdById], references: [id])
+  createdById String
+
+  assignees   TaskAssignee[]   // Many-to-many
+  comments    TaskComment[]    // Task discussions
+
+  // 🔹 Self-relation for subtasks
+  subtasks    Task[]           @relation("Subtasks")
+  parentTask  Task?            @relation("Subtasks", fields: [parentTaskId], references: [id])
+  parentTaskId String?
+
+  roles       TaskRole[]       // Optional per-task roles
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model TaskAssignee {
+  id        String   @id @default(cuid())
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  assignedAt DateTime @default(now())
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  content   String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId    String
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+
+  createdAt DateTime @default(now())
+}
+
+model TaskRole {
+  id     String @id @default(cuid())
+  name   String // e.g., OWNER, REVIEWER, CONTRIBUTOR
+
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId String
+TaskRolePermission TaskRolePermission[]
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  assignedAt DateTime @default(now())
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  BLOCKED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model TaskRolePermission {
+  id           String      @id @default(cuid())
+  taskRoleId   String
+  permissionId String
+
+  taskRole     TaskRole    @relation(fields: [taskRoleId], references: [id], onDelete: Cascade)
+  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([taskRoleId, permissionId])
 }
