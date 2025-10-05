@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 interface DeleteWorkspaceProps {
-  workspaceSlug: string;
+  workspaceSlug: any;
 }
 
 export const useDeleteWorkspace = ({ workspaceSlug }: DeleteWorkspaceProps) => {

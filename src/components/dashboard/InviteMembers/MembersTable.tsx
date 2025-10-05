@@ -267,7 +267,7 @@ export default function MembersTable({
     <Button
       className="rounded-full bg-neutral-700 hover:bg-neutral-800 w-[120px] lg:w-auto lg:text-sm text-[9px] lg:h-full h-[30px]"
       onClick={() => setInviteOpen(true)}
-      disabled={!hasInvitePermission}
+      // disabled={!hasInvitePermission}
     >
       Invite Members
     </Button>
