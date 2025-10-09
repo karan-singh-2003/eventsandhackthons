@@ -37,7 +37,7 @@ export function LandingBanner() {
 
   return (
     <div className="relative w-full overflow-hidden bg-[#f6f6f6] py-6 lg:py-8">
-      <div className="relative mx-auto px-4 md:px-8 lg:px-12 max-w-[1400px]">
+      <div className="relative mx-auto px-4 md:px-8 lg:px-10 max-w-[1400px]">
         {/* Smaller responsive height */}
         <div className="relative h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden">
           {slides.map((slide, index) => (

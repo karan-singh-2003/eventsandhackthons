@@ -52,7 +52,7 @@ export function EventCard({
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-500 cursor-pointer",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",
-        "w-[250px] lg:w-[245px]",
+        "w-[250px] lg:w-[235px]",
         isSpecialStyle
           ? "bg-transparent "
           : "bg-card",
@@ -60,7 +60,7 @@ export function EventCard({
       )}
     >
       {/* Event Image */}
-      <div className="relative h-[320px] lg:h-[380px] overflow-hidden rounded-t-lg">
+      <div className="relative h-[320px] lg:h-[350px] overflow-hidden rounded-t-lg">
         <img
           src={eventImage || "/placeholder.svg"}
           alt={eventName}
@@ -75,7 +75,7 @@ export function EventCard({
       </div>
 
  
-          <div className="flex items-center bg-black p-3 rounded-b-lg gap-2 text-white">
+          <div className="flex items-center bg-black p-2 rounded-b-lg gap-2 text-white">
             <Calendar className="size-4" />
             <span className="text-sm font-medium">{eventDate}</span>
           </div>
