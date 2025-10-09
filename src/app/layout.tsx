@@ -35,7 +35,7 @@
 // }
 
 import type { Metadata } from 'next'
-import { Inter, Poppins } from 'next/font/google'
+import { Inter, Poppins , Roboto } from 'next/font/google'
 import './globals.css'
 import ReactQueryProvider from '@/providers/query-provider'
 
@@ -45,6 +45,13 @@ import { toast, Toaster } from "sonner";
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+})
+
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto",
+  display: "swap",
 })
 
 const poppins = Poppins({
@@ -65,7 +72,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable}  ${poppins.variable} font-poppins  `}>
+      <body className={`${inter.variable}  ${poppins.variable} ${roboto.variable}     font-poppins  font-roboto `}>
         <ReactQueryProvider>
         <Toaster
   position='top-center'
