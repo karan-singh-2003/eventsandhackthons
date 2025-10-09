@@ -28,7 +28,6 @@ export function LandingBanner() {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length)
     }, 5000)
-
     return () => clearInterval(timer)
   }, [])
 
@@ -37,87 +36,92 @@ export function LandingBanner() {
   const goToNext = () => setCurrentSlide((prev) => (prev + 1) % slides.length)
 
   return (
-    <div className="relative w-full overflow-hidden bg-[#f6f6f6] py-8 lg:py-6">
-      <div className="relative max-w-[1390px] mx-auto px-4 lg:px-6 h-[390px]">
-        {/* Slides */}
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
-              index === currentSlide
-                ? "opacity-100 translate-x-0"
-                : index < currentSlide
-                ? "opacity-0 -translate-x-full"
-                : "opacity-0 translate-x-full"
-            }`}
-          >
-            {/* Background Image */}
-            <div className="absolute inset-0 rounded-xl overflow-hidden">
-              <img
-                src={slide.image || "/placeholder.svg"}
-                alt={slide.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
-            </div>
+    <div className="relative w-full overflow-hidden bg-[#f6f6f6] py-6 lg:py-8">
+      <div className="relative mx-auto px-4 md:px-8 lg:px-12 max-w-[1400px]">
+        {/* Smaller responsive height */}
+        <div className="relative h-[220px] sm:h-[260px] md:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden">
+          {slides.map((slide, index) => (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+                index === currentSlide
+                  ? "opacity-100 translate-x-0"
+                  : index < currentSlide
+                  ? "opacity-0 -translate-x-full"
+                  : "opacity-0 translate-x-full"
+              }`}
+            >
+              {/* Image */}
+              <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                <img
+                  src={slide.image || "/placeholder.svg"}
+                  alt={slide.title}
+                  className="w-full h-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+              </div>
 
-            {/* Content */}
-            <div className="relative h-full flex items-center ml-6">
-              <div className="max-w-3xl">
-                {/* Responsive Heading */}
-                <h1
-                  className="mb-4 font-bold text-white leading-tight"
-                  style={{
-                    fontSize: 'clamp(1.5rem, 5vw, 4rem)'
-                  }}
-                >
-                  {slide.title}
-                  <br />
-                  <span className="text-accent" style={{ fontSize: 'clamp(2rem, 6vw, 5rem)' }}>
-                    {slide.highlight}
-                  </span>
-                </h1>
+              {/* Text */}
+              <div className="relative h-full flex items-center px-6 md:px-10 lg:px-14">
+                <div className="max-w-2xl">
+                  <h1
+                    className="mb-3 font-bold text-white leading-tight"
+                    style={{
+                      fontSize: 'clamp(1.2rem, 4vw, 2.5rem)',
+                    }}
+                  >
+                    {slide.title}
+                    <br />
+                    <span
+                      className="text-accent"
+                      style={{
+                        fontSize: 'clamp(1.5rem, 5vw, 3rem)',
+                      }}
+                    >
+                      {slide.highlight}
+                    </span>
+                  </h1>
 
-                {/* Responsive Button */}
-                <Button
-                  size="lg"
-                  className="mt-6 md:mt-8 bg-accent hover:bg-accent/90 text-accent-foreground px-6 py-3 md:px-8 md:py-4 text-sm md:text-lg rounded-full"
-                >
-                  {slide.cta}
-                </Button>
+                  <Button
+                    size="sm"
+                    className="mt-4 md:mt-5 bg-accent hover:bg-accent/90 text-accent-foreground px-5 py-2 md:px-6 md:py-3 rounded-full text-xs md:text-sm"
+                  >
+                    {slide.cta}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-
-        {/* Navigation Arrows */}
-        <button
-          onClick={goToPrevious}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded-full transition-all"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </button>
-        <button
-          onClick={goToNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded-full transition-all"
-          aria-label="Next slide"
-        >
-          <ChevronRight className="h-6 w-6" />
-        </button>
-
-        {/* Dots Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`h-2 rounded-full transition-all ${
-                index === currentSlide ? "w-8 bg-white" : "w-2 bg-white/50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
           ))}
+
+          {/* Navigation Arrows */}
+          <button
+            onClick={goToPrevious}
+            className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded-full transition-all"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="h-5 w-5 md:h-6 md:w-6" />
+          </button>
+          <button
+            onClick={goToNext}
+            className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded-full transition-all"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="h-5 w-5 md:h-6 md:w-6" />
+          </button>
+
+          {/* Dots */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`h-2 rounded-full transition-all ${
+                  index === currentSlide ? "w-6 bg-white" : "w-2 bg-white/50"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
