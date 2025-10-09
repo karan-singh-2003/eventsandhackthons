@@ -3,7 +3,6 @@
 import * as React from "react"
 import { ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { EventCard, type EventCardProps } from "./EventCards"
 
 export interface EventsSectionProps {
@@ -39,32 +38,32 @@ export function EventsSection({
     return () => observer.disconnect()
   }, [])
 
-  // ✅ Apply gradient bg if title is "Upcoming Events"
   const isUpcoming = title.toLowerCase() === "upcoming events"
 
   return (
     <section
       ref={sectionRef}
       className={cn(
-        "w-full py-12 px-0 transition-all duration-500",
+        // ✅ Slightly reduced padding to make section compact
+        "w-full min-h-[100vh] py-8 sm:py-10 lg:py-8 transition-all duration-500",
         isUpcoming
-          ? "bg-gradient-to-r from-[#1f2335] via-[#262b41] to-[#2b3148] text-white"
-          : "bg-white text-black",
+          ? "bg-gradient-to-r from-[#1f2335] via-[#262b41] to-[#2b3148]  text-white"
+          : " text-black", // ✅ Slightly lighter neutral bg for contrast
         className
       )}
     >
-      <div className="w-full max-w-[1400px] mx-auto px-[4px] md:px-[20px]">
+      <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-12">
         {/* Header */}
         <div
           className={cn(
-            "flex items-center justify-between mb-2 transition-all duration-500 delay-100",
+            "flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 lg:mb-3 transition-all duration-500 delay-100",
             isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
           )}
         >
-          <div>
+          <div className="flex flex-col gap-1">
             <h3
               className={cn(
-                "text-[24px] md:text-[26px] font-bold",
+                "text-2xl lg:text-2xl font-bold",
                 isUpcoming ? "text-white" : "text-[#333333]"
               )}
             >
@@ -73,7 +72,7 @@ export function EventsSection({
             {aboutTitle && (
               <p
                 className={cn(
-                  "text-[14px] mt-1",
+                  "text-sm lg:text-[14px] leading-snug",
                   isUpcoming ? "text-gray-300" : "text-gray-600"
                 )}
               >
@@ -86,14 +85,16 @@ export function EventsSection({
             <button
               onClick={onSeeAll}
               className={cn(
-                "group/btn gap-1 flex text-[14px] cursor-pointer",
-                isUpcoming ? "text-white" : "text-[#d1410c]"
+                "group/btn lg:mt-0 mt-3 flex items-center  text-sm lg:text-[14px] font-medium transition-all",
+                isUpcoming
+                  ? "text-white hover:text-gray-300 cursor-pointer"
+                  : "text-[#d1410c] hover:text-[#a63609] cursor-pointer"
               )}
             >
               See All
               <ChevronRight
                 className={cn(
-                  "size-4",
+                  "size-4 lg:size-4 transition-transform group-hover/btn:translate-x-1 cursor-pointer",
                   isUpcoming ? "text-white" : "text-[#d1410c]"
                 )}
               />
@@ -101,17 +102,19 @@ export function EventsSection({
           )}
         </div>
 
-        {/* Cards Grid */}
+        {/* ✅ Cards placed closer to title with responsive compact spacing */}
         <div
-          className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-[6px] lg:gap-[12px]"
-          style={{ justifyContent: "center" }}
+          className={cn(
+            "grid gap-3 sm:gap-4 md:gap-5 lg:gap-6",
+            "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+            "transition-all duration-500"
+          )}
         >
           {events.map((event, index) => (
             <div
               key={index}
-              style={{
-                transitionDelay: `${index * 80}ms`,
-              }}
+              className="transition-transform duration-500"
+              style={{ transitionDelay: `${index * 80}ms` }}
             >
               <EventCard {...event} />
             </div>
