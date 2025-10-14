@@ -3,6 +3,7 @@
 import { BannerCategory } from "@/components/landingPage/BannerCategory"
 import { EventsSection } from "@/components/landingPage/eventcomponents/EventSection"
 import EventSectionShow from "@/components/landingPage/eventcomponents/EventSectionShow"
+import Footer from "@/components/landingPage/Footer landing page/Footer"
 import { LandingBanner } from "@/components/landingPage/LandingBanner"
 import { LoadingScreen } from "@/components/landingPage/LoadingScreenLandingpage"
 import Navbar from "@/components/landingPage/Navbar"
@@ -50,6 +51,9 @@ export default function HomePage() {
 
           <EventSectionShow/>
         </main>
+        <footer>
+          <Footer/>
+        </footer>
       </div>
     </>
   )
