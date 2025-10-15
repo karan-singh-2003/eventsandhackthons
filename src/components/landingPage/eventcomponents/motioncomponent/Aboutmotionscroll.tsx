@@ -4,16 +4,24 @@ import React, { useEffect } from "react"
 import { motion, useAnimation } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 
-export default function AboutMotionTextFallFromTop() {
-  const controls = useAnimation()
+interface AboutMotionScrollProps {
+  text?: string
+  textSize?: string // Tailwind size class like 'text-6xl'
+  textColor?: string // Tailwind color class like 'text-black'
+}
 
+export default function AboutMotionScroll({
+  text = "Memories",
+  textSize = "text-6xl",
+  textColor = "text-black",
+}: AboutMotionScrollProps) {
+  const controls = useAnimation()
   const [ref, inView] = useInView({
     triggerOnce: false,
     threshold: 0.5,
     rootMargin: "0px 0px -10% 0px",
   })
 
-  const text = "Memories"
   const chars = text.split("")
 
   useEffect(() => {
@@ -26,20 +34,19 @@ export default function AboutMotionTextFallFromTop() {
     visible: { transition: { staggerChildren: 0.08 } },
   }
 
-  // 👇 Reversed: starts from above (negative Y)
   const item = (distance: number) => ({
     hidden: {
-      y: -160, // move above when hidden
+      y: -160,
       transition: {
         duration: 1.2,
         ease: [0.22, 1, 0.36, 1],
       },
     },
     visible: {
-      y: 0, // falls down into place
+      y: 0,
       transition: {
         delay: distance * 0.05,
-        duration: 1.4,
+        duration: 1.1,
         ease: [0.22, 1, 0.36, 1],
       },
     },
@@ -48,8 +55,7 @@ export default function AboutMotionTextFallFromTop() {
   const centerIndex = Math.floor(chars.length / 2)
 
   return (
-    <section className="h-[100vh] flex items-center justify-center bg-gradient-to-b from-gray-100 to-gray-200">
-      {/* Overflow mask box */}
+    <section className="h-[20vh] flex items-center justify-center ">
       <div
         ref={ref}
         className="overflow-hidden h-[4em] flex items-center justify-center"
@@ -58,10 +64,10 @@ export default function AboutMotionTextFallFromTop() {
           variants={container}
           initial="hidden"
           animate={controls}
-          className="text-6xl md:text-8xl font-bold text-black tracking-tight flex leading-none"
+          className={`${textSize} ${textColor}  tracking-tight flex leading-none`}
         >
           {chars.map((char, i) => {
-            const distance = Math.abs(i - centerIndex)
+            const distance:any = Math.abs(i - centerIndex)
             return (
               <motion.span
                 key={i}

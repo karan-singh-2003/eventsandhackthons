@@ -50,6 +50,7 @@ export default function HomePage() {
           </div>
 
           <EventSectionShow/>
+          
         </main>
         <footer>
           <Footer/>

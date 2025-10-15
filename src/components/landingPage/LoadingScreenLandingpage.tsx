@@ -6,6 +6,9 @@ export function LoadingScreen({ onLoadingComplete }: { onLoadingComplete: () => 
   const [isExiting, setIsExiting] = useState(false)
 
   useEffect(() => {
+    // Disable scroll while loader is visible
+    document.body.style.overflow = "hidden"
+
     // Start exit animation after 2.5 seconds
     const exitTimer = setTimeout(() => {
       setIsExiting(true)
@@ -13,12 +16,14 @@ export function LoadingScreen({ onLoadingComplete }: { onLoadingComplete: () => 
 
     // Complete loading after exit animation
     const completeTimer = setTimeout(() => {
+      document.body.style.overflow = "auto" // Re-enable scroll
       onLoadingComplete()
     }, 3500)
 
     return () => {
       clearTimeout(exitTimer)
       clearTimeout(completeTimer)
+      document.body.style.overflow = "auto" // Ensure scroll resets if component unmounts early
     }
   }, [onLoadingComplete])
 
@@ -35,7 +40,7 @@ export function LoadingScreen({ onLoadingComplete }: { onLoadingComplete: () => 
             isExiting ? "translate-y-[-20px] opacity-0" : "translate-y-0 opacity-100"
           }`}
         >
-          <h1 className="text-7xl md:text-8xl font-bold tracking-tight animate-pulse">events</h1>
+          <h1 className="text-7xl lg:text-8xl font-bold tracking-tight animate-pulse">events</h1>
         </div>
 
         {/* Loading indicator */}

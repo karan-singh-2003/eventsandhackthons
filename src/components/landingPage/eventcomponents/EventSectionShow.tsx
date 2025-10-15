@@ -1,5 +1,6 @@
 import React from 'react'
 import { EventsSection } from './EventSection'
+import MemoryPic from '../MemoryPic/MemoryPic'
 
 function EventSectionShow() {
 
@@ -242,7 +243,7 @@ function EventSectionShow() {
                 events={CosumicClub}
                 onSeeAll={() => console.log("See all latest events")}
               />
-
+        <MemoryPic/>
    </div>
   )
 }
