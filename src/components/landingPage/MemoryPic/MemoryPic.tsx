@@ -33,6 +33,7 @@ export default function MemoryPic() {
           cardSize={110}
           arcDegrees={160}
           durationMs={35000}
+          centerImage={{ src: "/gne_logo.png", alt: "Center Image" }}
          spacingFactor={1.4}    
           direction="clockwise"
         />

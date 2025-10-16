@@ -6,19 +6,20 @@ type ImageItem = { src: string; alt: string }
 
 export type SemiCircleCarouselProps = {
   images: ImageItem[]
-  radius?: number // px
-  cardSize?: number // px (cards are square)
-  arcDegrees?: number // visible arc span in degrees (<= 180 for semicircle), default 160
-  durationMs?: number // time to sweep one-way (clockwise), then ping-pong back
+  radius?: number
+  cardSize?: number
+  arcDegrees?: number
+  durationMs?: number
   direction?: "clockwise" | "counterclockwise"
   className?: string
-  spacingFactor?: number // control gap between images
+  spacingFactor?: number
+  centerImage?: ImageItem
 }
 
 /**
  * SemiCircleCarousel
- * - Images move along a semicircle arc and tilt smoothly along the path.
- * - Natural upright rotation correction applied for realistic look.
+ * - Smooth rotating semicircle
+ * - Responsive center brand image with professional shine animation
  */
 export function SemiCircleCarousel({
   images,
@@ -29,6 +30,7 @@ export function SemiCircleCarousel({
   direction = "clockwise",
   className,
   spacingFactor = 1,
+  centerImage,
 }: SemiCircleCarouselProps) {
   const containerRef = React.useRef<HTMLDivElement | null>(null)
   const [phase, setPhase] = React.useState(0)
@@ -48,10 +50,8 @@ export function SemiCircleCarousel({
   // Continuous rotation
   React.useEffect(() => {
     if (reducedMotion.current) return
-
     let raf = 0
     const start = performance.now()
-
     const tick = (now: number) => {
       const elapsed = now - start
       const raw = (elapsed / durationMs) * dirSign
@@ -59,12 +59,11 @@ export function SemiCircleCarousel({
       setPhase(p)
       raf = requestAnimationFrame(tick)
     }
-
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)
   }, [durationMs, dirSign])
 
-  // Geometry setup
+  // Geometry
   const arcRad = Math.min(Math.max(arcDegrees, 10), 180) * (Math.PI / 180)
   const centerAngle = Math.PI / 2
   const startAngle = centerAngle + arcRad / 2
@@ -72,7 +71,7 @@ export function SemiCircleCarousel({
   const width = radius * 2
   const height = radius
 
-  // Evenly spaced positions with spacingFactor
+  // Evenly spaced positions
   const positions = React.useMemo(() => {
     if (!images.length) return []
     return images.map((_, i) => (i / images.length) * spacingFactor)
@@ -87,28 +86,76 @@ export function SemiCircleCarousel({
     <div
       ref={containerRef}
       aria-label="Semicircle image carousel"
-      className={["relative mx-auto select-none", className].filter(Boolean).join(" ")}
+      className={[
+        "relative mx-auto flex justify-center items-end select-none",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       style={{
-        width,
+        width: "100%",
+        maxWidth: `${width}px`,
         height,
       }}
     >
-      {/* Soft mask to fade bottom */}
+      {/* Soft fade mask */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           maskImage: "radial-gradient(120% 100% at 50% 100%, black 60%, transparent 100%)",
-          WebkitMaskImage: "radial-gradient(120% 100% at 50% 100%, black 60%, transparent 100%)",
+          WebkitMaskImage:
+            "radial-gradient(120% 100% at 50% 100%, black 60%, transparent 100%)",
         }}
       />
 
+      {/* 🌟 Center Brand Image with Shine Animation */}
+      {centerImage && (
+        <div
+          className="absolute flex items-center justify-center rounded-full overflow-hidden shadow-2xl bg-white"
+          style={{
+            width: `${cardSize * 1.5}px`,
+            height: `${cardSize * 1.5}px`,
+            left: "50%",
+            bottom: `${radius * 0.1}px`,
+            transform: "translateX(-50%)",
+            zIndex: 200,
+            border: "2px solid rgba(255,255,255,0.3)",
+            position: "absolute",
+          }}
+        >
+          {/* Brand image */}
+          <img
+            src={centerImage.src}
+            alt={centerImage.alt}
+            className="h-full w-full object-cover rounded-full"
+            draggable={false}
+            style={{
+              position: "relative",
+              zIndex: 1,
+            }}
+          />
+
+          {/* ✨ Shine overlay */}
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(130deg, transparent 30%, rgba(255,255,255,0.6) 50%, transparent 70%)",
+              transform: "translateX(-100%)",
+              animation: "shineSweep 3s linear infinite",
+              zIndex: 2,
+            }}
+          />
+        </div>
+      )}
+
+      {/* 🔄 Rotating Arc Images */}
       {images.map((img, idx) => {
         const base = positions[idx]
         const v = mapWithOffset(base, phase)
         const theta = startAngle + (endAngle - startAngle) * v
 
-        // Circle center
         const cx = radius
         const cy = radius
         const x = cx + radius * Math.cos(theta)
@@ -120,11 +167,10 @@ export function SemiCircleCarousel({
         const depth = Math.sin(theta)
         const scale = 0.9 + depth * 0.12
 
-        // ✅ Corrected rotation along semicircle
-        // Keeps image upright but subtly tilts along the curve.
-        const rotationDeg = (90 - (theta * 180) / Math.PI) * 0.6
+        // Rotate upright along path
+        const rotationDeg = (90 - (theta * 180) / Math.PI) * 0.9
 
-        // Fade at edges
+        // Fade edges
         const fadeFrac = 0.12
         let edgeAlpha = 1
         if (v < fadeFrac) edgeAlpha = v / fadeFrac
@@ -151,23 +197,36 @@ export function SemiCircleCarousel({
             }}
           >
             <div
-              className="h-full w-full rounded-xl bg-card shadow-xl overflow-hidden"
+              className="h-full w-full rounded-xl overflow-hidden bg-white shadow-xl"
               style={{
-                border: "1px solid var(--color-border)",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.06)",
+                border: "1px solid rgba(0,0,0,0.05)",
               }}
             >
               <img
-                src={img.src || "/placeholder.svg"}
+                src={img.src}
                 alt={img.alt}
                 className="h-full w-full object-cover"
                 draggable={false}
-                style={{ display: "block" }}
               />
             </div>
           </div>
         )
       })}
+
+      {/* 🪞 Keyframes for shine */}
+      <style jsx>{`
+        @keyframes shineSweep {
+          0% {
+            transform: translateX(-120%) rotate(0deg);
+          }
+          50% {
+            transform: translateX(120%) rotate(0deg);
+          }
+          100% {
+            transform: translateX(120%) rotate(0deg);
+          }
+        }
+      `}</style>
     </div>
   )
 }
