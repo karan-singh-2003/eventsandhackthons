@@ -1,3 +1,4 @@
+import Footer from "@/components/landingPage/Footer landing page/Footer"
 import Navbar from "@/components/landingPage/Navbar"
 
 export default function MotionTextLayout({
@@ -9,6 +10,7 @@ export default function MotionTextLayout({
     <>
       <Navbar/>
       {children}
+       <Footer/>
     </>
   )
 }

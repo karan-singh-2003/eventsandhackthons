@@ -36,7 +36,7 @@ export default function ActiveEventbelowsection() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-foreground">Ethical Hacking Workshop</h2>
+      {/* <h2 className="text-2xl font-bold text-foreground">Ethical Hacking Workshop</h2> */}
 
       <div className="grid gap-4">
         {details.map((detail, index) => {

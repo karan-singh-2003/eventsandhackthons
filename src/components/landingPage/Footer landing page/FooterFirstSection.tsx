@@ -2,7 +2,7 @@ import React from "react"
 
 function FooterFirstSection() {
   return (
-    <footer className="w-full bg-[#eeeeee] py-6 md:py-8 lg:py-6">
+    <footer className="w-full bg-[#eeeeee] py-6 md:py-8 lg:py-5">
       <div className="max-w-[1400px] mx-auto px-4  md:px-12 lg:px-14 flex flex-col gap-1">
         {/* Heading */}
         <h2 className="text-[15px] md:text-[14px] font-bold text-[#707070]">

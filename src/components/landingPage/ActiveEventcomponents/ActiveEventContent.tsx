@@ -1,12 +1,13 @@
 "use client"
 
-import { Heart, ThumbsUp } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import {  ThumbsUp } from "lucide-react"
 
 import ActiveEventImage from "./ActiveEventImage"
 import ActiveEventDescription from "./ActiveEventDescription"
-import ActiveEventbelowsection from "./ActiveEventbelowsection"
+
 import EventOrganizer from "./EventOrgainzersection"
+import EventTermsCondition from "./EventTermCondition"
+import EventYouMayAlsoLike from "./EventYouMayLike"
 
 interface EventContentProps {
   isInterested: boolean
@@ -22,38 +23,62 @@ export default function ActiveEventContent({
   onFavoriteChange,
 }: EventContentProps) {
   return (
-    <div className="space-y-8">
+    <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-1 space-y-4">
       {/* Event Image */}
-      <ActiveEventImage/>
-
-      {/* Action Buttons */}
-      <div className="flex gap-3">
-        <Button
-          variant={isInterested ? "default" : "outline"}
-          className="flex-1 gap-2"
-          onClick={() => onInterestChange(!isInterested)}
-        >
-          <ThumbsUp className="w-4 h-4" />
-          {isInterested ? "Interested" : "I am Interested"}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onFavoriteChange(!isFavorite)}
-          className={isFavorite ? "bg-red-50 border-red-200" : ""}
-        >
-          <Heart className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : ""}`} />
-        </Button>
+      <div className="rounded-2xl overflow-hidden shadow-md">
+        <ActiveEventImage />
       </div>
 
-      {/* Event Details */}
-      <ActiveEventbelowsection />
+      {/* Action Buttons */}
+     <div className="flex flex-col sm:flex-row gap-3 lg:gap-2 justify-end items-center">
+  {/* Interested Button */}
+  <button
+    onClick={() => onInterestChange(!isInterested)}
+    className={`
+      flex items-center justify-center gap-2
+      w-full sm:w-auto
+      px-2 py-2 
+      rounded-lg border transition-all duration-300
+      border-[#d1410c] text-[#d1410c] font-medium
+      hover:bg-[#d1410c] hover:text-white
+      text-sm md:text-base lg:text-[12px]
+      shadow-sm hover:shadow-md
+    `}
+  >
+    <ThumbsUp className="w-4 h-4" />
+    {isInterested ? "you & 12k are  interested." : "I am Interested"}
+  </button>
 
-      {/* Event Description */}
-      <ActiveEventDescription />
+  {/* Favorite (Heart) Button */}
+  
+</div>
 
-      {/* Event Organizer */}
-      <EventOrganizer />
+
+      
+
+      {/* Event Description Section */}
+      <div className="bg-white p-1 lg:p-2">
+        <ActiveEventDescription />
+      </div>
+
+      {/* Event Organizer Section */}
+      <div className="bg-white p-1 lg:p-2 ">
+        <EventOrganizer />
+      </div>
+
+  <div className="bg-white p-1 lg:p-2 ">
+         <EventTermsCondition />
+        
+       
+       </div>
+ 
+ <div className="bg-white p-1 lg:p-2 ">
+        <EventYouMayAlsoLike/>
+       
+        
+       
+      </div>
+ 
     </div>
   )
 }

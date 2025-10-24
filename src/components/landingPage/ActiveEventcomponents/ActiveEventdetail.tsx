@@ -1,20 +1,54 @@
 "use client"
 
-import { useState } from "react"
-
-
-
+import { useState, useEffect } from "react"
 import ActiveEventheader from "./ActiveEventheader"
+import StickyScrollHeader from "./StickyEventHeader"
 import ActiveEventContent from "./ActiveEventContent"
 import ActiveEventRegistrationCard from "./ActiveEventRegistrationCard"
 
 export default function EventDetailsPage() {
   const [isInterested, setIsInterested] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false)
+  const [showStickyHeader, setShowStickyHeader] = useState(false)
+  const [scrollTimeout, setScrollTimeout] = useState<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        // Clear existing timeout
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout)
+        }
+
+        // Set new timeout for 2 seconds
+        const timeout = setTimeout(() => {
+          setShowStickyHeader(true)
+        }, 100)
+
+        setScrollTimeout(timeout)
+      } else {
+        // Hide header when scrolled back to top
+        if (scrollTimeout) {
+          clearTimeout(scrollTimeout)
+        }
+        setShowStickyHeader(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+      if (scrollTimeout) {
+        clearTimeout(scrollTimeout)
+      }
+    }
+  }, [scrollTimeout])
 
   return (
-      <div className="min-h-screen bg-background">
-      {/* <EventHeader /> */}
+    <div className="min-h-screen bg-background">
+      {/* <ActiveEventheader /> */}
+
+      <StickyScrollHeader eventName="Ethical Hacking Workshop" showHeader={showStickyHeader} />
 
       <div className="px-6 py-8">
         <div className="max-w-7xl mx-auto">
@@ -30,7 +64,7 @@ export default function EventDetailsPage() {
             </div>
 
             {/* Right sticky section - stays fixed while page scrolls */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1  ">
               <div className="sticky top-8 h-fit z-10">
                 <ActiveEventRegistrationCard isInterested={isInterested} isFavorite={isFavorite} />
               </div>
