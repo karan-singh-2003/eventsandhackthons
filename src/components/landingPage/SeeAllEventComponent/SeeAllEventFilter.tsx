@@ -35,8 +35,8 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
   return (
     <div className="sticky top-24 space-y-4">
       {/* Filters Card */}
-      <div className="bg-card rounded-lg border border-border p-5 shadow-md">
-        <h2 className="text-lg font-semibold text-card-foreground mb-5">Filters</h2>
+      <div className="bg-card  border border-border p-4 shadow-sm">
+        <h2 className="text-lg lg:text-[20px] text-[#333333] font-medium mb-5">Filters</h2>
 
         {/* Date Section with Toggle */}
         <div className="space-y-4">
@@ -44,7 +44,7 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
             onClick={() => setIsDateExpanded(!isDateExpanded)}
             className="w-full flex items-center justify-between group"
           >
-            <h3 className="text-sm font-semibold text-card-foreground">Date</h3>
+            <h3 className="text-sm lg:text-[15px]  font-medium text-[#333333]">Date</h3>
             <ChevronDown
               size={18}
               className={`text-muted-foreground transition-transform duration-300 group-hover:text-card-foreground ${
@@ -57,36 +57,40 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
           {isDateExpanded && (
             <div className="space-y-2 animate-in fade-in duration-200">
               {/* Today Button */}
+         <div className="flex   gap-2">
+
               <button
                 onClick={() => handleDateFilter("today")}
-                className={`w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`w-[65px] px-2 py-2  text-[14px] cursor-pointer font-medium transition-all duration-200 ${
                   selectedFilters.date === "today"
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-secondary text-secondary-foreground hover:bg-muted border border-transparent hover:border-border"
-                }`}
-              >
+                  ? "bg-[#d1410c] text-white "
+                  : "bg-white  text-[#d1410c] hover:bg-muted border  "
+                  }`}
+                  >
                 Today
               </button>
 
               {/* Tomorrow Button */}
               <button
                 onClick={() => handleDateFilter("tomorrow")}
-                className={`w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`w-[85px] px-2 py-2  text-[14px] cursor-pointer font-medium transition-all duration-200 ${
                   selectedFilters.date === "tomorrow"
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-secondary text-secondary-foreground hover:bg-muted border border-transparent hover:border-border"
-                }`}
-              >
+                  ? "bg-[#d1410c] text-white "
+                  : "bg-white  text-[#d1410c] border hover:bg-muted  "
+                  }`}
+                  >
                 Tomorrow
               </button>
+
+                </div>
 
               {/* This Weekend Button */}
               <button
                 onClick={() => handleDateFilter("weekend")}
-                className={`w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                className={`w-[158px] px-1 py-2  text-[14px] font-medium transition-all duration-200 ${
                   selectedFilters.date === "weekend"
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-secondary text-secondary-foreground hover:bg-muted border border-transparent hover:border-border"
+                    ? "bg-[#d1410c] text-white"
+                    : "bg-white text-[#d1410c]  border  hover:border-border"
                 }`}
               >
                 This Weekend
@@ -97,8 +101,8 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
           {/* Date Range Checkbox */}
           {isDateExpanded && (
             <div className="flex items-center gap-3 pt-2 animate-in fade-in duration-200">
-              <Checkbox id="date-range" checked={dateRange} onCheckedChange={handleDateRangeToggle} />
-              <label htmlFor="date-range" className="text-sm font-medium text-card-foreground cursor-pointer">
+              <Checkbox id="date-range" checked={dateRange} onCheckedChange={handleDateRangeToggle} className="size-3.5 border-[#d1410c]" />
+              <label htmlFor="date-range" className="text-sm lg:text-[14px] font-medium text-[#d1410c] cursor-pointer">
                 Date Range
               </label>
             </div>
@@ -112,7 +116,7 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
               onFiltersChange({ date: null, dateRange: false })
               setDateRange(false)
             }}
-            className="text-xs text-primary hover:underline mt-4 transition-colors"
+            className="text-xs text-[#666666] hover:underline mt-4 transition-colors"
           >
             Clear Filters
           </button>
@@ -120,12 +124,12 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
       </div>
 
       {/* Browse My Carts Button */}
-      <Button
-        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold py-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-        size="lg"
+      <button
+        className="w-full bg-transparent border border-[#d1410c] text-[#d1410c]  font-medium py-2 lg:py-2 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200"
+        
       >
         Browse My Carts
-      </Button>
+      </button>
     </div>
   )
 }

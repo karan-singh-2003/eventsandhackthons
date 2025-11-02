@@ -15,28 +15,29 @@ interface EventCardProps {
 
 export default function SeeAllEventCard({ event }: EventCardProps) {
   return (
-    <div className="group relative bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
-      {/* Event Image - Larger Focus */}
-      <div className="relative h-64 w-full bg-muted overflow-hidden">
+    <div className="group relative rounded-xl overflow-hidden  transition-all duration-300">
+      
+      {/* Event Image */}
+      <div className="relative h-56 w-full bg-muted overflow-hidden">
         <Image
           src={event.image || "/placeholder.svg"}
           alt={event.title}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Event Info - Minimal and Clean */}
-      <div className="p-3">
-        <h3 className="font-semibold text-sm text-card-foreground line-clamp-1">{event.title}</h3>
-        <p className="text-xs text-muted-foreground mb-2">{event.club}</p>
-
-        {/* Event Meta - Compact */}
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>{new Date(event.date).toLocaleDateString()}</span>
-          <span>{event.attendees} attending</span>
-        </div>
+      {/* Event content */}
+      <div className="px-1 py-4  space-y-1">
+        <h3 className="font-medium text-[#1a1a1a] text-[18px]  line-clamp-1 tracking-tight">
+          {event.title}
+        </h3>
+        <p className="text-[14px] text-[#666666] line-clamp-1">
+          {event.club}
+        </p>
       </div>
     </div>
   )

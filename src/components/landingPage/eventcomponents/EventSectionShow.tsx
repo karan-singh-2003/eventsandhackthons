@@ -1,6 +1,8 @@
+'use client'
 import React from 'react'
 import { EventsSection } from './EventSection'
 import MemoryPic from '../MemoryPic/MemoryPic'
+import { useRouter } from 'next/navigation'
 
 function EventSectionShow() {
 
@@ -212,36 +214,37 @@ function EventSectionShow() {
       isEnrolled: true,
     },
   ]
-
+ const router = useRouter();
   return (
    <div>
      <EventsSection
                 title="Enrolled Events"
                 events={enrolledEvents}
-                onSeeAll={() => console.log("See all enrolled events")}
+                //socyietyid provide here 
+                onSeeAll={() => router.push(`/events/upcoming`)}
               />
     
               <EventsSection
                 title="Latest Events"
                 events={latestEvents}
-                onSeeAll={() => console.log("See all latest events")}
+                 onSeeAll={() => router.push(`/events/itian`)}
               />
                <EventsSection
                 title="Upcoming Events"
                 aboutTitle='Big moments, bigger memories — coming soon!'
                 events={upcomingevents}
-                onSeeAll={() => console.log("See all latest events")}
+                 onSeeAll={() => router.push(`/events/itian`)}
                 
               />
                  <EventsSection
                 title="Itian Club Events"
                 events={ItianClub}
-                onSeeAll={() => console.log("See all latest events")}
+                 onSeeAll={() => router.push(`/events/itian`)}
               />
                  <EventsSection
                 title="Tech Club Events"
                 events={CosumicClub}
-                onSeeAll={() => console.log("See all latest events")}
+                 onSeeAll={() => router.push(`/events/itian`)}
               />
         <MemoryPic/>
    </div>

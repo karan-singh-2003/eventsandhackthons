@@ -13,7 +13,7 @@ const mockEvents = [
     id: 1,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-10-28",
     attendees: 150,
   },
@@ -21,7 +21,7 @@ const mockEvents = [
     id: 2,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-10-29",
     attendees: 120,
   },
@@ -29,7 +29,7 @@ const mockEvents = [
     id: 3,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-10-30",
     attendees: 180,
   },
@@ -37,7 +37,7 @@ const mockEvents = [
     id: 4,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-11-01",
     attendees: 200,
   },
@@ -45,7 +45,7 @@ const mockEvents = [
     id: 5,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-11-02",
     attendees: 160,
   },
@@ -53,7 +53,7 @@ const mockEvents = [
     id: 6,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-11-03",
     attendees: 140,
   },
@@ -61,7 +61,7 @@ const mockEvents = [
     id: 7,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-11-05",
     attendees: 190,
   },
@@ -69,7 +69,7 @@ const mockEvents = [
     id: 8,
     title: "Quiz Phonic",
     club: "Itian Club",
-    image: "/quiz-phonic-event-poster.jpg",
+    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
     date: "2024-11-06",
     attendees: 170,
   },
@@ -77,7 +77,7 @@ const mockEvents = [
 
 export default function SeeAllEventGrid({ activeTab }: EventGridProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 hide-scrollbar">
+     <div className="grid lg:grid-cols-4 grid-cols-1 gap-6  overflow-y-auto pr-2 hide-scrollbar">
       {mockEvents.map((event) => (
         <SeeAllEventCard key={event.id} event={event} />
       ))}

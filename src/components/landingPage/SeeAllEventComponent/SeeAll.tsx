@@ -15,19 +15,20 @@ export default function SeeAllEvent() {
   })
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#f6f6f6]">
       {/* Header with Tabs */}
-      <div className="sticky top-0 z-40 bg-background border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className=" top-0 z-40  ">
+        <div className="">
           <SeeAllEventheader activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-7xl  px-4 sm:px-6 lg:px-8 py-7">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Left Side - Scrollable Event Cards */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 ">
+        <h2 className="text-[24px]  uppercase  font-semibold text-[#333333] mb-5">Itian Club</h2>
             <SeeAllEventGrid activeTab={activeTab} />
           </div>
 
