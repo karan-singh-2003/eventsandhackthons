@@ -41,6 +41,10 @@ TasksCreated         Task[]         @relation("TaskCreatedBy")
   TaskComments         TaskComment[]
   TaskRoles            TaskRole[]
   EventInterest        EventInterest[]
+
+  enrolledEvents      EventEnrollment[]
+  teamsLed    Team[] 
+  TeamMembers         TeamMember[]
   createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces")
 }
 
@@ -64,6 +68,8 @@ model Workspace {
    lastActiveEvents UserLastActiveEvent[]
    Tasks          Task[]
    eventParticipants EventParticipant[]
+   teams         Team[]
+   enrolledEvents  EventEnrollment[]
 }
 
 model Member {
@@ -210,47 +216,123 @@ model Event {
   eventLink       String?       // For online events
   bannerUrl       String?       // Main banner or poster image
   galleryUrls     String[]      // Additional images
-  
-  isTeamEvent     Boolean      @default(false)   // true → team-based, false → solo
-  minTeamSize     Int?                             // optional, only for team events
-  maxTeamSize     Int?                             // optional, only for team events
+
+  isTeamEvent     Boolean       @default(false)   // true → team-based, false → solo
+  minTeamSize     Int?                            // optional, only for team events
+  maxTeamSize     Int?                            // optional, only for team events
 
   startDate       DateTime
   endDate         DateTime?
   capacity        Int?          // Max attendees
-  
+
   category        String?       // e.g. "Tech", "Cultural", "Workshop"
   tags            String[]      // e.g. ["hackathon", "AI", "college"]
   label           String?       // optional short label like “Flagship Event”
-  
+
   // Engagement
-  interestedCount Int            @default(0)
-  enrolledCount   Int            @default(0)
-  viewCount       Int            @default(0)
-  
+  interestedCount Int           @default(0)
+  enrolledCount   Int           @default(0)
+  viewCount       Int           @default(0)
+
   // Relations
-  workspace       Workspace      @relation(fields: [workspaceId], references: [id])
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id])
   workspaceId     String
 
-  createdBy       User           @relation("CreatedEvents", fields: [createdById], references: [id])
+  createdBy       User          @relation("CreatedEvents", fields: [createdById], references: [id])
   createdById     String
-  
+
+  // ✅ Enrollment and Participation
+  enrollments     EventEnrollment[]
   participants    EventParticipant[]
+  teams           Team[]
   interestedUsers EventInterest[]
+
+  // ✅ Roles and Tasks
   EventRoles      EventRole[]
   Tasks           Task[]
-   lastActiveUsers UserLastActiveEvent[]   // ✅ Relation added here
+  lastActiveUsers UserLastActiveEvent[]
+
   // Moderation / Visibility
-  status          EventStatus    @default(DRAFT)
+  status          EventStatus     @default(DRAFT)
   visibility      EventVisibility @default(PUBLIC)
   approved        Boolean         @default(false)
 
   // Audit fields
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  deletedAt       DateTime?      // soft delete
-    @@unique([workspaceId, name])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?       // soft delete
+
+  @@unique([workspaceId, name])
   @@unique([workspaceId, slug])
+}
+
+model EventEnrollment {
+  id             String           @id @default(cuid())
+  eventId        String
+  userId         String?          // for solo events
+  teamId         String?          // for team events
+  workspaceId    String
+  status         EnrollmentStatus @default(PENDING)
+  registeredAt   DateTime         @default(now())
+  remarks        String?
+  paymentStatus  PaymentStatus    @default(NOT_REQUIRED)
+  certificateUrl String?          // optional: event completion certificate
+
+  // Relations
+  event          Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user           User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team           Team?            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])     // prevent duplicate solo registration
+  @@unique([eventId, teamId])     // prevent duplicate team registration
+}
+
+model Team {
+  id           String        @id @default(cuid())
+  name         String
+  code         String        @unique
+  eventId      String
+  leaderId     String        // user who created the team
+  workspaceId  String
+  createdAt    DateTime      @default(now())
+
+  // Relations
+  event        Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  leader       User          @relation(fields: [leaderId], references: [id], onDelete: Cascade)     
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  members      TeamMember[]
+  enrollments  EventEnrollment[]  // ✅ link to enrollments
+
+  @@unique([eventId, name])
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  teamId    String
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+}
+
+
+enum EnrollmentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  NOT_REQUIRED
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
 
 
