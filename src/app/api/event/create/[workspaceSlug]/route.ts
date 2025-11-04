@@ -1,20 +1,31 @@
-// app/api/event/create/[workspaceSlug]/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { getAuthData } from '@/lib/auth-server'
-import { z } from 'zod'
-import { createNotification } from '@/actions/notifications'
-import redis from '@/lib/redis'
+import { NextRequest, NextResponse } from "next/server"
+import { prisma } from "@/lib/prisma"
+import { getAuthData } from "@/lib/auth-server"
+import { z } from "zod"
+import { createNotification } from "@/actions/notifications"
+import slugify from "slugify"
 
-// ✅ Zod schema (client only sends name + isOnline)
+// ✅ Zod validation schema for Event creation
+
 const createEventSchema = z.object({
-  name: z.string().min(3, 'Event name must be at least 3 characters'),
+  name: z.string().min(3, "Event name must be at least 3 characters"),
+  description: z.string().optional(),
+  location: z.string().optional(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
   isOnline: z.boolean().default(false),
+  eventLink: z.string().url().optional().nullable(),
+  bannerUrl: z.string().url().optional().nullable(),
+  capacity: z.number().int().positive().optional(),
+  tags: z.array(z.string()).default([]),
+  isTeamEvent: z.boolean().default(false),
+  minTeamSize: z.number().int().positive().optional(),
+  maxTeamSize: z.number().int().positive().optional(),
 })
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { workspaceSlug: any } }
+  { params }: { params: { workspaceSlug: string } }
 ) {
   try {
     const body = await request.json()
@@ -22,126 +33,136 @@ export async function POST(
 
     if (!result.success) {
       return NextResponse.json(
-        { error: 'Invalid input data', details: result.error.issues },
+        { error: "Invalid input data", details: result.error.issues },
         { status: 400 }
       )
     }
 
+    const {
+      name,
+      description,
+      location,
+      startDate,
+      endDate,
+      isOnline,
+      eventLink,
+      bannerUrl,
+      capacity,
+      tags,
+      isTeamEvent,
+      minTeamSize,
+      maxTeamSize,
+    } = result.data
+
     const { workspaceSlug } = params
-    const { name, isOnline } = result.data
 
     // ✅ Auth check
     const authData = await getAuthData()
     if (!authData.userInfo || !authData.sessionInfo) {
       return NextResponse.json(
-        { error: 'Unauthorized - No valid session found' },
+        { error: "Unauthorized - No valid session found" },
         { status: 401 }
       )
     }
 
     const { userInfo, sessionInfo } = authData
     if (new Date() > new Date(sessionInfo.expiresAt)) {
-      return NextResponse.json({ error: 'Session expired' }, { status: 401 })
+      return NextResponse.json({ error: "Session expired" }, { status: 401 })
     }
 
-    // ✅ Find workspace by slug
+    // ✅ Find workspace
     const workspace = await prisma.workspace.findUnique({
       where: { slug: workspaceSlug },
       select: { id: true },
     })
 
     if (!workspace) {
-      return NextResponse.json(
-        { error: 'Workspace not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "Workspace not found" }, { status: 404 })
     }
 
-    // ✅ Check membership
+    // ✅ Verify membership
     const isMember = await prisma.member.findFirst({
       where: { userId: userInfo.userId, workspaceId: workspace.id },
     })
 
     if (!isMember) {
       return NextResponse.json(
-        { error: 'Forbidden - You are not a member of this workspace' },
+        { error: "Forbidden - You are not a member of this workspace" },
         { status: 403 }
       )
     }
 
-    // ✅ Redis cache check (event name uniqueness per workspace)
-    const cacheKey = `event:${workspace.id}:name:${name.toLowerCase()}`
-    const cachedEvent = await prisma.event.findFirst({
-        where: { workspaceId: workspace.id,  name },
-        })
+    // ✅ Generate slug
+    const slug = slugify(name, { lower: true, strict: true })
 
-    if (cachedEvent) {
-      return NextResponse.json(
-        { message: 'Event name already exists (cached)' },
-        { status: 409 }
-      )
-    }
+    // ✅ Check uniqueness (per workspace)
+  const existingEvent = await prisma.event.findFirst({
+  where: {
+    workspaceId: workspace.id,
+    AND: {
+      OR: [
+        { name },
+        {  slug },
+      ],
+    },
+  },
+})
 
-    // ✅ Double-check in DB
-    const existingEvent = await prisma.event.findFirst({
-      where: { workspaceId: workspace.id,  name },
-    })
 
     if (existingEvent) {
       return NextResponse.json(
-        { error: 'Event name already exists' },
+        { error: "Event with this name or slug already exists" },
         { status: 409 }
       )
     }
-
 
     // ✅ Create event
     const newEvent = await prisma.event.create({
       data: {
-        name: name,
-        
-        isOnline: isOnline ?? false,
-        startDate: new Date(), // placeholder
-        endDate: new Date(),   // placeholder
+        name,
+        slug,
+        description,
+        location,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        isOnline,
+        eventLink,
+        bannerUrl,
+        capacity,
+        tags,
+        isTeamEvent,
+        minTeamSize,
+        maxTeamSize,
         workspaceId: workspace.id,
         createdById: userInfo.userId,
-   
       },
     })
 
-
-    // ✅ Cache event name in Redis (to prevent race conditions)
-    await redis.set(cacheKey, newEvent.id)
-    await redis.expire(cacheKey, 60 * 5) // cache for 5 minutes
-
-    
-    // ✅ Create default event role (Organizer)
-    const organizerRole=  await prisma.eventRole.create({
+    // ✅ Create default Organizer role
+    const organizerRole = await prisma.eventRole.create({
       data: {
-        name: 'ORGANIZER',
+        name: "ORGANIZER",
         workspaceId: workspace.id,
         eventId: newEvent.id,
       },
     })
 
-      const eventPermissions = await prisma.permission.findMany({
-      where: {
-        category: {
-          name: "EVENT", // ✅ only fetch Event category permissions
-        },
-      },
+    // ✅ Assign all EVENT category permissions to Organizer
+    const eventPermissions = await prisma.permission.findMany({
+      where: { category: { name: "EVENT" } },
       select: { id: true },
-    });
+    })
 
-     if (eventPermissions.length > 0) {
+    if (eventPermissions.length > 0) {
       await prisma.eventRolePermission.createMany({
-        data: eventPermissions.map((permission: { id: string }) => ({
+        data: eventPermissions.map((p) => ({
           roleId: organizerRole.id,
-          permissionId: permission.id,
+          permissionId: p.id,
         })),
-      })};
+      })
+    }
 
-    // ✅ Create participant entry (creator = organizer)
+    // ✅ Add creator as participant (Organizer)
     await prisma.eventParticipant.create({
       data: {
         userId: userInfo.userId,
@@ -149,7 +170,7 @@ export async function POST(
         workspaceId: workspace.id,
         roleId: organizerRole.id,
         joinedAt: new Date(),
-        status: 'APPROVED',
+        status: "APPROVED",
       },
     })
 
@@ -163,20 +184,19 @@ export async function POST(
     return NextResponse.json(
       {
         success: true,
-        message: 'Event created successfully',
-        event: {
-          id: newEvent.id,
-          name: newEvent.name,
-        },
+        message: "Event created successfully",
+        event: newEvent,
       },
       { status: 201 }
     )
-  } catch (error:any) {
+  } catch (error: any) {
+    console.error("❌ Error creating event:", error)
     if (error.code === "P2002") {
-    return NextResponse.json(
-      { message: "Event with this name already exists in this workspace" },
-      { status: 409 }
-    )
+      return NextResponse.json(
+        { error: "Event name or slug already exists" },
+        { status: 409 }
+      )
+    }
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
-  throw error; // re-throw if not handled}
-}}
+}

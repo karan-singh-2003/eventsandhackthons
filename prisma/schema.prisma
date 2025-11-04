@@ -40,6 +40,7 @@ TasksCreated         Task[]         @relation("TaskCreatedBy")
   TaskAssignees        TaskAssignee[]
   TaskComments         TaskComment[]
   TaskRoles            TaskRole[]
+  EventInterest        EventInterest[]
   createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces")
 }
 
@@ -199,41 +200,78 @@ enum InviteStatus {
   EXPIRED
 }
 
-
 model Event {
-  id            String      @id @default(cuid())
-  name          String      
-  description   String?
-  location      String?
-  startDate     DateTime
-  endDate       DateTime
-  isOnline      Boolean     @default(false)
-  eventLink     String?
-  capacity      Int?
-  EventRoles    EventRole[]
-  status        EventStatus @default(DRAFT)
-
-  // Relations
-  workspace     Workspace   @relation(fields: [workspaceId], references: [id])
-  workspaceId   String
-
-  createdBy     User        @relation("CreatedEvents", fields: [createdById], references: [id])
-  createdById   String
+  id              String       @id @default(cuid())
+  name            String
+  slug            String?        // SEO & shareable links, e.g. /events/techfest-2025
+  description     String?
+  location        String?
+  isOnline        Boolean       @default(false)
+  eventLink       String?       // For online events
+  bannerUrl       String?       // Main banner or poster image
+  galleryUrls     String[]      // Additional images
   
-  lastActiveUsers UserLastActiveEvent[]
-  participants  EventParticipant[]
-  Tasks         Task[]
+  isTeamEvent     Boolean      @default(false)   // true → team-based, false → solo
+  minTeamSize     Int?                             // optional, only for team events
+  maxTeamSize     Int?                             // optional, only for team events
 
-  @@unique([workspaceId, name]) // ✅ only enforce name uniqueness per workspace
+  startDate       DateTime
+  endDate         DateTime?
+  capacity        Int?          // Max attendees
+  
+  category        String?       // e.g. "Tech", "Cultural", "Workshop"
+  tags            String[]      // e.g. ["hackathon", "AI", "college"]
+  label           String?       // optional short label like “Flagship Event”
+  
+  // Engagement
+  interestedCount Int            @default(0)
+  enrolledCount   Int            @default(0)
+  viewCount       Int            @default(0)
+  
+  // Relations
+  workspace       Workspace      @relation(fields: [workspaceId], references: [id])
+  workspaceId     String
 
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdBy       User           @relation("CreatedEvents", fields: [createdById], references: [id])
+  createdById     String
+  
+  participants    EventParticipant[]
+  interestedUsers EventInterest[]
+  EventRoles      EventRole[]
+  Tasks           Task[]
+   lastActiveUsers UserLastActiveEvent[]   // ✅ Relation added here
+  // Moderation / Visibility
+  status          EventStatus    @default(DRAFT)
+  visibility      EventVisibility @default(PUBLIC)
+  approved        Boolean         @default(false)
+
+  // Audit fields
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?      // soft delete
+    @@unique([workspaceId, name])
+  @@unique([workspaceId, slug])
 }
 
 
 
-
 // Pivot table for participants
+
+enum EventVisibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+
+model EventInterest {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  createdAt DateTime @default(now())
+}
 
 enum EventStatus {
   DRAFT
