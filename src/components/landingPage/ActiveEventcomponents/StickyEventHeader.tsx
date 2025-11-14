@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface StickyScrollHeaderProps {
-  eventName: string
+  eventName: any
   showHeader: boolean
 }
 

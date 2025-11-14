@@ -18,7 +18,7 @@ const EventNavigation: React.FC<EventNavigationProps> = ({ workspaceSlug, eventS
   const routes = getEventRoutes(workspaceSlug, eventSlug);
 
   return (
-    <nav className="flex flex-col ml-[49px] gap-2 mt-2 bg-transparent"> {/* column & no background */}
+    <nav className="flex flex-col ml-[49px]  gap-2 mt-2 bg-transparent"> {/* column & no background */}
       {routes.map((route) => {
         const isActive = route.href ? pathname === route.href : false;
 
@@ -38,7 +38,7 @@ const EventNavigation: React.FC<EventNavigationProps> = ({ workspaceSlug, eventS
             }}
           >
             <route.icon className="h-[14px] w-[14px] text-[#636363] hover:underline" />
-            <span className="text-[11px] font-medium text-[#636363] hover:underline">{route.label}</span>
+            <span className="text-[11px] font-medium text-[#636363] hover:underline">{route.label} </span>
           </button>
         );
       })}

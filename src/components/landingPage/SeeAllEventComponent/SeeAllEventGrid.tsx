@@ -4,81 +4,17 @@ import SeeAllEventCard from "./SeeAllEventCards"
 
 
 interface EventGridProps {
-  activeTab: string
+  events:any
 }
 
 // Mock event data
-const mockEvents = [
-  {
-    id: 1,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-10-28",
-    attendees: 150,
-  },
-  {
-    id: 2,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-10-29",
-    attendees: 120,
-  },
-  {
-    id: 3,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-10-30",
-    attendees: 180,
-  },
-  {
-    id: 4,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-11-01",
-    attendees: 200,
-  },
-  {
-    id: 5,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-11-02",
-    attendees: 160,
-  },
-  {
-    id: 6,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-11-03",
-    attendees: 140,
-  },
-  {
-    id: 7,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-11-05",
-    attendees: 190,
-  },
-  {
-    id: 8,
-    title: "Quiz Phonic",
-    club: "Itian Club",
-    image: "/tech-conference-modern-stage-lighting-audience (1).jpg",
-    date: "2024-11-06",
-    attendees: 170,
-  },
-]
 
-export default function SeeAllEventGrid({ activeTab }: EventGridProps) {
+export default function SeeAllEventGrid({ events }: EventGridProps) {
+   const safeEvents = events || []
+
   return (
-     <div className="grid lg:grid-cols-4 grid-cols-1 gap-6  overflow-y-auto pr-2 hide-scrollbar">
-      {mockEvents.map((event) => (
+     <div className="grid lg:grid-cols-4 grid-cols-1 gap-6   overflow-y-auto pr-2 hide-scrollbar">
+      {safeEvents.map((event:any) => (
         <SeeAllEventCard key={event.id} event={event} />
       ))}
     </div>

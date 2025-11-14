@@ -5,6 +5,7 @@ import { useQueryData } from '@/hooks/useQueryData'
 import SidebarManageEvents from './SidebarManageEvents'
 import SidebarLogoutButton from './SidebarLogoutButton'
 import { Separator } from '@/components/ui/separator'
+import { useRouter } from 'next/navigation'
 
 interface SidebarLoggedInProps {
   userName: string
@@ -32,7 +33,7 @@ const SidebarLoggedIn = ({ userName, onClose }: SidebarLoggedInProps) => {
     () => axios.get('/api/user/manage-events-config'),
     !!userName
   )
-
+const router = useRouter()
   useEffect(() => {
     if (response?.data && response.status === 200) {
       setManageEventsConfig(response.data.manageEvents)
@@ -63,7 +64,7 @@ const SidebarLoggedIn = ({ userName, onClose }: SidebarLoggedInProps) => {
          <button
 
       className="flex items-center gap-2 w-full px-4 py-1 text-[#333333] justify-start text-[14px]  hover:bg-gray-50 active:bg-gray-100"
-      onClick={() => alert('Notifications clicked!')}
+      onClick={() => {router.push('/event/notifications'); onClose();}}
     >
       {/* Bell Icon */}
       <svg

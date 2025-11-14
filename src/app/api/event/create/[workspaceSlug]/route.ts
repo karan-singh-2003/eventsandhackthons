@@ -2,25 +2,38 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getAuthData } from "@/lib/auth-server"
 import { z } from "zod"
-import { createNotification } from "@/actions/notifications"
 import slugify from "slugify"
+import { createNotification } from "@/actions/notifications"
 
-// ✅ Zod validation schema for Event creation
-
+// ✅ Zod validation schema
 const createEventSchema = z.object({
-  name: z.string().min(3, "Event name must be at least 3 characters"),
+  name: z.string().min(3),
   description: z.string().optional(),
   location: z.string().optional(),
-  startDate: z.string().datetime(),
-  endDate: z.string().datetime(),
+
+  startDate: z.string(),
+  endDate: z.string(),
+
+  registrationStartDate: z.string().optional(),
+  registrationEndDate: z.string().optional(),
+
   isOnline: z.boolean().default(false),
-  eventLink: z.string().url().optional().nullable(),
+  eventLink: z.string().url().optional(),
   bannerUrl: z.string().url().optional().nullable(),
-  capacity: z.number().int().positive().optional(),
-  tags: z.array(z.string()).default([]),
-  isTeamEvent: z.boolean().default(false),
-  minTeamSize: z.number().int().positive().optional(),
-  maxTeamSize: z.number().int().positive().optional(),
+
+  category: z.string().optional(),
+
+  label: z.string().optional(),
+
+  capacity: z.number().optional(),
+  linkTitle: z.string().optional().or(z.literal("")),
+linkUrl: z.string().url().optional().or(z.literal("")),
+
+  // ✅ SOLO / TEAM / SOLO + TEAM
+  eventType: z.enum(["SOLO", "TEAM", "SOLO_AND_TEAM"]).default("SOLO"),
+
+  minTeamSize: z.number().optional(),
+  maxTeamSize: z.number().optional(),
 })
 
 export async function POST(
@@ -29,174 +42,125 @@ export async function POST(
 ) {
   try {
     const body = await request.json()
-    const result = createEventSchema.safeParse(body)
+    const parsed = createEventSchema.safeParse(body)
 
-    if (!result.success) {
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Invalid input data", details: result.error.issues },
+        { error: "Invalid data", details: parsed.error.format() },
         { status: 400 }
       )
     }
 
-    const {
-      name,
-      description,
-      location,
-      startDate,
-      endDate,
-      isOnline,
-      eventLink,
-      bannerUrl,
-      capacity,
-      tags,
-      isTeamEvent,
-      minTeamSize,
-      maxTeamSize,
-    } = result.data
+    const data = parsed.data
 
     const { workspaceSlug } = params
+    const auth = await getAuthData()
 
-    // ✅ Auth check
-    const authData = await getAuthData()
-    if (!authData.userInfo || !authData.sessionInfo) {
-      return NextResponse.json(
-        { error: "Unauthorized - No valid session found" },
-        { status: 401 }
-      )
+    if (!auth?.userInfo) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { userInfo, sessionInfo } = authData
-    if (new Date() > new Date(sessionInfo.expiresAt)) {
-      return NextResponse.json({ error: "Session expired" }, { status: 401 })
-    }
+    const userId = auth.userInfo.userId
 
-    // ✅ Find workspace
+    // ✅ Workspace check
     const workspace = await prisma.workspace.findUnique({
       where: { slug: workspaceSlug },
-      select: { id: true },
     })
 
     if (!workspace) {
       return NextResponse.json({ error: "Workspace not found" }, { status: 404 })
     }
 
-    // ✅ Verify membership
-    const isMember = await prisma.member.findFirst({
-      where: { userId: userInfo.userId, workspaceId: workspace.id },
+    // ✅ Membership check
+    const member = await prisma.member.findFirst({
+      where: { userId, workspaceId: workspace.id },
     })
 
-    if (!isMember) {
+    if (!member) {
       return NextResponse.json(
-        { error: "Forbidden - You are not a member of this workspace" },
+        { error: "You are not a member of this workspace" },
         { status: 403 }
       )
     }
 
-    // ✅ Generate slug
-    const slug = slugify(name, { lower: true, strict: true })
+    // ✅ Team event validation
+    if (data.eventType !== "SOLO") {
+      if (!data.minTeamSize || !data.maxTeamSize) {
+        return NextResponse.json(
+          { error: "Team size required for team events" },
+          { status: 400 }
+        )
+      }
 
-    // ✅ Check uniqueness (per workspace)
-  const existingEvent = await prisma.event.findFirst({
-  where: {
-    workspaceId: workspace.id,
-    AND: {
-      OR: [
-        { name },
-        {  slug },
-      ],
-    },
-  },
-})
+      if (data.minTeamSize > data.maxTeamSize) {
+        return NextResponse.json(
+          { error: "Min team size cannot be greater" },
+          { status: 400 }
+        )
+      }
+    }
 
-
-    if (existingEvent) {
+    // ✅ Solo should not have team size
+    if (data.eventType === "SOLO" && (data.minTeamSize || data.maxTeamSize)) {
       return NextResponse.json(
-        { error: "Event with this name or slug already exists" },
-        { status: 409 }
+        { error: "Team size not allowed for SOLO event" },
+        { status: 400 }
       )
     }
 
-    // ✅ Create event
-    const newEvent = await prisma.event.create({
+    // ✅ Unique slug
+    let slug = slugify(data.name, { lower: true })
+    const conflict = await prisma.event.findFirst({
+      where: { slug, workspaceId: workspace.id },
+    })
+    if (conflict) slug = `${slug}-${Date.now()}`
+
+    // ✅ Create Event (DRAFT)
+    const event = await prisma.event.create({
       data: {
-        name,
+        ...data,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate),
+
+        registrationStartDate: data.registrationStartDate
+          ? new Date(data.registrationStartDate)
+          : null,
+
+        registrationEndDate: data.registrationEndDate
+          ? new Date(data.registrationEndDate)
+          : null,
+
         slug,
-        description,
-        location,
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        isOnline,
-        eventLink,
-        bannerUrl,
-        capacity,
-        tags,
-        isTeamEvent,
-        minTeamSize,
-        maxTeamSize,
         workspaceId: workspace.id,
-        createdById: userInfo.userId,
+        createdById: userId,
+
+        status: "DRAFT",
+        visibility: "PUBLIC",
       },
     })
 
-    // ✅ Create default Organizer role
-    const organizerRole = await prisma.eventRole.create({
-      data: {
-        name: "ORGANIZER",
-        workspaceId: workspace.id,
-        eventId: newEvent.id,
-      },
-    })
-
-    // ✅ Assign all EVENT category permissions to Organizer
-    const eventPermissions = await prisma.permission.findMany({
-      where: { category: { name: "EVENT" } },
-      select: { id: true },
-    })
-
-    if (eventPermissions.length > 0) {
-      await prisma.eventRolePermission.createMany({
-        data: eventPermissions.map((p) => ({
-          roleId: organizerRole.id,
-          permissionId: p.id,
-        })),
-      })
-    }
-
-    // ✅ Add creator as participant (Organizer)
-    await prisma.eventParticipant.create({
-      data: {
-        userId: userInfo.userId,
-        eventId: newEvent.id,
-        workspaceId: workspace.id,
-        roleId: organizerRole.id,
-        joinedAt: new Date(),
-        status: "APPROVED",
-      },
-    })
+    // ✅ Add creator as event participant (no role)
+   
 
     // ✅ Notification
     await createNotification({
-      userId: userInfo.userId,
-      message: `Event "${newEvent.name}" created successfully 🎉`,
+      userId,
+      message: `Event "${event.name}" created successfully`,
       workspaceId: workspace.id,
     })
 
     return NextResponse.json(
-      {
-        success: true,
-        message: "Event created successfully",
-        event: newEvent,
-      },
+      { success: true, event },
       { status: 201 }
     )
   } catch (error: any) {
-    console.error("❌ Error creating event:", error)
-    if (error.code === "P2002") {
-      return NextResponse.json(
-        { error: "Event name or slug already exists" },
-        { status: 409 }
-      )
-    }
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    console.error("Event Create Error:", error)
+    return NextResponse.json(
+      {
+        error: "Internal Server Error",
+        details: error.message,
+      },
+      { status: 500 }
+    )
   }
 }

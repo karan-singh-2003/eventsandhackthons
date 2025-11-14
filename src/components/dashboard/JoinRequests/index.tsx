@@ -74,6 +74,6 @@ export default function JoinRequests() {
       />
     </div>
   ) : (
-    <PermissionError message="YPermission given" />
+    <PermissionError message="Contact admin for permission" />
   )
 }

@@ -16,7 +16,7 @@ function Navigation() {
   const pathname = usePathname()
   const router = useRouter()
   const { close } = useMobileSidebar()
-  const { setIsOpen } = usePanelStore()// ✅ get setter from panel store
+  // const { setIsOpen } = usePanelStore()// ✅ get setter from panel store
 
   const userInfo = getUserInfo()
   const userId = userInfo?.userId
@@ -34,7 +34,7 @@ function Navigation() {
 
   const handleNavigation = (item: NavigationRoute) => {
     // ✅ always close panel when navigating
-    setIsOpen(false)
+    // setIsOpen(false)
 
     if (item.action === "dialog" && item.onClick) {
       item.onClick()

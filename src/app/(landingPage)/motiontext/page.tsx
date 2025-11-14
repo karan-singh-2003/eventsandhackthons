@@ -1,7 +1,9 @@
-// "use client"
+"use client"
 
 import AboutMotionTextTriangle from "@/components/landingPage/eventcomponents/motioncomponent/Aboutmotionscroll";
+import EventParticipationSettings from "@/components/landingPage/eventcomponents/motioncomponent/EventParticipant";
 import ScrollGrowBox from "@/components/landingPage/eventcomponents/motioncomponent/Scrollgrowbox";
+import { useState } from "react";
 
 // import { motion, useAnimation } from "framer-motion"
 // import { useEffect } from "react"
@@ -44,6 +46,11 @@ import ScrollGrowBox from "@/components/landingPage/eventcomponents/motioncompon
 
 
 export default function HomePage() {
+  const [eventSettings, setEventSettings] = useState({
+  isTeamEvent: false,
+  minTeamSize: null,
+  maxTeamSize: null,
+});
   return (
     <main>
       <section className="h-screen flex items-center justify-center bg-gray-800 text-white text-5xl">
@@ -56,6 +63,7 @@ export default function HomePage() {
         Keep Scrolling ⬆️⬇️
       </section>
       <ScrollGrowBox/>
+      <EventParticipationSettings  onChange={setEventSettings}/>
     </main>
   )
 }

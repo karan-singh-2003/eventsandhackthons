@@ -45,7 +45,7 @@ export function EventsSection({
       ref={sectionRef}
       className={cn(
         // ✅ Slightly reduced padding to make section compact
-        "w-full min-h-[100vh] py-8 sm:py-10 lg:py-8 transition-all duration-500",
+        "w-full min-h-[100vh] py-8 sm:py-10 lg:py-8   transition-all duration-500",
         isUpcoming
           ? "bg-gradient-to-r from-[#1f2335] via-[#262b41] to-[#2b3148]  text-white"
           : " text-black", // ✅ Slightly lighter neutral bg for contrast
@@ -105,12 +105,12 @@ export function EventsSection({
         {/* ✅ Cards placed closer to title with responsive compact spacing */}
         <div
           className={cn(
-            "grid gap-3 sm:gap-4 md:gap-5 lg:gap-6",
+            "grid gap-3  md:gap-5 lg:gap-6",
             "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
             "transition-all duration-500"
           )}
         >
-          {events.map((event, index) => (
+          {events.slice(0, 5).map((event, index) => (
             <div
               key={index}
               className="transition-transform duration-500"

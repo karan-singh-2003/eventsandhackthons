@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/lib/uploadcloudanary.js", "src/lib/multer.js", "src/app/api/event/createagent/route.js", "src/Schemas/eventschema.js", "src/components/dashboard/Eventcreatecomponent/EventParticipantswitch.jsx"],
   "exclude": ["node_modules"]
 }

@@ -39,7 +39,7 @@ export const EventCreateButton: React.FC<EventCreateButtonProps> = ({ workspaceS
 
   return (
     <>
-      {!lastEvent ? (
+      {/* {!lastEvent ? (
         // If no event → show Create Button
         <button
           onClick={openModal}
@@ -59,10 +59,17 @@ export const EventCreateButton: React.FC<EventCreateButtonProps> = ({ workspaceS
 </button>
 
 
-      )}
+      )} */}
 
       {/* Modal */}
+       <div  onClick={() => {togglePanel("event", lastEvent)
+     router.push(`/workspace/${workspaceSlug}/event/${lastEvent.name}`); 
+  }}>
+        Create Event 
       <EventCreateModal workspaceSlug={workspaceSlug} />
+
+       </div>
+      
     </>
   );
 };

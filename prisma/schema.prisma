@@ -32,25 +32,31 @@ model User {
   createdRoles          Role[]         @relation("RoleCreatedBy")
   updatedRoles          Role[]         @relation("RoleUpdatedBy")
   sessions              Session[]
-  EventParticipants    EventParticipant[]
+  
   createdEvents        Event[]        @relation("CreatedEvents")
   lastActiveEvents UserLastActiveEvent[] 
-TasksCreated         Task[]         @relation("TaskCreatedBy")
+// TasksCreated         Task[]         @relation("TaskCreatedBy")
   lastActiveWorkspace   Workspace?     @relation("UserLastActiveWorkspace", fields: [lastActiveWorkspaceId], references: [id])
-  TaskAssignees        TaskAssignee[]
-  TaskComments         TaskComment[]
-  TaskRoles            TaskRole[]
+  // TaskAssignees        TaskAssignee[]
+  // TaskComments         TaskComment[]
+  // TaskRoles            TaskRole[]
   EventInterest        EventInterest[]
 
   enrolledEvents      EventEnrollment[]
   teamsLed    Team[] 
   TeamMembers         TeamMember[]
-  createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces")
+  createdWorkspaces     Workspace[]    @relation("UserCreatedWorkspaces") 
+  
+   sentEventNotifications     EventMemberNotification[] @relation("Sender")
+
+  // ⭐ Notifications the user RECEIVED (as team member)
+  receivedEventNotifications EventMemberNotification[] @relation("Receiver")
+
 }
 
 model Workspace {
   id              String         @id @default(uuid())
-  name            String
+  name            String           @unique
   createdById     String
   allowAutoJoin   Boolean        @default(false)
   createdAt       DateTime       @default(now())
@@ -62,12 +68,12 @@ model Workspace {
   notifications   Notification[]
   roles           Role[]
   events          Event[]
-  EventRoles      EventRole[]
+  
   lastActiveUsers User?          @relation("UserLastActiveWorkspace")
   createdBy       User           @relation("UserCreatedWorkspaces", fields: [createdById], references: [id], onDelete: Cascade)
    lastActiveEvents UserLastActiveEvent[]
-   Tasks          Task[]
-   eventParticipants EventParticipant[]
+  //  Tasks          Task[]
+   
    teams         Team[]
    enrolledEvents  EventEnrollment[]
 }
@@ -98,6 +104,8 @@ model Role {
   createdBy   User             @relation("RoleCreatedBy", fields: [createdById], references: [id], onDelete: Cascade)
   updatedBy   User             @relation("RoleUpdatedBy", fields: [updatedById], references: [id], onDelete: Cascade)
   permissions RolePermission[]
+    // eventRolePermissions     EventRolePermission[]
+    
   members     Member[]
   Invite      Invite[]
   JoinRequest JoinRequest[]
@@ -118,8 +126,8 @@ model Permission {
   categoryId      String
   category        PermissionCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   rolePermissions RolePermission[]
-   eventRolePermissions     EventRolePermission[]
-   TaskRolePermissions    TaskRolePermission[]
+  //  eventRolePermissions     EventRolePermission[]
+  //  TaskRolePermissions    TaskRolePermission[]
 }
 
 model RolePermission {
@@ -209,18 +217,23 @@ enum InviteStatus {
 model Event {
   id              String       @id @default(cuid())
   name            String
-  slug            String?        // SEO & shareable links, e.g. /events/techfest-2025
+  slug            String?          // SEO & shareable links, e.g. /events/techfest-2025
   description     String?
   location        String?
   isOnline        Boolean       @default(false)
   eventLink       String?       // For online events
   bannerUrl       String?       // Main banner or poster image
   galleryUrls     String[]      // Additional images
+ eventType  EventType @default(SOLO)
 
-  isTeamEvent     Boolean       @default(false)   // true → team-based, false → solo
+    // true → team-based, false → solo
   minTeamSize     Int?                            // optional, only for team events
   maxTeamSize     Int?                            // optional, only for team events
 
+  registrationStartDate DateTime?   // When enrollment opens
+  registrationEndDate   DateTime?   // When enrollment closes
+linkTitle       String?      // optional external link title
+linkUrl         String?      // optional external link URL
   startDate       DateTime
   endDate         DateTime?
   capacity        Int?          // Max attendees
@@ -243,13 +256,13 @@ model Event {
 
   // ✅ Enrollment and Participation
   enrollments     EventEnrollment[]
-  participants    EventParticipant[]
+  
   teams           Team[]
   interestedUsers EventInterest[]
-
+eventnotifications EventMemberNotification[]
   // ✅ Roles and Tasks
-  EventRoles      EventRole[]
-  Tasks           Task[]
+  
+  // Tasks           Task[]
   lastActiveUsers UserLastActiveEvent[]
 
   // Moderation / Visibility
@@ -266,6 +279,12 @@ model Event {
   @@unique([workspaceId, slug])
 }
 
+enum EventType {
+  SOLO          // only solo allowed
+  TEAM          // only team allowed
+  SOLO_AND_TEAM // both allowed
+}
+
 model EventEnrollment {
   id             String           @id @default(cuid())
   eventId        String
@@ -274,6 +293,7 @@ model EventEnrollment {
   workspaceId    String
   status         EnrollmentStatus @default(PENDING)
   registeredAt   DateTime         @default(now())
+  updatedAt     DateTime @updatedAt
   remarks        String?
   paymentStatus  PaymentStatus    @default(NOT_REQUIRED)
   certificateUrl String?          // optional: event completion certificate
@@ -304,6 +324,7 @@ model Team {
   members      TeamMember[]
   enrollments  EventEnrollment[]  // ✅ link to enrollments
 
+eventmembernotifications EventMemberNotification[]
   @@unique([eventId, name])
 }
 
@@ -312,7 +333,9 @@ model TeamMember {
   teamId    String
   userId    String
   joinedAt  DateTime @default(now())
-
+// new fields
+  confirmed Boolean  @default(false)
+  isRemoved Boolean  @default(false)
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -368,49 +391,7 @@ enum eventJoinStatus {
   APPROVED
   REJECTED
 }
-model EventRole {
-  id          String   @id @default(cuid())
-  name        String
-  workspaceId String   // Link role to workspace
-   eventId     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
- event       Event?    @relation(fields: [eventId], references: [id], onDelete: Cascade)
- 
-  workspace   Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  permissions EventRolePermission[]
-  participants EventParticipant[]
 
-  @@unique([workspaceId,eventId, name]) // No duplicate role names per workspace
-}
-
-model EventRolePermission {
-  id           String      @id @default(cuid())
-  roleId       String
-  permissionId String
-
-  role         EventRole   @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([roleId, permissionId])
-}
-
-model EventParticipant {
-  id        String      @id @default(cuid())
-  userId    String
-  eventId   String
-  roleId    String      // assign workspace-linked event role
-  workspaceId String?     // for easier queries
-  status    eventJoinStatus @default(PENDING)
-  joinedAt  DateTime   @default(now())
-
-  workspace Workspace? @relation(fields: [workspaceId], references: [id])
-  user      User   @relation(fields: [userId], references: [id])
-  event     Event  @relation(fields: [eventId], references: [id])
-  role      EventRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, eventId])
-}
 
 model UserLastActiveEvent {
   id          String   @id @default(cuid())
@@ -426,96 +407,30 @@ model UserLastActiveEvent {
    @@unique([userId, workspaceId], name: "userId_workspaceId")  // one last active event per workspace
 }
 
+model EventMemberNotification {
+  id            String   @id @default(cuid())
+  eventId       String?
+  teamId        String?
+  senderId      String
+  receiverId    String?
+  message       String
+  status        NotificationStatus @default(PENDING) // PENDING / ACCEPTED / REJECTED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  respondedAt    DateTime?
 
-model Task {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  status      TaskStatus    @default(TODO)
-  priority    TaskPriority  @default(MEDIUM)
-  dueDate     DateTime?
-
-  // Relations
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  workspaceId String
-
-  event       Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId     String
-
-  createdBy   User          @relation("TaskCreatedBy", fields: [createdById], references: [id])
-  createdById String
-
-  assignees   TaskAssignee[]   // Many-to-many
-  comments    TaskComment[]    // Task discussions
-
-  // 🔹 Self-relation for subtasks
-  subtasks    Task[]           @relation("Subtasks")
-  parentTask  Task?            @relation("Subtasks", fields: [parentTaskId], references: [id])
-  parentTaskId String?
-
-  roles       TaskRole[]       // Optional per-task roles
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  event   Event?   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  team    Team?   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  sender  User    @relation("Sender", fields: [senderId], references: [id])
+  receiver User?   @relation("Receiver", fields: [receiverId], references: [id])
 }
 
-model TaskAssignee {
-  id        String   @id @default(cuid())
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId    String
-
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-
-  assignedAt DateTime @default(now())
+enum NotificationStatus {
+  PENDING
+  ACCEPTED
+  INVITESENT
+  REJECTED
 }
 
-model TaskComment {
-  id        String   @id @default(cuid())
-  content   String
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId    String
 
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
 
-  createdAt DateTime @default(now())
-}
-
-model TaskRole {
-  id     String @id @default(cuid())
-  name   String // e.g., OWNER, REVIEWER, CONTRIBUTOR
-
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  taskId String
-TaskRolePermission TaskRolePermission[]
-  user   User   @relation(fields: [userId], references: [id])
-  userId String
-
-  assignedAt DateTime @default(now())
-}
-
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  DONE
-  BLOCKED
-}
-
-enum TaskPriority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-model TaskRolePermission {
-  id           String      @id @default(cuid())
-  taskRoleId   String
-  permissionId String
-
-  taskRole     TaskRole    @relation(fields: [taskRoleId], references: [id], onDelete: Cascade)
-  permission   Permission  @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([taskRoleId, permissionId])
-}

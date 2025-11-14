@@ -4,13 +4,16 @@ import * as React from "react"
 import { Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import { useRouter } from "next/navigation"
 
 export interface EventCardProps {
+  eventId?: any
   eventName: string
   eventImage: string
   eventDate: string
   society: string
   description?: string
+   eventSlug?: any 
   isEnrolled?: boolean
   upcoming?: string
   onClick?: () => void
@@ -21,13 +24,15 @@ export function EventCard({
   eventImage,
   eventDate,
   society,
+  eventId,
   isEnrolled = false,
+  eventSlug,
   upcoming,
   onClick, 
 }: EventCardProps) {
   const [isVisible, setIsVisible] = React.useState(false)
   const cardRef = React.useRef<HTMLDivElement>(null)
-
+ const router = useRouter() // ✅ initialize router
   React.useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -48,7 +53,7 @@ export function EventCard({
   return (
     <div
       ref={cardRef}
-      onClick={onClick}
+      onClick={() => router.push(`/event/${eventId}`)}
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-lg transition-all duration-500 cursor-pointer",
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8",

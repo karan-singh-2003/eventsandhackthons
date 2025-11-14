@@ -197,35 +197,60 @@ export const useEventModalStore = create<EventModalState>((set:any) => ({
 
 
 
-
-
 interface PanelState {
   isOpen: boolean
   panelType: "event" | "workspace" | null
-
-    setIsOpen: (value: boolean) => void
   panelData: any
+  panelRoute: string | null
+
+  setPanelRoute: (route: string | null) => void
+  closePanel: () => void
   togglePanel: (type: "event" | "workspace", data?: any) => void
 }
 
-export const usePanelStore = create<PanelState>((set, get) => ({
+export const usePanelStore = create<PanelState>((set) => ({
   isOpen: false,
   panelType: null,
   panelData: null,
-   setIsOpen: (value) => set({ isOpen: value }),
-  togglePanel: (type, data) => {
-    const { isOpen, panelType, panelData } = get()
+  panelRoute: null,
 
-    // If same panel open → close it
-    if (
-      isOpen &&
-      panelType === type &&
-      JSON.stringify(panelData) === JSON.stringify(data)
-    ) {
-      set({ isOpen: false, panelType: null, panelData: null })
-    } else {
-      // Otherwise open/update
-      set({ isOpen: true, panelType: type, panelData: data })
-    }
-  },
+  setPanelRoute: (route) => set({ panelRoute: route }),
+
+  closePanel: () =>
+    set({
+      isOpen: false,
+      panelType: null,
+      panelData: null,
+      panelRoute: null,
+    }),
+
+  togglePanel: (type, data = null) =>
+    set({
+      isOpen: true,
+      panelType: type,
+      panelData: data,
+    }),
+}))
+
+
+interface TeamDialogState {
+  isOpen: boolean
+  minSize: number | null
+  maxSize: number | null
+  eventId: string | null
+
+  openDialog: (eventId: string, minSize: number, maxSize: number) => void
+  closeDialog: () => void
+}
+
+export const useTeamDialogStore = create<TeamDialogState>((set) => ({
+  isOpen: false,
+  minSize: null,
+  maxSize: null,
+  eventId: null,
+
+  openDialog: (eventId, minSize, maxSize) =>
+    set({ isOpen: true, eventId, minSize, maxSize }),
+
+  closeDialog: () => set({ isOpen: false, eventId: null, minSize: null, maxSize: null }),
 }))
