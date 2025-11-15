@@ -1,22 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import useGetLoadingbanner from "@/hooks/useGetLoadingbanner";
 import { useRouter } from "next/navigation";
+import useGetLatestbanner from "@/hooks/useGetLoadingbanner";
 
 export function LandingBanner() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const { data = [], isError, isPending } = useGetLoadingbanner();
+  const { data = [], isError, isPending } = useGetLatestbanner();
 
   const slides = data?.events || [];
 const router = useRouter()
 
   // Auto Slide
   useEffect(() => {
-    if (!slides.length) return;
+    if (!slides.length) return ;
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
@@ -55,7 +54,7 @@ const router = useRouter()
           {slides?.map((event: any, index: number) => (
             <div
               key={event.id}
-              onClick={()=>router.push(`/event/${event?.id}`)}
+            
               className={`absolute inset-0 transition-all duration-700 ease-in-out
                 ${
                   index === currentSlide
@@ -76,27 +75,41 @@ const router = useRouter()
               </div>
 
               {/* Text */}
-              <div className="relative h-full flex items-center px-6 md:px-10 lg:px-14">
-                <div className="max-w-2xl">
-                  <h1
-                    className=" font-semibold absolute bottom-6 left-6 lg:bottom-17 md:left-10 text-white leading-tight"
-                    style={{
-                      fontSize: "clamp(1.2rem, 4vw, 2.5rem)",
-                    }}
-                  >
-                    {event.name}
-                  </h1>
+             {/* Text */}
+<div className="relative h-full flex items-end px-6 md:px-10 lg:px-14 pb-10">
+  <div className="max-w-xl space-y-1.5">
 
-                  <div className="absolute bottom-6 left-6 md:bottom-8 md:left-10">
-  <Button
-    size="sm"
-    className="bg-accent hover:bg-accent/90 text-accent-foreground px-5 py-2 md:px-6 md:py-3 rounded-full text-xs md:text-sm"
-  >
-    View Event
-  </Button>
+    {/* Event Name */}
+    <h1
+      className="text-white font-bold leading-tight drop-shadow-md"
+      style={{
+        fontSize: "clamp(1.4rem, 4vw, 2.8rem)", // responsive
+      }}
+    >
+      {event.name}
+    </h1>
+
+    {/* Event Description */}
+    <p
+      className="text-white/80 text-sm md:text-base font-normal line-clamp-2 drop-shadow-sm"
+      style={{
+        maxWidth: "500px",
+      }}
+    >
+      {event.description}
+    </p>
+
+    {/* View Event Button */}
+    <button
+      onClick={() => router.push(`/event/${event.id}`)}
+      className="mt-3 bg-accent hover:cursor-pointer hover:bg-accent/90 text-[#1a1a1a] px-3 lg:px-5 py-1.5 lg:py-2 rounded-sm text-xs lg:text-sm font-medium transition"
+    >
+      View Event
+    </button>
+
+  </div>
 </div>
- </div>
-              </div>
+
             </div>
           ))}
 

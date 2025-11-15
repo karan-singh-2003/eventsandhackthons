@@ -8,12 +8,12 @@ import { toast } from 'sonner'
  * Fetches all events for a given society slug
  * using TanStack Query (GET request version)
  */
-const useGetLoadingbanner = () => {
+const useGetLatestbanner = () => {
   const query = useQuery({
     queryKey: ['loadingbanner'], // ✅ Unique cache per society
      queryFn: async () => {
    // ✅ Use GET instead of POST
-      const response = await axios.get('api/event/latestevent')
+      const response = await axios.get('api/event/latesteventlimited')
 
       if (!response.data?.success) {
         throw new Error(response.data?.message || 'Failed to fetch events')
@@ -33,4 +33,4 @@ const useGetLoadingbanner = () => {
   return query
 }
 
-export default useGetLoadingbanner
+export default useGetLatestbanner

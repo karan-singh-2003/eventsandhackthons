@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     // Try getting the logged-in user info (optional)
-    const user = await getUserInfo().catch(() => null)
+      const user = await getUserInfo().catch(() => null)
 
     // Fetch event by ID with related workspace and roles
     const event = await prisma.event.findUnique({

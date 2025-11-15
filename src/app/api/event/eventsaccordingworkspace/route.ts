@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getUserInfo } from "@/lib/auth-server";
 
 /**
  * @route   GET /api/public/events
- * @desc    Fetch all workspaces and their public events (upcoming first, past last)
+ * @desc    Fetch all workspaces and events, and add user enrollment info
  * @access  Public
  */
 export async function GET() {
   try {
-    // ✅ 1️⃣ Fetch workspaces and their public events
+    // 🔐 1️⃣ Get User (optional)
+    const user = await getUserInfo().catch(() => null);
+    const userId = user?.userId ?? null;
+
+    // 2️⃣ Fetch All Workspaces & Public Events
     const workspaces = await prisma.workspace.findMany({
       select: {
         id: true,
@@ -34,38 +39,76 @@ export async function GET() {
             eventLink: true,
             enrolledCount: true,
             capacity: true,
+            // later we attach userStatus manually
           },
         },
       },
-      orderBy: {
-        name: "asc",
-      },
+      orderBy: { name: "asc" },
     });
 
-    // ✅ 2️⃣ Sort events inside each workspace
     const today = new Date();
 
-    const sortedWorkspaces = workspaces.map((workspace) => {
-      const upcoming = workspace.events
-        .filter((event) => new Date(event.startDate) >= today)
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()); // soonest first
+    // 3️⃣ Attach user enrollment info to each event
+    const finalWorkspaces = await Promise.all(
+      workspaces.map(async (workspace) => {
+        // Sort upcoming + past
+        const upcoming = workspace.events
+          .filter((e) => new Date(e.startDate) >= today)
+          .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
 
-      const past = workspace.events
-        .filter((event) => new Date(event.startDate) < today)
-        .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()); // latest past first
+        const past = workspace.events
+          .filter((e) => new Date(e.startDate) < today)
+          .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
 
-      return {
-        ...workspace,
-        events: [...upcoming, ...past], // ✅ upcoming first, past last
-      };
-    });
+        const sortedEvents = [...upcoming, ...past];
 
-    // ✅ 3️⃣ Return formatted response
+        // If user is NOT logged in, return events without user status
+        if (!userId) {
+          return { ...workspace, events: sortedEvents };
+        }
+
+        // 4️⃣ For logged-in user → attach userStatus
+        const enrichedEvents = await Promise.all(
+          sortedEvents.map(async (event) => {
+            const enrollment = await prisma.eventEnrollment.findFirst({
+              where: {
+                eventId: event.id,
+                status: { not: "REJECTED" },  // ❗ exclude rejected enrollments
+                OR: [
+                  { userId }, // solo
+                  { team: { members: { some: { userId } } } }, // team member
+                ],
+              },
+              include: {
+                team: true,
+              },
+            });
+
+            return {
+              ...event,
+              userStatus: {
+                isAuthenticated: true,
+                isEnrolled: !!enrollment,
+                enrollmentType: enrollment?.team ? "TEAM" : enrollment ? "SOLO" : null,
+                team: enrollment?.team || null,
+              },
+            };
+          })
+        );
+
+        return {
+          ...workspace,
+          events: enrichedEvents,
+        };
+      })
+    );
+
     return NextResponse.json(
       {
         success: true,
-        totalWorkspaces: sortedWorkspaces.length,
-        data: sortedWorkspaces,
+        totalWorkspaces: finalWorkspaces.length,
+        data: finalWorkspaces,
+        loggedInUser: userId || null,
       },
       { status: 200 }
     );
