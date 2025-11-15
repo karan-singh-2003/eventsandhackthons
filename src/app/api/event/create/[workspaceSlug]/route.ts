@@ -82,6 +82,111 @@ export async function POST(
         { status: 403 }
       )
     }
+// ------------------------------------------------------------
+// ✅ Prevent duplicate event names inside the same workspace
+// ------------------------------------------------------------
+const existingEvent = await prisma.event.findFirst({
+  where: {
+    name: data.name,
+    workspaceId: workspace.id,
+  },
+});
+
+if (existingEvent) {
+  return NextResponse.json(
+    {
+      error: `An event named "${data.name}" already exists in this workspace. Please choose a different name.`,
+    },
+    { status: 400 }
+  );
+}
+
+
+    // ------------------------------------------
+// ✅ REQUIRED DATE CHECKS
+// ------------------------------------------
+if (!data.startDate || !data.endDate) {
+  return NextResponse.json(
+    { error: "Event start date and end date are required" },
+    { status: 400 }
+  );
+}
+
+// Team events require registration dates
+if (data.eventType !== "SOLO") {
+  if (!data.registrationStartDate || !data.registrationEndDate) {
+    return NextResponse.json(
+      { error: "Registration start & end dates are required for team events" },
+      { status: 400 }
+    );
+  }
+}
+
+// Convert date strings
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+const eventStart = new Date(data.startDate);
+const eventEnd = new Date(data.endDate);
+
+const regStart = data.registrationStartDate
+  ? new Date(data.registrationStartDate)
+  : null;
+
+const regEnd = data.registrationEndDate
+  ? new Date(data.registrationEndDate)
+  : null;
+
+// ------------------------------------------
+// ✅ DATE VALIDATION RULES
+// ------------------------------------------
+
+// 1️⃣ Event start date cannot be in the past
+if (eventStart < today) {
+  return NextResponse.json(
+    { error: "Event start date cannot be in the past" },
+    { status: 400 }
+  );
+}
+
+// 2️⃣ Event end must be after event start
+if (eventEnd <= eventStart) {
+  return NextResponse.json(
+    { error: "Event end date must be after start date" },
+    { status: 400 }
+  );
+}
+
+// 3️⃣ If registration dates exist → validate
+if (regStart && regStart < today) {
+  return NextResponse.json(
+    { error: "Registration start must be today or later" },
+    { status: 400 }
+  );
+}
+
+if (regStart && regEnd && regEnd <= regStart) {
+  return NextResponse.json(
+    { error: "Registration end must be after start date" },
+    { status: 400 }
+  );
+}
+
+// 4️⃣ Registration cannot end after event start
+if (regEnd && regEnd > eventStart) {
+  return NextResponse.json(
+    { error: "Registration must end before event start" },
+    { status: 400 }
+  );
+}
+
+// 5️⃣ Event cannot start before registration starts
+if (regStart && eventStart < regStart) {
+  return NextResponse.json(
+    { error: "Event start cannot be before registration start" },
+    { status: 400 }
+  );
+}
 
     // ✅ Team event validation
     if (data.eventType !== "SOLO") {
