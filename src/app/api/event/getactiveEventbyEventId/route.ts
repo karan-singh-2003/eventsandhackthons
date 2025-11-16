@@ -66,6 +66,8 @@ export async function POST(req: Request) {
         isOnline: event.isOnline,
         eventLink: event.eventLink,
         linkTitle: event.linkTitle,
+        registrationStartDate: event.registrationStartDate,
+        registrationEndDate: event.registrationEndDate,
         linkUrl: event.linkUrl,
         minTeamSize: event.minTeamSize,
         maxTeamSize: event.maxTeamSize,

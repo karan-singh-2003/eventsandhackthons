@@ -1,15 +1,13 @@
 "use client"
 
-import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, Calendar, Clock, MapPin, Users, Heart } from "lucide-react"
+import { AlertCircle, Calendar, Clock, MapPin, Users } from "lucide-react"
 import { format } from "date-fns"
 import { toast } from "sonner"
-import { QueryClient, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTeamDialogStore } from "@/store/modal-slice"
 import TeamRegistrationDialog from "./enrollment/TeamRegistrationDialog"
-
 
 
 interface RegistrationCardProps {
@@ -25,162 +23,211 @@ interface RegistrationCardProps {
     minTeamSize: number
     maxTeamSize: number
     registrationEndDate: any
-    registrationStartDate:any
+    registrationStartDate: any
   }
   eventUserStatus?: any
-  eventloggedInUser?:any
+  eventloggedInUser?: any
 }
 
-export default function ActiveEventRegistrationCard({ event, eventUserStatus, eventloggedInUser }: RegistrationCardProps) {
- 
+export default function ActiveEventRegistrationCard({ event, eventUserStatus }: RegistrationCardProps) {
 
-  // calculate duration
-  const start = new Date(event?.startDate)
-  const end = new Date(event?.endDate)
-  const durationHours = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60))
+  const queryClient = useQueryClient()
 
-  // onClick logic
-  
+  // -----------------------------
+  // EVENT DATE RANGE (DISPLAY ONLY)
+  // -----------------------------
+  const eventStart = new Date(event.startDate)
+  const eventEnd = new Date(event.endDate)
 
-  const queryClient = useQueryClient();
-
-  const details = [
-    { icon: Calendar, value: `${format(start, "EEE dd MMM yyyy")} --  ${format(end, "EEE dd MMM yyyy")}` },
-    { icon: Clock, value: `${format(end, "hh:mm a")} to ${format(start, "hh:mm a")}` },
-    { icon: Clock, value: `${durationHours} hours total` },
-    { icon: Users, value: `Type: ${event?.eventType || "N/A"}` },
-    { icon: MapPin, value: event?.location },
-  ]
-
-const openTeamDialog = () => {
-  useTeamDialogStore.getState().openDialog(
-    event.id,
-    event.minTeamSize,
-    event.maxTeamSize
+  const durationHours = Math.round(
+    (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60)
   )
-}
 
   // -----------------------------
-  // RENDER BUTTONS BASED ON EVENT TYPE
+  // REGISTRATION DATE RANGE (LOGIC)
   // -----------------------------
-const renderEnrollmentButtons = () => {
-  const isAlreadyEnrolled = eventUserStatus.isEnrolled;
-  const isRegistrationEnded =
-    new Date() > new Date(event.registrationEndDate);
+  const now = new Date()
+  const regStart = new Date(event.registrationStartDate)
+  console.log("Registration Start Date:", regStart);
+  const regEnd = new Date(event.registrationEndDate)
 
+  const isRegistrationNotStarted = now < regStart
+  const isRegistrationClosed = now > regEnd
+  const isRegistrationOpen = now >= regStart && now <= regEnd
+
+  const isAlreadyEnrolled = eventUserStatus?.isEnrolled
+
+  // -----------------------------
+  // STYLES (NO CHANGE)
+  // -----------------------------
   const disabledClasses =
-    "w-full h-10 sm:h-11 lg:h-12 text-[16px] sm:text-[17px] lg:text-[18px] text-white rounded-xl cursor-not-allowed font-medium bg-[#d1410c] border-[#d1410c] border";
+    "w-full h-10 sm:h-11 lg:h-12 text-[16px] sm:text-[17px] lg:text-[18px] text-white rounded-xl cursor-not-allowed font-medium bg-[#d1410c] border-[#d1410c] border"
 
   const activeClasses =
-    "w-full h-10 sm:h-11 lg:h-12 text-[16px] sm:text-[17px] lg:text-[18px] text-[#d1410c] rounded-xl cursor-pointer font-medium bg-transparent border-[#d1410c] border hover:bg-[#d1410c] hover:text-white transition-all";
+    "w-full h-10 sm:h-11 lg:h-12 text-[16px] sm:text-[17px] lg:text-[18px] text-[#d1410c] rounded-xl cursor-pointer font-medium bg-transparent border-[#d1410c] border hover:bg-[#d1410c] hover:text-white transition-all"
 
-  // 🔒 If registration is closed → show only "Registration Closed"
-  if (isRegistrationEnded) {
-    return (
-      <button className={disabledClasses} disabled>
-        Registration Closed
-      </button>
-    );
+  // -----------------------------
+  // TEAM DIALOG
+  // -----------------------------
+  const openTeamDialog = () => {
+    useTeamDialogStore.getState().openDialog(
+      event.id,
+      event.minTeamSize,
+      event.maxTeamSize
+    )
   }
 
-  // ===== SOLO EVENT =====
-  if (event.eventType === "SOLO") {
-    return isAlreadyEnrolled ? (
-      <button className={disabledClasses} disabled>
-        Already Enrolled
-      </button>
-    ) : (
-      <button
-        className={activeClasses}
-        onClick={() => handleEnroll("SOLO")}
-        disabled={soloEnrollMutation.isPending}
-      >
-        {soloEnrollMutation.isPending ? "Enrolling..." : "Enroll Solo"}
-      </button>
-    );
+  // -----------------------------
+  // SOLO ENROLL MUTATION
+  // -----------------------------
+  const soloEnrollMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      const res = await fetch("/api/event/enrollment/soloenrollment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId }),
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Enrollment failed")
+      return data
+    },
+
+    onSuccess: () => {
+      toast.success("🎉 Solo enrollment successful!")
+      queryClient.invalidateQueries({ queryKey: ["events"] })
+      queryClient.invalidateQueries({ queryKey: ["workspaces", event.id] })
+      queryClient.invalidateQueries({
+        queryKey: ["SeeAllEventsBySocietySlug", event.id],
+        
+      }
+    
+    )
+    window.location.reload()
+    },
+
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to enroll")
+    },
+  })
+
+  const handleEnroll = () => {
+    soloEnrollMutation.mutate(event.id)
   }
 
-  // ===== TEAM EVENT =====
-  if (event.eventType === "TEAM") {
-    return (
-      <button
-        className={isAlreadyEnrolled ? disabledClasses : activeClasses}
-        onClick={!isAlreadyEnrolled ? openTeamDialog : undefined}
-        disabled={isAlreadyEnrolled}
-      >
-        {isAlreadyEnrolled ? "Already Enrolled" : "Register as Team"}
-      </button>
-    );
-  }
-
-  // ===== SOLO + TEAM EVENT =====
-  if (event.eventType === "SOLO_AND_TEAM") {
-    if (isAlreadyEnrolled) {
+  // -----------------------------
+  // BUTTON RENDER LOGIC
+  // -----------------------------
+  const renderEnrollmentButtons = () => {
+    // ❌ NOT STARTED
+    if (isRegistrationNotStarted) {
       return (
+        <button className={disabledClasses} disabled>
+          Registration Not Started
+        </button>
+      )
+    }
+
+    // ❌ CLOSED
+    if (isRegistrationClosed) {
+      return (
+        <button className={disabledClasses} disabled>
+          Registration Closed
+        </button>
+      )
+    }
+
+    // 🟢 OPEN (but check event type)
+    // SOLO EVENT
+    if (event.eventType === "SOLO") {
+      return isAlreadyEnrolled ? (
         <button className={disabledClasses} disabled>
           Already Enrolled
         </button>
-      );
-    }
-
-    return (
-      <div className="flex flex-col sm:flex-row gap-3 w-full">
+      ) : (
         <button
           className={activeClasses}
-          onClick={() => handleEnroll("SOLO")}
+          onClick={handleEnroll}
           disabled={soloEnrollMutation.isPending}
         >
           {soloEnrollMutation.isPending ? "Enrolling..." : "Enroll Solo"}
         </button>
+      )
+    }
 
-        <button className={activeClasses} onClick={openTeamDialog}>
-          Register as Team
+    // TEAM EVENT
+    if (event.eventType === "TEAM") {
+      return (
+        <button
+          className={isAlreadyEnrolled ? disabledClasses : activeClasses}
+          onClick={!isAlreadyEnrolled ? openTeamDialog : undefined}
+          disabled={isAlreadyEnrolled}
+        >
+          {isAlreadyEnrolled ? "Already Enrolled" : "Register as Team"}
         </button>
-      </div>
-    );
+      )
+    }
+
+    // BOTH
+    if (event.eventType === "SOLO_AND_TEAM") {
+      if (isAlreadyEnrolled) {
+        return (
+          <button className={disabledClasses} disabled>
+            Already Enrolled
+          </button>
+        )
+      }
+
+      return (
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <button
+            className={activeClasses}
+            onClick={handleEnroll}
+            disabled={soloEnrollMutation.isPending}
+          >
+            {soloEnrollMutation.isPending ? "Enrolling..." : "Enroll Solo"}
+          </button>
+
+          <button className={activeClasses} onClick={openTeamDialog}>
+            Register as Team
+          </button>
+        </div>
+      )
+    }
+
+    return null
   }
 
-  return null;
-};
+  // -----------------------------
+  // EVENT DETAILS ARRAY
+  // -----------------------------
+  const details = [
+    {
+      icon: Calendar,
+      value: `${format(eventStart, "EEE dd MMM yyyy")} -- ${format(
+        eventEnd,
+        "EEE dd MMM yyyy"
+      )}`,
+    },
+    {
+      icon: Clock,
+      value: `${format(eventStart, "hh:mm a")} to ${format(
+        eventEnd,
+        "hh:mm a"
+      )}`,
+    },
+    { icon: Clock, value: `${durationHours} hours total` },
+    { icon: Users, value: `Type: ${event.eventType || "N/A"}` },
+    { icon: MapPin, value: event.location },
+  ]
 
-
-const soloEnrollMutation = useMutation({
-  mutationFn: async (eventId: string) => {
-    const res = await fetch("/api/event/enrollment/soloenrollment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ eventId }),
-    })
-
-    const data = await res.json()
-    if (!res.ok) throw new Error(data.message || "Enrollment failed")
-
-    return data
-  },
-
-  onSuccess: (data:any) => {
-    toast.success("🎉 Solo enrollment successful!")
-    queryClient.invalidateQueries({ queryKey: ['events'] });
-    queryClient.invalidateQueries({ queryKey: ['workspaces',event.id] });
-    queryClient.invalidateQueries({ queryKey: ['SeeAllEventsBySocietySlug', event.id] });
-    console.log("Enrollment Response:", data)
-  },
-
-  onError: (error: any) => {
-    toast.error(error.message || "Failed to enroll")
-  },
-})
-
-const handleEnroll = (type: "SOLO") => {
-  if (type === "SOLO") {
-    soloEnrollMutation.mutate(event?.id)
-  }
-}
-
-
+  // -----------------------------
+  // RETURN UI (NO CSS CHANGES)
+  // -----------------------------
   return (
     <Card className="shadow-sm w-full max-w-[450px] lg:max-w-[480px] mx-auto transition-all duration-300">
       <CardContent className="pt-6 space-y-6">
+
         {/* Event Summary */}
         <div className="space-y-4">
           <div className="grid gap-3 sm:gap-4">
@@ -200,7 +247,7 @@ const handleEnroll = (type: "SOLO") => {
               )
             })}
 
-            {/* Workspace (Organizer) */}
+            {/* Workspace */}
             <div className="flex gap-3 sm:gap-4 items-center">
               <div className="flex-shrink-0 mt-1">
                 <svg
@@ -225,7 +272,7 @@ const handleEnroll = (type: "SOLO") => {
                   <path d="m18.504 19.433 0 -8" fill="none" stroke="#464646" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} />
                   <path d="m21.504 19.433 0 -8" fill="none" stroke="#464646" strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} />
                   <path
-                    d="M1.65 8.538a0.5 0.5 0 0 0 0.307 0.895h20.1a0.5 0.5 0 0 0 0.309 -0.894L12.343 0.674a0.5 0.5 0 0 0 -0.616 0Z"
+                    d="M1.65 8.538a0.5 0.5 0 0 0 0.307 0.895h20.1a0.5 0.5 0 0 0 0.309 -0.894L12.343 0.674a0.5 0 0 0 -0.616 0Z"
                     fill="none"
                     stroke="#464646"
                     strokeLinecap="round"
@@ -253,14 +300,12 @@ const handleEnroll = (type: "SOLO") => {
           </div>
         </div>
 
-        {/* Interested & Register Buttons */}
-         
-
+        {/* Enrollment Buttons */}
         <div className="flex flex-col sm:flex-row gap-3">
           {renderEnrollmentButtons()}
         </div>
-        <TeamRegistrationDialog/>
-      
+
+        <TeamRegistrationDialog />
       </CardContent>
     </Card>
   )

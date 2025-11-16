@@ -15,7 +15,7 @@ const router = useRouter()
 
   // Auto Slide
   useEffect(() => {
-    if (!slides.length) return ;
+    if (!slides.length) return;
 
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
