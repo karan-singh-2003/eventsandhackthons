@@ -6,33 +6,33 @@ export default function EventNotificationCard({ notification, onRespond }: any) 
 
       {/* Event + Team Info */}
       <div className="flex flex-col">
-        <span className="text-sm text-gray-500">
-          Event: <strong>{notification.event?.name}</strong>
+        <span className="text-sm lg:text-[15px] text-[#39364f]">
+          Event: <strong >{notification.event?.name}</strong>
         </span>
 
         {notification.team?.name && (
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-[#555555]">
             Team: <strong>{notification.team.name}</strong>
           </span>
         )}
       </div>
 
       {/* Message */}
-      <p className="text-gray-800 text-sm">{notification.message}</p>
+      <p className="text-[#323232] text-sm">{notification.message}</p>
 
       {/* Accept/Reject only if INVITESENT */}
       {notification.status === "INVITESENT" && (
         <div className="flex gap-3 mt-2">
           <button
             onClick={() => onRespond(notification.id, "ACCEPT")}
-            className="px-5 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+            className="px-5 py-2 rounded-lg bg-transparent border-green-600 border hover:text-white text-green-600 text-sm font-medium hover:bg-green-700 transition"
           >
             Accept
           </button>
 
           <button
             onClick={() => onRespond(notification.id, "REJECT")}
-            className="px-5 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition"
+            className="px-5 py-2 rounded-lg bg-transparent hover:text-white text-sm border border-red-600 text-red-600 font-medium hover:bg-red-700 transition"
           >
             Reject
           </button>

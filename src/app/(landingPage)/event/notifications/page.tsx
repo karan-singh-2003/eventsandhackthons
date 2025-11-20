@@ -1,6 +1,7 @@
 "use client";
 
 import EventNotificationCard from "@/components/landingPage/landingpageEventNotification/EventNotificationCard";
+import { CircleAlert } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function NotificationsPage() {
@@ -40,10 +41,17 @@ export default function NotificationsPage() {
   return (
     <div className="min-h-screen max-w-2xl mx-4 p-6 flex flex-col gap-4 pb-24">
 
-      <h1 className="text-xl font-semibold mb-2">Notifications</h1>
+      <h1 className="text-xl lg:text-[32px] font-semibold text-[#1a1a1a] mb-2">Notifications</h1>
 
       {notifications.length === 0 ? (
-        <p className="text-gray-600 text-sm">No notifications found.</p>
+        <div className="text-yellow-800 font-medium flex gap-x-3 items-center bg-yellow-50 p-3 text-[11px] lg:text-sm">
+      <CircleAlert />
+      <div>
+        
+        <h3>No notifications available at the moment.</h3>
+      </div>
+    </div>
+
       ) : (
         notifications.map((notification:any) => (
           <EventNotificationCard

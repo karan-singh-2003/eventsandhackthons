@@ -28,7 +28,7 @@ const useSeeAllEventsBySocietySlug = (societySlug: string) => {
        // ✅ Keep in memory for 10 minutes
   refetchOnWindowFocus: false,     // 🚫 Won’t refetch when switching tabs
   refetchOnReconnect: true,        // ✅ Safe — refetch if network goes down & back
-  refetchOnMount: true,
+  refetchOnMount: false,
     
   })
 

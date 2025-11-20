@@ -67,26 +67,36 @@ export async function POST(req: Request) {
     // ---------------------------
     // 5️⃣ CHECK IF USER ALREADY ENROLLED SOLO
     // ---------------------------
-    const existingEnrollment = await prisma.eventEnrollment.findFirst({
-      where: {
-        eventId,
-        OR: [
-          { userId }, // already enrolled solo
-          {
-            team: {
-              members: { some: { userId } } // part of a team already
-            }
+  // ---------------------------
+// 5️⃣ CHECK IF USER ALREADY ENROLLED (IGNORE REJECTED)
+// ---------------------------
+const existingEnrollment = await prisma.eventEnrollment.findFirst({
+  where: {
+    eventId,
+    status: { not: "REJECTED" }, // <--- IMPORTANT FIX
+    OR: [
+      { userId }, // solo enrollment
+      {
+        team: {
+          members: {
+            some: { userId } // team enrollment
           }
-        ]
+        }
       }
-    })
+    ]
+  }
+})
 
-    if (existingEnrollment) {
-      return NextResponse.json(
-        { success: false, message: "You are already enrolled in this event" },
-        { status: 409 }
-      )
-    }
+if (existingEnrollment) {
+  return NextResponse.json(
+    {
+      success: false,
+      message: "You are already enrolled in this event"
+    },
+    { status: 409 }
+  )
+}
+
 
     // ---------------------------
     // 6️⃣ CHECK EVENT CAPACITY

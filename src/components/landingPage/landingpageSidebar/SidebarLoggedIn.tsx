@@ -98,7 +98,7 @@ const router = useRouter()
        <button
 
       className="flex items-start gap-3 w-full  px-4 justify-start text-left hover:bg-gray-50 active:bg-gray-100 py-1"
-      onClick={() => alert('View all your registered events')}
+      onClick={() => {router.push('/event/enrolledevents'); onClose();}}
     >
       {/* Calendar Icon */}
       {/* New Order Icon */}
@@ -121,7 +121,7 @@ const router = useRouter()
       {/* Text Section */}
       <div className="flex flex-col">
         <span className="text-[14px]  text-[#333333]">
-          Your Orders
+          Your Enrolled Events
         </span>
         <span className="text-[11px] text-gray-500">
           View all your registered events

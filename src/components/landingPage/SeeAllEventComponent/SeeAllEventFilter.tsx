@@ -126,6 +126,7 @@ export default function SeeAllEventFilter({ selectedFilters, onFiltersChange }: 
       {/* Browse My Carts Button */}
       <button
         className="w-full bg-transparent border border-[#d1410c] text-[#d1410c]  font-medium py-2 lg:py-2 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200"
+        onClick={() => window.location.href = '/event/enrolledevents'}
         
       >
         Browse My Carts

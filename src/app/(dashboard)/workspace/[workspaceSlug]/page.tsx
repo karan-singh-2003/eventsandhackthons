@@ -1,8 +1,9 @@
+import { DashboardHomepage } from '@/components/dashboard/dashboardHomePage/DashboardHomePage'
 import React from 'react'
 
 function page() {
   return (
-    <div className=' font-poppins ont-semibold'></div>
+    <div ><DashboardHomepage/></div>
   )
 }
 

@@ -105,7 +105,7 @@ function EventSectionShow() {
           title="Enrolled Events"
           aboutTitle="These are the events you’re officially part of — stay prepared and make the most of the experience!"
           events={enrolledEvents}
-          onSeeAll={() => router.push(`/events/enrolled`)}
+          onSeeAll={() => router.push(`/event/enrolledevents`)}
         />
       )}
 

@@ -24,11 +24,11 @@ const useFetchallEventbyeventId = (eventId: string) => {
       return response.data
     },
     enabled: !!eventId, // ✅ Only run when slug is available
-     staleTime: 1000 * 60 * 5,        // ✅ 5 minutes = fresh period
-       // ✅ Keep in memory for 10 minutes
-  refetchOnWindowFocus: false,     // 🚫 Won’t refetch when switching tabs
-  refetchOnReconnect: true,        // ✅ Safe — refetch if network goes down & back
-  refetchOnMount: true,
+  staleTime: 1000 * 60 * 5,              // Data fresh for 5 minutes
+    gcTime: 1000 * 60 * 10,                // Cache kept for 10 minutes
+    refetchOnWindowFocus: false,           // Do not auto-refetch on tab focus
+    refetchOnReconnect: true,              // Refetch when internet reconnects
+    refetchOnMount: false,   
     
   })
 

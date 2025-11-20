@@ -54,7 +54,7 @@ export default function ActiveEventRegistrationCard({ event, eventUserStatus }: 
   const isRegistrationNotStarted = now < regStart
   const isRegistrationClosed = now > regEnd
   const isRegistrationOpen = now >= regStart && now <= regEnd
-
+const isEventEnded = now > new Date(event.endDate)
   const isAlreadyEnrolled = eventUserStatus?.isEnrolled
 
   // -----------------------------
@@ -119,32 +119,51 @@ export default function ActiveEventRegistrationCard({ event, eventUserStatus }: 
   // BUTTON RENDER LOGIC
   // -----------------------------
   const renderEnrollmentButtons = () => {
-    // ❌ NOT STARTED
-    if (isRegistrationNotStarted) {
-      return (
-        <button className={disabledClasses} disabled>
-          Registration Not Started
-        </button>
-      )
-    }
 
-    // ❌ CLOSED
-    if (isRegistrationClosed) {
+  // 0️⃣ EVENT ENDED → Always show Event Closed
+  if (isEventEnded) {
+    return (
+      <button className={disabledClasses} disabled>
+        Event Closed
+      </button>
+    );
+  }
+   if (isAlreadyEnrolled) {
       return (
-        <button className={disabledClasses} disabled>
-          Registration Closed
-        </button>
-      )
-    }
-
-    // 🟢 OPEN (but check event type)
-    // SOLO EVENT
-    if (event.eventType === "SOLO") {
-      return isAlreadyEnrolled ? (
         <button className={disabledClasses} disabled>
           Already Enrolled
         </button>
-      ) : (
+      );
+    }
+
+  // 1️⃣ REGISTRATION NOT STARTED
+  if (isRegistrationNotStarted) {
+    return (
+      <button className={disabledClasses} disabled>
+        Registration Not Started 
+      </button>
+    );
+  }
+
+  // 2️⃣ REGISTRATION CLOSED (but event still running)
+  if (isRegistrationClosed) {
+    return (
+      <button className={disabledClasses} disabled>
+        Registration Closed
+      </button>
+    );
+  }
+
+  // 3️⃣ REGISTRATION OPEN →
+  // show Already Enrolled OR allow enrollment
+  if (isRegistrationOpen) {
+
+    // Already enrolled → show only this
+   
+
+    // ⭐ SOLO EVENT
+    if (event.eventType === "SOLO") {
+      return (
         <button
           className={activeClasses}
           onClick={handleEnroll}
@@ -152,32 +171,20 @@ export default function ActiveEventRegistrationCard({ event, eventUserStatus }: 
         >
           {soloEnrollMutation.isPending ? "Enrolling..." : "Enroll Solo"}
         </button>
-      )
+      );
     }
 
-    // TEAM EVENT
+    // ⭐ TEAM EVENT
     if (event.eventType === "TEAM") {
       return (
-        <button
-          className={isAlreadyEnrolled ? disabledClasses : activeClasses}
-          onClick={!isAlreadyEnrolled ? openTeamDialog : undefined}
-          disabled={isAlreadyEnrolled}
-        >
-          {isAlreadyEnrolled ? "Already Enrolled" : "Register as Team"}
+        <button className={activeClasses} onClick={openTeamDialog}>
+          Register as Team
         </button>
-      )
+      );
     }
 
-    // BOTH
+    // ⭐ BOTH OPTIONS
     if (event.eventType === "SOLO_AND_TEAM") {
-      if (isAlreadyEnrolled) {
-        return (
-          <button className={disabledClasses} disabled>
-            Already Enrolled
-          </button>
-        )
-      }
-
       return (
         <div className="flex flex-col sm:flex-row gap-3 w-full">
           <button
@@ -187,16 +194,17 @@ export default function ActiveEventRegistrationCard({ event, eventUserStatus }: 
           >
             {soloEnrollMutation.isPending ? "Enrolling..." : "Enroll Solo"}
           </button>
-
           <button className={activeClasses} onClick={openTeamDialog}>
             Register as Team
           </button>
         </div>
-      )
+      );
     }
-
-    return null
   }
+
+  return null;
+};
+
 
   // -----------------------------
   // EVENT DETAILS ARRAY

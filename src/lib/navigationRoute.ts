@@ -14,7 +14,7 @@ export function getRoutes(workspaceSlug: string): NavigationRoute[] {
   return [
     {
       label: "Home",
-      href: "/",
+      href: `/workspace/${workspaceSlug}`,
       icon: HomeIcon,
       activeIcon: HomeIcon,
       action: "navigate",

@@ -239,7 +239,7 @@ if (regStart && eventStart < regStart) {
         workspaceId: workspace.id,
         createdById: userId,
 
-        status: "DRAFT",
+        status: "OPEN",
         visibility: "PUBLIC",
       },
     })

@@ -15,8 +15,33 @@ import { EventCalendar } from "./EventCalendar"
 import { EventCreateButton } from "../Eventcreatebutton"
 import { useParams, useRouter } from "next/navigation"
 import { useEventModalStore, usePanelStore } from "@/store/modal-slice"
+import { da } from "zod/v4/locales"
+import useSeeAllEventsBySocietySlug from "@/hooks/useSealleventsbySocietySlug"
+
 
 export function EventOrganizationDashboard() {
+  const {workspaceSlug}= useParams();
+
+const {data , isPending , isError} =  useSeeAllEventsBySocietySlug(workspaceSlug as string);
+const exportToCSV = () => {
+    // Convert to CSV string
+    const headers = ["Event Title", "Event Slug", "Status"];
+    const rows = data?.events.map((item:any) => [item.name, item.slug, item.status]);
+
+    let csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((e) => e.join(",")).join("\n");
+
+    // Create download link
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.href = encodedUri;
+    link.download = "Event_Data.csv";
+    document.body.appendChild(link);
+    link.click();
+  };
+
+
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedStatus, setSelectedStatus] = useState<string[]>(["upcoming"])
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
@@ -27,7 +52,6 @@ export function EventOrganizationDashboard() {
     setSelectedStatus((prev) => (prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]))
   }
 
-  const {workspaceSlug}= useParams();
 const router = useRouter();
     const { togglePanel, setPanelRoute  } = usePanelStore();
   return (
@@ -81,7 +105,7 @@ const router = useRouter();
                   {/* Calendar Button - Add click handler to toggle calendar */}
                   <Button
                     variant="outline"
-                    className="border-border hover:cursor-pointer bg-white hover:bg-muted gap-2 w-full md:w-auto"
+                    className="border-border hidden hover:cursor-pointer bg-white hover:bg-muted gap-2 w-full md:w-auto"
                     size="lg"
                     onClick={() => setIsCalendarOpen(!isCalendarOpen)}
                   >
@@ -148,7 +172,103 @@ const router = useRouter();
                 </div>
               </div>
 
-              {isCalendarOpen && <EventCalendar />}
+              {/* {isCalendarOpen && <EventCalendar />} */}
+<div className="p-5 bg-white rounded-xl border shadow-sm">
+  <div className="flex justify-between items-center mb-4">
+    <h2 className="font-semibold text-lg">College Events </h2>
+    <button
+      onClick={exportToCSV}
+      className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
+    >
+      Export CSV
+    </button>
+  </div>
+
+  {/* Table */}
+  <div className="overflow-x-auto">
+    <table className="w-full border text-left">
+      <thead>
+        <tr className="bg-gray-100 border-b">
+          <th className="p-2">Event Title</th>
+          <th className="p-2">Event Slug</th>
+          <th className="p-2">Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {/* 🔄 Loading State */}
+        {isPending && (
+          <tr>
+            <td colSpan={3} className="p-4 text-center">
+              <div className="animate-pulse h-4 bg-gray-200 rounded w-full"></div>
+            </td>
+          </tr>
+        )}
+
+        {/* ❌ Error State */}
+        {isError && (
+          <tr>
+            <td colSpan={3} className="p-4 text-center text-red-500">
+              Failed to load event data.
+            </td>
+          </tr>
+        )}
+
+        {/* 🟡 No data */}
+        {!isPending && !isError && data?.length === 0 && (
+          <tr>
+            <td colSpan={3} className="p-4 text-center text-muted-foreground">
+              No participants found.
+            </td>
+          </tr>
+        )}
+
+        {/* ✅ Success State - Map Data */}
+        {!isPending &&
+          !isError &&
+          data?.events.map((item: any, index: number) => (
+            <tr key={index} className="border-b">
+  <td className="p-2">{item.name}</td>
+  <td className="p-2">{item.slug}</td>
+  <td className="p-2">{item.status}</td>
+
+  {/* 3 dots menu */}
+  <td className="p-2 text-right">
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="p-2 hover:bg-gray-100 rounded-full">
+          ⋮
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuCheckboxItem
+          className="cursor-pointer"
+          onClick={() =>
+            router.push(`/workspace/${workspaceSlug}/event/${item.eventId}`)
+          }
+        >
+          View Event
+        </DropdownMenuCheckboxItem>
+
+        <DropdownMenuCheckboxItem
+          className="cursor-pointer"
+          onClick={() =>
+            router.push(`/workspace/${workspaceSlug}/event/${item.eventId}/edit`)
+          }
+        >
+          Update Event
+        </DropdownMenuCheckboxItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  </td>
+</tr>
+
+          ))}
+      </tbody>
+    </table>
+  </div>
+</div>
 
               {/* List Section */}
               

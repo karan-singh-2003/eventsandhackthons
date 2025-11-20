@@ -1,20 +1,17 @@
-import { useQueryData } from "@/hooks/useQueryData";
+import { useQuery } from "@tanstack/react-query";
 
 export function usegeteventaccordingworkspaces() {
   const {
-    data: workspaces = { data: [] },
+    data = { data: [] },
     isPending,
     isFetching,
     error,
-  } = useQueryData(
-    ["events"], // ✅ unique cache key
-    async () => {
+  } = useQuery({
+    queryKey: ["events"],
+    queryFn: async () => {
       const res = await fetch("/api/event/eventsaccordingworkspace", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-         // ✅ avoid stale data (optional)
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!res.ok) {
@@ -23,11 +20,20 @@ export function usegeteventaccordingworkspaces() {
 
       return res.json();
     },
-    true // ✅ means: enabled by default (based on your hook logic)
-  );
+
+    // -----------------------
+    // 🔥 TanStack Query Options
+    // -----------------------
+
+    staleTime: 1000 * 60 * 5,              // Data fresh for 5 minutes
+    gcTime: 1000 * 60 * 10,                // Cache kept for 10 minutes
+    refetchOnWindowFocus: false,           // Do not auto-refetch on tab focus
+    refetchOnReconnect: true,              // Refetch when internet reconnects
+    refetchOnMount: false,                 // Do NOT refetch on component mount
+  });
 
   return {
-    workspaces: workspaces.data ?? [],
+    workspaces: data.data ?? [],
     isPending,
     isFetching,
     error,
